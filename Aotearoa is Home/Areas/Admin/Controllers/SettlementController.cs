@@ -16,12 +16,13 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
         // CREATE
+
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // SAVE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SettlementPage page)
@@ -33,7 +34,31 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
+        // VIEW PAGE
+
+        [HttpGet]
+        public async Task<IActionResult> View(int id)
+        {
+            var page = await _context.SettlementPages
+                .Include(p => p.ContentBlocks)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (page == null)
+            {
+                return NotFound();
+            }
+
+            page.ContentBlocks = page.ContentBlocks
+                .OrderBy(b => b.DisplayOrder)
+                .ToList();
+
+            return View(page);
+        }
+
+
         // EDIT
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var page = await _context.SettlementPages
@@ -51,6 +76,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             return View(page);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -82,7 +108,9 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         // DELETE
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -97,6 +125,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
             _context.ContentBlocks.RemoveRange(page.ContentBlocks);
+
             _context.SettlementPages.Remove(page);
 
             await _context.SaveChangesAsync();

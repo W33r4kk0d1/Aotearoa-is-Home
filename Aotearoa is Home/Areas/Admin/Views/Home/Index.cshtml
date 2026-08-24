@@ -19,19 +19,23 @@
         {
             <div class="admin-category-item">
 
-                <a href="/Admin/Settlement/Edit/@settlementPage.Id"
+                <!-- Category opens actual page -->
+                <a href="/Admin/Settlement/View/@settlementPage.Id"
                    class="admin-category-box">
 
-                    <span>@settlementPage.CategoryName</span>
+                    <span>@(settlementPage.CategoryName)</span>
 
                 </a>
 
+
+                <!-- Admin controls -->
                 <div class="admin-category-actions">
 
                     <a href="/Admin/Settlement/Edit/@settlementPage.Id"
                        class="admin-edit-button">
                         Edit
                     </a>
+
 
                     <form action="/Admin/Settlement/Delete"
                           method="post"
@@ -44,8 +48,11 @@
                                value="@settlementPage.Id" />
 
                         <button type="submit"
-                                class="admin-delete-button">
+                                class="admin-delete-button"
+                                onclick="return confirm('Are you sure you want to delete this category?');">
+
                             Delete
+
                         </button>
 
                     </form>
@@ -57,13 +64,16 @@
 
     </div>
 
+
+    <!-- Create button -->
+
     <div class="admin-create-section">
 
-        <a asp-area="Admin"
-           asp-controller="Settlement"
-           asp-action="Create"
+        <a href="/Admin/Settlement/Create"
            class="admin-create-button">
+
             + Create Settlement Information
+
         </a>
 
     </div>
