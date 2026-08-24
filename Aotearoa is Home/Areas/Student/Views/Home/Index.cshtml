@@ -2,51 +2,27 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="container home-container">
-
-    <div class="category-grid">
-
-        <a href="/Student/Accommodation" class="category-box">
-            <span>Accommodation</span>
-        </a>
-
-        <a href="/Settlement/Education" class="category-box">
-            <span>Education</span>
-        </a>
-
-        <a href="/Settlement/Healthcare" class="category-box">
-            <span>Healthcare & Wellbeing</span>
-        </a>
-
-        <a href="/Settlement/Employment" class="category-box">
-            <span>Employment</span>
-        </a>
-
-        <a href="/Settlement/Language" class="category-box">
-            <span>Language Support</span>
-        </a>
-
-        <a href="/Settlement/Childcare" class="category-box">
-            <span>Childcare</span>
-        </a>
-
-        <a href="/Settlement/FamilySupport" class="category-box">
-            <span>Family Support</span>
-        </a>
-
-        <a href="/Settlement/Emergency" class="category-box">
-            <span>Emergency</span>
-        </a>
-
-        <a href="/Settlement/Community" class="category-box">
-            <span>Community Support</span>
-        </a>
-
-    </div>
-
-</div>
+@model List<Aotearoa_is_Home.Models.SettlementPage>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Student";
 }
+
+<div class="container home-container">
+
+    <div class="category-grid">
+
+        @foreach (var settlementPage in Model)
+        {
+            <a href="/Student/Settlement/View/@settlementPage.Id"
+               class="category-box">
+
+                <span>@(settlementPage.CategoryName)</span>
+
+            </a>
+        }
+
+    </div>
+
+</div>

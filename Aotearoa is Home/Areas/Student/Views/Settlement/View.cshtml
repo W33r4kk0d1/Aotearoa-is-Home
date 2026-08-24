@@ -1,0 +1,57 @@
+﻿@model Aotearoa_is_Home.Models.SettlementPage
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.CategoryName;
+}
+
+<div class="container settlement-page">
+
+    <div class="settlement-page-header">
+
+        <h1>
+            @(Model.CategoryName)
+        </h1>
+
+    </div>
+
+    <div class="settlement-content">
+
+        @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
+        {
+            @if (block.Type == "heading")
+            {
+                <h1 class="settlement-heading">
+                    @(block.Content)
+                </h1>
+            }
+
+            else if (block.Type == "subheading")
+            {
+                <h2 class="settlement-subheading">
+                    @(block.Content)
+                </h2>
+            }
+
+            else if (block.Type == "paragraph")
+            {
+                <p class="settlement-paragraph">
+                    @(block.Content)
+                </p>
+            }
+
+            else if (block.Type == "image")
+            {
+                <div class="settlement-image-container">
+
+                    <img src="@block.Content"
+                         alt="@(Model.CategoryName)"
+                         class="settlement-image" />
+
+                </div>
+            }
+        }
+
+    </div>
+
+</div>
