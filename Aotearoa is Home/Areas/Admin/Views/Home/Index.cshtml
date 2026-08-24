@@ -1,0 +1,71 @@
+﻿@model List<Aotearoa_is_Home.Models.SettlementPage>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Administrator Dashboard";
+}
+
+<div class="container admin-container">
+
+    <h1>Administrator Dashboard</h1>
+
+    <p class="admin-subtitle">
+        Manage settlement information.
+    </p>
+
+    <div class="admin-category-grid">
+
+        @foreach (var settlementPage in Model)
+        {
+            <div class="admin-category-item">
+
+                <a href="/Admin/Settlement/Edit/@settlementPage.Id"
+                   class="admin-category-box">
+
+                    <span>@settlementPage.CategoryName</span>
+
+                </a>
+
+                <div class="admin-category-actions">
+
+                    <a href="/Admin/Settlement/Edit/@settlementPage.Id"
+                       class="admin-edit-button">
+                        Edit
+                    </a>
+
+                    <form action="/Admin/Settlement/Delete"
+                          method="post"
+                          style="display:inline;">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@settlementPage.Id" />
+
+                        <button type="submit"
+                                class="admin-delete-button">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <div class="admin-create-section">
+
+        <a asp-area="Admin"
+           asp-controller="Settlement"
+           asp-action="Create"
+           class="admin-create-button">
+            + Create Settlement Information
+        </a>
+
+    </div>
+
+</div>

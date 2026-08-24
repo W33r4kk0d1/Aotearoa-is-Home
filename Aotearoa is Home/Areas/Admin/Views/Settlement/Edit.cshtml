@@ -1,0 +1,346 @@
+﻿@model Aotearoa_is_Home.Models.SettlementPage
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Settlement Information";
+}
+
+<div class="container admin-container">
+
+    <h1>Edit Settlement Information</h1>
+
+    <form asp-area="Admin"
+          asp-controller="Settlement"
+          asp-action="Edit"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="Id"
+               value="@Model.Id" />
+
+        <div class="admin-form-group">
+
+            <label for="CategoryName">
+                Category Name
+            </label>
+
+            <input type="text"
+                   id="CategoryName"
+                   name="CategoryName"
+                   value="@Model.CategoryName"
+                   class="admin-form-input"
+                   required />
+
+        </div>
+
+        <h2>Page Content</h2>
+
+        <div id="contentBlocks">
+
+            @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
+            {
+                <div class="content-block">
+
+                    <div class="content-block-header">
+
+                        <strong>
+                            @block.Type
+                        </strong>
+
+                        <button type="button"
+                                onclick="this.parentElement.parentElement.remove()">
+                            Remove
+                        </button>
+
+                    </div>
+
+                    <input type="hidden"
+                           name="ContentBlocks[@block.DisplayOrder].Id"
+                           value="@block.Id" />
+
+                    <input type="hidden"
+                           name="ContentBlocks[@block.DisplayOrder].Type"
+                           value="@block.Type" />
+
+                    <input type="hidden"
+                           name="ContentBlocks[@block.DisplayOrder].DisplayOrder"
+                           value="@block.DisplayOrder" />
+
+                    @if (block.Type == "heading")
+                    {
+                        <input type="text"
+                               name="ContentBlocks[@block.DisplayOrder].Content"
+                               value="@block.Content"
+                               class="admin-form-input"
+                               placeholder="Enter heading..."
+                               required />
+                    }
+
+                    else if (block.Type == "subheading")
+                    {
+                        <input type="text"
+                               name="ContentBlocks[@block.DisplayOrder].Content"
+                               value="@block.Content"
+                               class="admin-form-input"
+                               placeholder="Enter subheading..."
+                               required />
+                    }
+
+                    else if (block.Type == "paragraph")
+                    {
+                        <textarea name="ContentBlocks[@block.DisplayOrder].Content"
+                          class="admin-form-input admin-textarea"
+                          placeholder="Enter paragraph..."
+                          required>@block.Content</textarea>
+                    }
+
+                    else if (block.Type == "image")
+                    {
+                        <input type="text"
+                               name="ContentBlocks[@block.DisplayOrder].Content"
+                               value="@block.Content"
+                               class="admin-form-input"
+                               placeholder="Image URL..." />
+                    }
+
+                </div>
+            }
+
+        </div>
+
+        <div class="content-builder-controls">
+
+            <select id="contentType"
+                    class="admin-form-input">
+
+                <option value="">
+                    Add content...
+                </option>
+
+                <option value="heading">
+                    Heading
+                </option>
+
+                <option value="subheading">
+                    Subheading
+                </option>
+
+                <option value="paragraph">
+                    Paragraph
+                </option>
+
+                <option value="image">
+                    Image
+                </option>
+
+            </select>
+
+            <button type="button"
+                    onclick="addContentBlock()"
+                    class="admin-create-button">
+
+                + Add Content
+
+            </button>
+
+        </div>
+
+        <div class="admin-form-actions">
+
+            <button type="submit"
+                    class="admin-save-button">
+
+                Save Changes
+
+            </button>
+
+            <a asp-area="Admin"
+               asp-controller="Home"
+               asp-action="Index"
+               class="admin-cancel-button">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    let blockIndex = @Model.ContentBlocks.Count();
+
+    function addContentBlock() {
+
+        const contentType =
+            document.getElementById("contentType").value;
+
+        if (contentType === "") {
+
+            alert("Please select a content type.");
+
+            return;
+        }
+
+        const container =
+            document.getElementById("contentBlocks");
+
+        const block =
+            document.createElement("div");
+
+        block.className = "content-block";
+
+
+        if (contentType === "heading") {
+
+            block.innerHTML = `
+
+                <div class="content-block-header">
+
+                    <strong>Heading</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="heading">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Enter heading..."
+                       required>
+
+            `;
+        }
+
+
+        else if (contentType === "subheading") {
+
+            block.innerHTML = `
+
+                <div class="content-block-header">
+
+                    <strong>Subheading</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="subheading">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Enter subheading..."
+                       required>
+
+            `;
+        }
+
+
+        else if (contentType === "paragraph") {
+
+            block.innerHTML = `
+
+                <div class="content-block-header">
+
+                    <strong>Paragraph</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="paragraph">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <textarea name="ContentBlocks[${blockIndex}].Content"
+                          class="admin-form-input admin-textarea"
+                          placeholder="Enter paragraph..."
+                          required></textarea>
+
+            `;
+        }
+
+
+        else if (contentType === "image") {
+
+            block.innerHTML = `
+
+                <div class="content-block-header">
+
+                    <strong>Image</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="image">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Image URL...">
+
+            `;
+        }
+
+
+        container.appendChild(block);
+
+        blockIndex++;
+
+        document.getElementById("contentType").value = "";
+
+    }
+
+</script>
