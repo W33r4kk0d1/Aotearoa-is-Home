@@ -1,0 +1,199 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Settlement Information";
+}
+
+<div class="container admin-container">
+
+    <h1>Create Settlement Information</h1>
+
+    <form asp-action="Create" method="post">
+
+        <div class="admin-form-group">
+            <label for="CategoryName">Category Name</label>
+
+            <input type="text"
+                   id="CategoryName"
+                   name="CategoryName"
+                   class="admin-form-input"
+                   placeholder="Enter category name..."
+                   required />
+        </div>
+
+        <h2>Page Content</h2>
+
+        <div id="contentBlocks"></div>
+
+        <div class="content-builder-controls">
+
+            <select id="contentType" class="admin-form-input">
+                <option value="">Add content...</option>
+                <option value="heading">Heading</option>
+                <option value="subheading">Subheading</option>
+                <option value="paragraph">Paragraph</option>
+                <option value="image">Image</option>
+            </select>
+
+            <button type="button"
+                    onclick="addContentBlock()"
+                    class="admin-create-button">
+                + Add Content
+            </button>
+
+        </div>
+
+        <div class="admin-form-actions">
+
+            <button type="submit"
+                    class="admin-save-button">
+                Create Settlement Information
+            </button>
+
+            <a href="/Admin/Home"
+               class="admin-cancel-button">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    let blockIndex = 0;
+
+    function addContentBlock() {
+
+        const contentType = document.getElementById("contentType").value;
+
+        if (contentType === "") {
+            alert("Please select a content type.");
+            return;
+        }
+
+        const container = document.getElementById("contentBlocks");
+
+        const block = document.createElement("div");
+        block.className = "content-block";
+
+        if (contentType === "heading") {
+
+            block.innerHTML = `
+                <div class="content-block-header">
+                    <strong>Heading</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="heading">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Enter heading..."
+                       required>
+            `;
+        }
+
+        else if (contentType === "subheading") {
+
+            block.innerHTML = `
+                <div class="content-block-header">
+                    <strong>Subheading</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="subheading">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Enter subheading..."
+                       required>
+            `;
+        }
+
+        else if (contentType === "paragraph") {
+
+            block.innerHTML = `
+                <div class="content-block-header">
+                    <strong>Paragraph</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="paragraph">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <textarea name="ContentBlocks[${blockIndex}].Content"
+                          class="admin-form-input admin-textarea"
+                          placeholder="Enter paragraph..."
+                          required></textarea>
+            `;
+        }
+
+        else if (contentType === "image") {
+
+            block.innerHTML = `
+                <div class="content-block-header">
+                    <strong>Image</strong>
+
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].Type"
+                       value="image">
+
+                <input type="hidden"
+                       name="ContentBlocks[${blockIndex}].DisplayOrder"
+                       value="${blockIndex}">
+
+                <input type="text"
+                       name="ContentBlocks[${blockIndex}].Content"
+                       class="admin-form-input"
+                       placeholder="Image URL...">
+            `;
+        }
+
+        container.appendChild(block);
+
+        blockIndex++;
+
+        document.getElementById("contentType").value = "";
+    }
+
+</script>
