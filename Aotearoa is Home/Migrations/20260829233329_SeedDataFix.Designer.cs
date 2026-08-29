@@ -3,6 +3,7 @@ using Aotearoa_is_Home.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aotearoa_is_Home.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260829233329_SeedDataFix")]
+    partial class SeedDataFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,88 +51,6 @@ namespace Aotearoa_is_Home.Migrations
                     b.HasIndex("SettlementPageId");
 
                     b.ToTable("ContentBlocks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Content = "Finding Accommodation in New Zealand",
-                            DisplayOrder = 1,
-                            SettlementPageId = 1,
-                            Type = "Heading"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Content = "Options include Homestays, Student accommodation, Youth hostels, Shared apartments, and Rental houses.",
-                            DisplayOrder = 2,
-                            SettlementPageId = 1,
-                            Type = "Paragraph"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Content = "Renting Guidelines",
-                            DisplayOrder = 3,
-                            SettlementPageId = 1,
-                            Type = "Heading"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Content = "Ensure you understand your tenancy agreement, bond payments, and tenant rights.",
-                            DisplayOrder = 4,
-                            SettlementPageId = 1,
-                            Type = "Paragraph"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Content = "Tertiary Information & Support",
-                            DisplayOrder = 1,
-                            SettlementPageId = 2,
-                            Type = "Heading"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Content = "Utilize campus international student support, academic learning hubs, library networks, and career advisory services.",
-                            DisplayOrder = 2,
-                            SettlementPageId = 2,
-                            Type = "Paragraph"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Content = "Medical Centres & Insurance",
-                            DisplayOrder = 1,
-                            SettlementPageId = 3,
-                            Type = "Heading"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Content = "Register with a local General Practitioner (GP). International students must maintain current medical insurance coverage.",
-                            DisplayOrder = 2,
-                            SettlementPageId = 3,
-                            Type = "Paragraph"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Content = "NZ Workplace Rights",
-                            DisplayOrder = 1,
-                            SettlementPageId = 5,
-                            Type = "Heading"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Content = "All workers are entitled to minimum wage, scheduled breaks, sick leave, and protection from workplace harassment.",
-                            DisplayOrder = 2,
-                            SettlementPageId = 5,
-                            Type = "Paragraph"
-                        });
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.SettlementInformation", b =>
@@ -251,58 +172,6 @@ namespace Aotearoa_is_Home.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SettlementPages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryName = "Accommodation"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryName = "Education"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryName = "Healthcare"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryName = "Language Assistance"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryName = "Employment"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryName = "Banking & Finance"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CategoryName = "Transport"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CategoryName = "Community Support"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CategoryName = "Childcare & Family"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CategoryName = "Emergency Support"
-                        });
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.ContentBlock", b =>
