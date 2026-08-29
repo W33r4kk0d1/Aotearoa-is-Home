@@ -3,6 +3,7 @@ using Aotearoa_is_Home.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aotearoa_is_Home.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260829234241_AddCmsSeedContent")]
+    partial class AddCmsSeedContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +80,7 @@ namespace Aotearoa_is_Home.Migrations
                         new
                         {
                             Id = 4,
-                            Content = "Ensure you understand your tenancy agreement, bond payments, and tenant rights.",
+                            Content = "Ensure you understand your tenancy agreement, bond payments (usually 2-4 weeks rent), and tenant rights.",
                             DisplayOrder = 4,
                             SettlementPageId = 1,
                             Type = "Paragraph"
