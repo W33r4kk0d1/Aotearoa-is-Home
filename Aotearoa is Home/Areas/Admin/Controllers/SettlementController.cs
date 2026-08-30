@@ -5,28 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aotearoa_is_Home.Areas.Admin.Controllers
 {
-    [Area("Admin")] // 🌟 This makes the URL start with /Admin/
+    [Area("Admin")]
     public class SettlementController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public SettlementController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // ============================================================
         // CREATE - GET
-        // ============================================================
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
-        
-        // ============================================================
+
         // ASYNC API CHECK FOR DUPLICATE CATEGORIES
-        // ============================================================
         [HttpGet]
         public async Task<IActionResult> IsCategoryUnique(string categoryName)
         {
@@ -42,40 +37,24 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return Json(!exists);
         }
 
-        // ... Keep the rest of your CREATE-POST, EDIT, VIEW, and DELETE methods beneath this unchanged ...
-
-
-        // ============================================================
         // CREATE - POST
-        // ============================================================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SettlementPage page)
         {
-            // --------------------------------------------------------
-            // Category name required
-            // --------------------------------------------------------
-
             if (string.IsNullOrWhiteSpace(page.CategoryName))
             {
                 ModelState.AddModelError(
                     "CategoryName",
                     "Category Hub Name is required."
                 );
-
                 return View(page);
             }
-
 
             page.CategoryName =
                 page.CategoryName.Trim();
 
-
-            // --------------------------------------------------------
             // Check duplicate category
-            // --------------------------------------------------------
-
             bool categoryExists =
                 await _context.SettlementPages
                     .AnyAsync(p =>
@@ -84,29 +63,21 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         == page.CategoryName.ToLower()
                     );
 
-
             if (categoryExists)
             {
                 ModelState.AddModelError(
                     "CategoryName",
                     $"The settlement category \"{page.CategoryName}\" already exists."
                 );
-
                 return View(page);
             }
-
-
-            // --------------------------------------------------------
             // Check duplicate topic headings
-            // --------------------------------------------------------
-
             if (page.ContentBlocks != null)
             {
                 var headings =
                     new HashSet<string>(
                         StringComparer.OrdinalIgnoreCase
                     );
-
 
                 foreach (var block in page.ContentBlocks)
                 {
@@ -134,12 +105,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     }
                 }
             }
-
-
-            // --------------------------------------------------------
             // Save
-            // --------------------------------------------------------
-
             _context.SettlementPages.Add(page);
 
             await _context.SaveChangesAsync();
@@ -148,11 +114,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-        // ============================================================
         // VIEW
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> View(int id)
         {
@@ -179,11 +141,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View(page);
         }
 
-
-        // ============================================================
         // EDIT - GET
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -194,12 +152,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         p => p.Id == id
                     );
 
-
             if (page == null)
             {
                 return NotFound();
             }
-
 
             page.ContentBlocks =
                 page.ContentBlocks
@@ -210,11 +166,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View(page);
         }
 
-
-        // ============================================================
         // EDIT - POST
-        // ============================================================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SettlementPage page)
@@ -250,7 +202,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         == page.CategoryName.ToLower()
                     );
 
-
             if (duplicate)
             {
                 ModelState.AddModelError(
@@ -267,7 +218,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return View(page);
             }
 
-
             // Find existing page
             var existingPage =
                 await _context.SettlementPages
@@ -276,23 +226,19 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         p => p.Id == page.Id
                     );
 
-
             if (existingPage == null)
             {
                 return NotFound();
             }
 
-
             // Update name
             existingPage.CategoryName =
                 page.CategoryName;
-
 
             // Delete old blocks
             _context.ContentBlocks.RemoveRange(
                 existingPage.ContentBlocks
             );
-
 
             // Add new blocks
             if (page.ContentBlocks != null)
@@ -308,18 +254,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 }
             }
 
-
             await _context.SaveChangesAsync();
-
 
             return RedirectToAction("Index", "Home");
         }
 
-
-        // ============================================================
         // DELETE
-        // ============================================================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -331,23 +271,18 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         p => p.Id == id
                     );
 
-
             if (page == null)
             {
                 return NotFound();
             }
 
-
             _context.ContentBlocks.RemoveRange(
                 page.ContentBlocks
             );
 
-
             _context.SettlementPages.Remove(page);
 
-
             await _context.SaveChangesAsync();
-
 
             return RedirectToAction(
                 "Index",

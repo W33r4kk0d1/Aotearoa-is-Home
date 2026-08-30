@@ -1,4 +1,6 @@
 ﻿@model Aotearoa_is_Home.Models.SettlementPage
+@using System.Text.Encodings.Web
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Edit Settlement Information";
@@ -16,7 +18,7 @@
 
                 <input type="hidden" name="Id" value="@Model.Id" />
 
-                <!-- Server-Side Validation Error Box (Displays database constraint notifications cleanly) -->
+                <!-- Server-Side Validation Error Box -->
                 <div asp-validation-summary="ModelOnly" class="text-danger small fw-bold mb-4 ms-2 list-unstyled"></div>
 
                 <!-- Category Name Block Title Input -->
@@ -44,7 +46,7 @@
                         {
                             if (!isFirstCard)
                             {
-                                @:</div><div class="bg-light p-2 rounded border d-flex gap-2 align-items-center"><select class="form-select form-select-sm nested-type-select" style="max-width: 200px;"><option value="">Add details to card...</option><option value="subheading">Subheading</option><option value="paragraph">Paragraph Text</option><option value="image">Image Asset URL</option></select><button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button></div></div></div>
+                                @:</div><div class="bg-light p-2 rounded border d-flex gap-2 align-items-center"><select class="form-select form-select-sm nested-type-select" style="max-width: 200px;"><option value="">Add details to card...</option><option value="subheading">Subheading</option><option value="paragraph">Paragraph Text</option><option value="image">Image Asset URL</option><option value="link">Link URL</option></select><button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button></div></div></div>
                                 serverCardIndex++;
                             }
                             isFirstCard = false;
@@ -54,7 +56,8 @@
                         else
                         {
                             var badgeColor = block.Type == "subheading" ? "bg-info text-dark" : 
-                                             block.Type == "paragraph" ? "bg-secondary text-white" : "bg-warning text-dark";
+                                             block.Type == "paragraph" ? "bg-secondary text-white" : 
+                                             block.Type == "image" ? "bg-warning text-dark" : "bg-dark text-white";
 
                             <div class="nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1" data-type="@block.Type">
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
@@ -72,7 +75,32 @@
                                     }
                                     else if (block.Type == "image")
                                     {
-                                        <input type="text" class="form-control form-control-sm item-content-field" value="@block.Content" />
+                                        <input type="text" class="form-control form-control-sm item-content-field" value="@block.Content" required />
+                                    }
+                                    else if (block.Type == "link")
+                                    {
+                                        var textPart = "Visit Resource Link";
+                                        var urlPart = "";
+                                        if (block.Content != null && block.Content.Contains("||"))
+                                        {
+                                            var split = block.Content.Split("||");
+                                            textPart = split[0];
+                                            urlPart = split[1];
+                                        }
+                                        else
+                                        {
+                                            urlPart = block.Content;
+                                        }
+
+                                        <div class="row g-2">
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control form-control-sm item-link-text-field" value="@textPart" required oninput="this.closest('.nested-item-row').querySelector('.item-content-field').value = this.value + '||' + this.closest('.nested-item-row').querySelector('.item-link-url-field').value;" />
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <input type="url" class="form-control form-control-sm item-link-url-field" value="@urlPart" required oninput="this.closest('.nested-item-row').querySelector('.item-content-field').value = this.closest('.nested-item-row').querySelector('.item-link-text-field').value + '||' + this.value;" />
+                                            </div>
+                                        </div>
+                                        <input type="hidden" class="item-content-field" value="@block.Content" />
                                     }
                                 </div>
                             </div>
@@ -81,7 +109,17 @@
 
                     @if (!isFirstCard)
                     {
-                        @:</div><div class="bg-light p-2 rounded border d-flex gap-2 align-items-center"><select class="form-select form-select-sm nested-type-select" style="max-width: 200px;"><option value="">Add details to card...</option><option value="subheading">Subheading</option><option value="paragraph">Paragraph Text</option><option value="image">Image Asset URL</option></select><button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button></div></div></div>
+                        @:</div>
+                        <div class="bg-light p-2 rounded border d-flex gap-2 align-items-center">
+                            <select class="form-select form-select-sm nested-type-select" style="max-width: 200px;">
+                                <option value="">Add details to card...</option>
+                                <option value="subheading">Subheading</option>
+                                <option value="paragraph">Paragraph Text</option>
+                                <option value="image">Image</option>
+                                <option value="link">Link URL</option>
+                            </select>
+                            <button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button>
+                            </div>
                     }
                 </div>
 
@@ -104,7 +142,7 @@
 
 @section Scripts {
     <script>
-        // 1. Initialize the card counter based on existing server-rendered topic cards
+        // Initialize the card counter based on existing server-rendered topic cards
         let cardCount = document.querySelectorAll("#topicCardsContainer .topic-card").length + 1;
 
         function createNewTopicCard() {
@@ -134,6 +172,7 @@
                             <option value="subheading">Subheading</option>
                             <option value="paragraph">Paragraph Text</option>
                             <option value="image">Image Asset URL</option>
+                            <option value="link">Link URL</option>
                         </select>
                         <button type="button" onclick="addNestedElement('${cardId}')" class="btn btn-outline-primary btn-sm fw-bold">
                             + Add Detail
@@ -173,7 +212,20 @@
                 inputHtml = `<textarea class="form-control form-control-sm item-content-field" rows="2" placeholder="Enter text details copy..." required></textarea>`;
             } else if (selectedType === "image") {
                 badgeColor = 'bg-warning text-dark';
-                inputHtml = `<input type="text" class="form-control form-control-sm item-content-field" placeholder="Paste image asset URL...">`;
+                inputHtml = `<input type="text" class="form-control form-control-sm item-content-field" placeholder="Paste image asset URL..." required>`;
+            } else if (selectedType === "link") {
+                badgeColor = 'bg-dark text-white';
+                inputHtml = `
+                    <div class="row g-2">
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control form-control-sm item-link-text-field" placeholder="Link Display Text (e.g. More Info)" required>
+                        </div>
+                        <div class="col-sm-7">
+                            <input type="url" class="form-control form-control-sm item-link-url-field" placeholder="Paste full URL destination (https://...)" required>
+                        </div>
+                    </div>
+                    <input type="hidden" class="item-content-field" value="">
+                `;
             }
 
             elementRow.innerHTML = `
@@ -183,6 +235,18 @@
                 </div>
                 <div>${inputHtml}</div>
             `;
+
+            if (selectedType === "link") {
+                const textIn = elementRow.querySelector(".item-link-text-field");
+                const urlIn = elementRow.querySelector(".item-link-url-field");
+                const contentIn = elementRow.querySelector(".item-content-field");
+                
+                const syncContent = () => {
+                    contentIn.value = `${textIn.value.trim()}||${urlIn.value.trim()}`;
+                };
+                textIn.addEventListener("input", syncContent);
+                urlIn.addEventListener("input", syncContent);
+            }
 
             nestedContainer.appendChild(elementRow);
             typeSelect.value = "";
@@ -255,7 +319,6 @@
             }
         }
 
-        // 2. Form Submission Interceptor Layer
         $(document).ready(function () {
             // Re-index immediately on page mount to properly structure server-rendered blocks
             reIndexAllInputs();
@@ -263,7 +326,6 @@
             $("#settlementForm").on("submit", function (event) {
                 const formElement = this;
 
-                // Validate baseline HTML parameters (like 'required')
                 if (!formElement.checkValidity()) {
                     formElement.reportValidity();
                     event.preventDefault();
@@ -272,8 +334,6 @@
 
                 const categoryInput = $("#CategoryName");
                 categoryInput.removeClass("is-invalid");
-                let hasError = false;
-
                 // Sync indices before executing the duplicate checks loop
                 reIndexAllInputs();
                 const headings = $(".card-heading-input");
@@ -285,7 +345,7 @@
                         alert(`⚠️ Validation Error: You cannot enter the same Topic Card Heading twice: "${$(this).val()}"`);
                         $(this).addClass("is-invalid").focus();
                         hasError = true;
-                        return false; // Break the jQuery loop execution
+                        return false; 
                     }
                     if (value !== "") {
                         uniqueHeadings.push(value);
@@ -301,4 +361,3 @@
         });
     </script>
 }
-

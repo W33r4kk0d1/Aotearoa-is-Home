@@ -5,59 +5,173 @@
     ViewData["Title"] = Model.CategoryName;
 }
 
-<div class="container settlement-page">
+<div class="container my-5" style="max-width: 950px;">
 
-    <div class="settlement-page-header">
+    <div class="card bg-dark text-white border-0 shadow-sm overflow-hidden mb-4 position-relative">
+        <div class="card-body p-4 p-md-5 position-relative" style="z-index: 2;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2 text-uppercase font-monospace small">
+                    <li class="breadcrumb-item"><a href="/Admin/Home" class="text-info text-decoration-none">Settlement Hub</a></li>
+                    <li class="breadcrumb-item active text-light opacity-75" aria-current="page">@Model.CategoryName</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 fw-bold mb-0">@Model.CategoryName</h1>
+        </div>
+        
+        <div class="position-absolute top-0 end-0 m-3 m-md-4" style="z-index: 3;">
+            
+                <a href="/Admin/Home" class="btn btn-secondary px-4 fw-semibold shadow-xs">
+                    🔙 Return to Dashboard Directory
+                </a>
+            <div class="d-flex justify-content-start align-items-center mt-5 pt-4 border-top">
 
-        <h1>
-            @(Model.CategoryName)
-        </h1>
-
-        <a href="/Admin/Settlement/Edit/@Model.Id"
-           class="admin-edit-button">
-            Edit Page
-        </a>
-
+            <a href="/Admin/Settlement/Edit/@Model.Id" class="btn btn-primary shadow-sm d-flex align-items-center gap-2 px-3 fw-bold border-2 border-white transition-all hover-lift">
+                ✏️ Edit Page
+            </a>
+            </div>
+        </div>
+    
+        
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at right, rgba(13,110,253,0.15), transparent); z-index: 1;"></div>
     </div>
 
+    <!-- REFRESHED SEARCH CONTROL BAR PANEL -->
+    <div class="card border-0 shadow-sm mb-4 bg-white p-3 rounded-3">
+        <div class="input-group input-group-lg border rounded-3 overflow-hidden">
+            <span class="input-group-text bg-light border-0 text-muted px-3">🔍</span>
+            <input type="text" 
+                   id="topicSearchBar" 
+                   onkeyup="filterTopicsBySearch()" 
+                   class="form-control border-0 ps-1 py-3 text-dark bg-white" 
+                   placeholder="Search entries inside the @Model.CategoryName collection (e.g. guidelines, rules, forms)..." 
+                   aria-label="Search filter field input bar" />
+            <button type="button" class="btn btn-outline-secondary border-0 px-3 fs-6" id="clearSearchBtn" onclick="clearSearchField()" style="display:none;">✕ Clear</button>
+        </div>
+    </div>
 
-    <div class="settlement-content">
+    <!-- SEPARATE FORUM-STYLE VISUAL TOPIC CARDS GRID SYSTEM CONTAINER -->
+    <div class="row g-4" id="topicCardsWorkspaceGrid">
+        @{
+            bool hasRenderedHeading = false;
+        }
 
         @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
         {
             @if (block.Type == "heading")
             {
-                <h1 class="settlement-heading">
-                    @(block.Content)
-                </h1>
+                if (hasRenderedHeading)
+                {
+                    @:</div></div></div></div>
+                }
+                hasRenderedHeading = true;
+
+                @:<div class="col-12 search-target-topic-block"><div class="card border-0 border-start border-primary border-4 shadow-sm bg-white rounded-3 overflow-hidden h-100"><div class="card-header bg-light py-3 border-bottom px-4"><h3 class="h4 mb-0 fw-bold text-dark tracking-tight d-flex align-items-center gap-2"><span class="text-primary fs-5">📌</span> <span class="search-heading-text">@block.Content</span></h3></div><div class="card-body p-4"><div class="d-flex flex-column gap-3 search-body-wrapper-text">
             }
-
-            else if (block.Type == "subheading")
+            else
             {
-                <h2 class="settlement-subheading">
-                    @(block.Content)
-                </h2>
-            }
+                // Format the nested sub elements safely layout system properties
+                if (block.Type == "subheading")
+                {
+                    <h4 class="h6 text-primary fw-bold text-uppercase tracking-wider mt-2 mb-0">🔹 @block.Content</h4>
+                }
+                else if (block.Type == "paragraph")
+                {
+                    <p class="text-secondary leading-relaxed mb-0 font-normal" style="white-space: pre-line; font-size: 1.05rem;">@block.Content</p>
+                }
+                else if (block.Type == "image")
+                {
+                    <div class="my-2 rounded border bg-light text-center p-2 shadow-inner overflow-hidden border-2 border-dashed" style="max-width: 600px;">
+                        <img src="@block.Content" class="img-fluid rounded shadow-sm hover-scale transition-all" alt="Topic Document Asset Illustration" onerror="this.parentElement.innerHTML='<div class=\"p-2 text-start small text-muted font-monospace bg-white border rounded\">🔗 Resource Link Asset Address: <a href=\"' + this.src + '\" target=\"_blank\" class=\"text-decoration-underline text-info fw-bold\">' + this.src + '</a>'" />
+                    </div>
+                }
+                else if (block.Type == "link")
+                {
+                    var linkDisplayText = "Click Here to Visit Link";
+                    var linkTargetUrl = "#";
 
-            else if (block.Type == "paragraph")
-            {
-                <p class="settlement-paragraph">
-                    @(block.Content)
-                </p>
-            }
+                    if (block.Content != null && block.Content.Contains("||"))
+                    {
+                        var pieces = block.Content.Split("||");
+                        linkDisplayText = pieces[0];
+                        linkTargetUrl = pieces[1];
+                    }
+                    else
+                    {
+                        linkTargetUrl = block.Content ?? "#";
+                    }
 
-            else if (block.Type == "image")
-            {
-                <div class="settlement-image-container">
-
-                    <img src="@block.Content"
-                         alt="@(Model.CategoryName)"
-                         class="settlement-image" />
-
-                </div>
+                    <div class="my-2 mt-3">
+                        <a href="@linkTargetUrl" target="_blank" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold transition-all hover-lift rounded-3 shadow-xs">
+                            🌐 @linkDisplayText <span class="small opacity-75">↗</span>
+                        </a>
+                    </div>
+                }
             }
         }
 
+        @if (hasRenderedHeading)
+        {
+            // Securely close out trailing collection elements looping context parameters tags
+            @:</div></div></div></div>
+        }
     </div>
 
+    <!-- EMPTY SEARCH RESULTS STATE SYSTEM BANNER DISPLAY -->
+    <div id="noSearchResultsAlert" class="card text-center p-5 border-2 border-dashed shadow-sm my-4 bg-white" style="display: none !important;">
+        <div class="display-3 mb-2">🏜️</div>
+        <h4 class="fw-bold text-dark">No Topic Results Found</h4>
+        <p class="text-muted mb-0">We couldn't find any content components matching your text keywords search inside this active folder directory path.</p>
+    </div>
+
+    
 </div>
+
+@section Scripts {
+    <script>
+        // High-performance search string parser filter tracking input keywords on-the-fly
+        function filterTopicsBySearch() {
+            const query = document.getElementById("topicSearchBar").value.trim().toLowerCase();
+            const topics = document.querySelectorAll(".search-target-topic-block");
+            const clearBtn = document.getElementById("clearSearchBtn");
+            let visibleCount = 0;
+
+            clearBtn.style.display = query !== "" ? "inline-block" : "none";
+
+            topics.forEach((topic) => {
+                const headingText = topic.querySelector(".search-heading-text").innerText.toLowerCase();
+                const bodyText = topic.querySelector(".search-body-wrapper-text").innerText.toLowerCase();
+
+                // Unhide any card where the text string parameters intersect the header fields or details wrappers
+                if (headingText.includes(query) || bodyText.includes(query)) {
+                    topic.style.setProperty("display", "block", "important");
+                    visibleCount++;
+                } else {
+                    topic.style.setProperty("display", "none", "important");
+                }
+            });
+
+            // If visibility query drops to zero, invoke the desert empty banner placeholder block layout context
+            const noResultsAlert = document.getElementById("noSearchResultsAlert");
+            if (visibleCount === 0 && query !== "") {
+                noResultsAlert.style.setProperty("display", "block", "important");
+            } else {
+                noResultsAlert.style.setProperty("display", "none", "important");
+            }
+        }
+
+        function clearSearchField() {
+            document.getElementById("topicSearchBar").value = "";
+            filterTopicsBySearch();
+            document.getElementById("topicSearchBar").focus();
+        }
+    </script>
+    
+    <style>
+        /* Interactive animation transitions styles block context */
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important; }
+        .hover-scale:hover { transform: scale(1.01); }
+        .transition-all { transition: all 0.2s ease-in-out; }
+        .bg-light-groove { background-color: #f9fbfd; }
+    </style>
+}
