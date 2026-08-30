@@ -74,6 +74,38 @@
                                     {
                                         <input type="text" class="form-control form-control-sm item-content-field" value="@block.Content" />
                                     }
+                                    else if (block.Type == "link")
+                                    {
+                                        var textPart = "Visit Resource Link";
+                                        var urlPart = "";
+                                        if (block.Content != null && block.Content.Contains("||"))
+                                        {
+                                            var split = block.Content.Split("||");
+                                            textPart = split[0];
+                                            urlPart = split[1];
+                                        }
+                                        else
+                                        {
+                                            urlPart = block.Content;
+                                        }
+                                        <div class="nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1" data-type="link">
+                                            <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
+                                                <span class="badge bg-dark text-white text-uppercase px-1 py-0 font-monospace" style="font-size:0.7rem;">Link</span>
+                                                <button type="button" onclick="this.closest('.nested-item-row').remove(); reIndexAllInputs();" class="btn-close" style="font-size:0.65rem;" aria-label="Close"></button>
+                                            </div>
+                                            <div>
+                                                <div class="row g-2">
+                                                    <div class="col-sm-5">
+                                                        <input type="text" class="form-control form-control-sm item-link-text-field" value="@textPart" required oninput="this.closest('.nested-item-row').querySelector('.item-content-field').value = this.value + '||' + this.closest('.nested-item-row').querySelector('.item-link-url-field').value;" />
+                                                    </div>
+                                                    <div class="col-sm-7">
+                                                        <input type="url" class="form-control form-control-sm item-link-url-field" value="@urlPart" required oninput="this.closest('.nested-item-row').querySelector('.item-content-field').value = this.closest('.nested-item-row').querySelector('.item-link-text-field').value + '||' + this.value;" />
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" class="item-content-field" value="@block.Content" />
+                                            </div>
+                                        </div>
+                                        }
                                 </div>
                             </div>
                         }
@@ -133,7 +165,8 @@
                             <option value="">Add details to card...</option>
                             <option value="subheading">Subheading</option>
                             <option value="paragraph">Paragraph Text</option>
-                            <option value="image">Image Asset URL</option>
+                            <option value="image">Image</option>
+                            <option value="link">Link URL</option>
                         </select>
                         <button type="button" onclick="addNestedElement('${cardId}')" class="btn btn-outline-primary btn-sm fw-bold">
                             + Add Detail
