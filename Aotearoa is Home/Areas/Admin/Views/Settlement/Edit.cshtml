@@ -1,346 +1,304 @@
 ﻿@model Aotearoa_is_Home.Models.SettlementPage
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Edit Settlement Information";
 }
 
-<div class="container admin-container">
-
-    <h1>Edit Settlement Information</h1>
-
-    <form asp-area="Admin"
-          asp-controller="Settlement"
-          asp-action="Edit"
-          method="post">
-
-        @Html.AntiForgeryToken()
-
-        <input type="hidden"
-               name="Id"
-               value="@Model.Id" />
-
-        <div class="admin-form-group">
-
-            <label for="CategoryName">
-                Category Name
-            </label>
-
-            <input type="text"
-                   id="CategoryName"
-                   name="CategoryName"
-                   value="@Model.CategoryName"
-                   class="admin-form-input"
-                   required />
-
+<div class="container my-5" style="max-width: 850px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white p-3 d-flex align-items-center justify-content-between">
+            <h1 class="h4 mb-0">✏️ Edit Settlement Category: @Model.CategoryName</h1>
+            <span class="badge bg-primary text-white" id="cardCounter">0 Topic Cards Active</span>
         </div>
+        <div class="card-body p-4 bg-light-groove">
+            <form id="settlementForm" asp-area="Admin" asp-controller="Settlement" asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
 
-        <h2>Page Content</h2>
+                <input type="hidden" name="Id" value="@Model.Id" />
 
-        <div id="contentBlocks">
+                <!-- Server-Side Validation Error Box (Displays database constraint notifications cleanly) -->
+                <div asp-validation-summary="ModelOnly" class="text-danger small fw-bold mb-4 ms-2 list-unstyled"></div>
 
-            @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
-            {
-                <div class="content-block">
-
-                    <div class="content-block-header">
-
-                        <strong>
-                            @block.Type
-                        </strong>
-
-                        <button type="button"
-                                onclick="this.parentElement.parentElement.remove()">
-                            Remove
-                        </button>
-
-                    </div>
-
-                    <input type="hidden"
-                           name="ContentBlocks[@block.DisplayOrder].Id"
-                           value="@block.Id" />
-
-                    <input type="hidden"
-                           name="ContentBlocks[@block.DisplayOrder].Type"
-                           value="@block.Type" />
-
-                    <input type="hidden"
-                           name="ContentBlocks[@block.DisplayOrder].DisplayOrder"
-                           value="@block.DisplayOrder" />
-
-                    @if (block.Type == "heading")
-                    {
-                        <input type="text"
-                               name="ContentBlocks[@block.DisplayOrder].Content"
-                               value="@block.Content"
-                               class="admin-form-input"
-                               placeholder="Enter heading..."
-                               required />
-                    }
-
-                    else if (block.Type == "subheading")
-                    {
-                        <input type="text"
-                               name="ContentBlocks[@block.DisplayOrder].Content"
-                               value="@block.Content"
-                               class="admin-form-input"
-                               placeholder="Enter subheading..."
-                               required />
-                    }
-
-                    else if (block.Type == "paragraph")
-                    {
-                        <textarea name="ContentBlocks[@block.DisplayOrder].Content"
-                          class="admin-form-input admin-textarea"
-                          placeholder="Enter paragraph..."
-                          required>@block.Content</textarea>
-                    }
-
-                    else if (block.Type == "image")
-                    {
-                        <input type="text"
-                               name="ContentBlocks[@block.DisplayOrder].Content"
-                               value="@block.Content"
-                               class="admin-form-input"
-                               placeholder="Image URL..." />
-                    }
-
+                <!-- Category Name Block Title Input -->
+                <div class="card p-3 mb-4 border-0 shadow-sm">
+                    <label for="CategoryName" class="form-label fw-bold text-dark">Category Hub Name</label>
+                    <input type="text"
+                           id="CategoryName"
+                           name="CategoryName"
+                           value="@Model.CategoryName"
+                           class="form-control form-control-lg border-2"
+                           required />
+                    <span asp-validation-for="CategoryName" class="text-danger small fw-bold mt-1 d-block"></span>
                 </div>
-            }
 
+                <!-- Live Topic Cards Display Grid Container -->
+                <div id="topicCardsContainer" class="d-flex flex-column gap-4 mb-4">
+                    @{
+                        int serverCardIndex = 0;
+                        bool isFirstCard = true;
+                    }
+
+                    @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
+                    {
+                        if (block.Type == "heading")
+                        {
+                            if (!isFirstCard)
+                            {
+                                @:</div><div class="bg-light p-2 rounded border d-flex gap-2 align-items-center"><select class="form-select form-select-sm nested-type-select" style="max-width: 200px;"><option value="">Add details to card...</option><option value="subheading">Subheading</option><option value="paragraph">Paragraph Text</option><option value="image">Image Asset URL</option></select><button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button></div></div></div>
+                                serverCardIndex++;
+                            }
+                            isFirstCard = false;
+
+                            @:<div class="card border-start border-primary border-4 shadow-sm topic-card bg-white mb-3" id="topic-card-@serverCardIndex"><div class="card-header bg-light d-flex justify-content-between align-items-center py-2"><span class="badge bg-primary text-uppercase font-monospace">Topic Card</span><button type="button" onclick="document.getElementById('topic-card-@serverCardIndex').remove(); reIndexAllInputs();" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:0.8rem;">Delete Card</button></div><div class="card-body p-3"><div class="mb-3 border-bottom pb-3"><label class="form-label small text-uppercase fw-bold text-secondary">Card Heading / Section Title</label><input type="text" class="form-control fw-bold card-heading-input" value="@block.Content" required></div><div class="nested-items-container d-flex flex-column gap-2 mb-3">
+                        }
+                        else
+                        {
+                            var badgeColor = block.Type == "subheading" ? "bg-info text-dark" : 
+                                             block.Type == "paragraph" ? "bg-secondary text-white" : "bg-warning text-dark";
+
+                            <div class="nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1" data-type="@block.Type">
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
+                                    <span class="badge @badgeColor text-uppercase px-1 py-0 font-monospace" style="font-size:0.7rem;">@block.Type</span>
+                                    <button type="button" onclick="this.closest('.nested-item-row').remove(); reIndexAllInputs();" class="btn-close" style="font-size:0.65rem;" aria-label="Close"></button>
+                                </div>
+                                <div>
+                                    @if (block.Type == "subheading")
+                                    {
+                                        <input type="text" class="form-control form-control-sm item-content-field" value="@block.Content" required />
+                                    }
+                                    else if (block.Type == "paragraph")
+                                    {
+                                        <textarea class="form-control form-control-sm item-content-field" rows="2" required>@block.Content</textarea>
+                                    }
+                                    else if (block.Type == "image")
+                                    {
+                                        <input type="text" class="form-control form-control-sm item-content-field" value="@block.Content" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    @if (!isFirstCard)
+                    {
+                        @:</div><div class="bg-light p-2 rounded border d-flex gap-2 align-items-center"><select class="form-select form-select-sm nested-type-select" style="max-width: 200px;"><option value="">Add details to card...</option><option value="subheading">Subheading</option><option value="paragraph">Paragraph Text</option><option value="image">Image Asset URL</option></select><button type="button" onclick="addNestedElement('topic-card-@serverCardIndex')" class="btn btn-outline-primary btn-sm fw-bold">+ Add Detail</button></div></div></div>
+                    }
+                </div>
+
+                <!-- Add New Main Topic Card Action Panel Button -->
+                <div class="text-center mb-4">
+                    <button type="button" onclick="createNewTopicCard()" class="btn btn-primary btn-lg shadow-sm px-4 fw-bold">
+                        ➕ Create New Topic Card
+                    </button>
+                </div>
+
+                <!-- Submission Controls Management Panel Layout -->
+                <div class="d-flex justify-content-end gap-2 border-top pt-3 bg-white p-3 rounded shadow-sm">
+                    <a href="/Admin/Home" class="btn btn-outline-secondary px-4">Cancel</a>
+                    <button type="submit" class="btn btn-success px-4 fw-bold">Save Changes</button>
+                </div>
+            </form>
         </div>
-
-        <div class="content-builder-controls">
-
-            <select id="contentType"
-                    class="admin-form-input">
-
-                <option value="">
-                    Add content...
-                </option>
-
-                <option value="heading">
-                    Heading
-                </option>
-
-                <option value="subheading">
-                    Subheading
-                </option>
-
-                <option value="paragraph">
-                    Paragraph
-                </option>
-
-                <option value="image">
-                    Image
-                </option>
-
-            </select>
-
-            <button type="button"
-                    onclick="addContentBlock()"
-                    class="admin-create-button">
-
-                + Add Content
-
-            </button>
-
-        </div>
-
-        <div class="admin-form-actions">
-
-            <button type="submit"
-                    class="admin-save-button">
-
-                Save Changes
-
-            </button>
-
-            <a asp-area="Admin"
-               asp-controller="Home"
-               asp-action="Index"
-               class="admin-cancel-button">
-
-                Cancel
-
-            </a>
-
-        </div>
-
-    </form>
-
+    </div>
 </div>
 
+@section Scripts {
+    <script>
+        // 1. Initialize the card counter based on existing server-rendered topic cards
+        let cardCount = document.querySelectorAll("#topicCardsContainer .topic-card").length + 1;
 
-<script>
+        function createNewTopicCard() {
+            const container = document.getElementById("topicCardsContainer");
+            const cardId = `topic-card-${cardCount}`;
+            
+            const topicCard = document.createElement("div");
+            topicCard.className = "card border-start border-primary border-4 shadow-sm topic-card bg-white mb-3";
+            topicCard.id = cardId;
 
-    let blockIndex = @Model.ContentBlocks.Count();
-
-    function addContentBlock() {
-
-        const contentType =
-            document.getElementById("contentType").value;
-
-        if (contentType === "") {
-
-            alert("Please select a content type.");
-
-            return;
-        }
-
-        const container =
-            document.getElementById("contentBlocks");
-
-        const block =
-            document.createElement("div");
-
-        block.className = "content-block";
-
-
-        if (contentType === "heading") {
-
-            block.innerHTML = `
-
-                <div class="content-block-header">
-
-                    <strong>Heading</strong>
-
-                    <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
-
-                        Remove
-
+            topicCard.innerHTML = `
+                <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                    <span class="badge bg-primary text-uppercase font-monospace">Topic Card</span>
+                    <button type="button" onclick="document.getElementById('${cardId}').remove(); reIndexAllInputs();" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:0.8rem;">
+                        Delete Card
                     </button>
-
                 </div>
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].Type"
-                       value="heading">
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].DisplayOrder"
-                       value="${blockIndex}">
-
-                <input type="text"
-                       name="ContentBlocks[${blockIndex}].Content"
-                       class="admin-form-input"
-                       placeholder="Enter heading..."
-                       required>
-
+                <div class="card-body p-3">
+                    <div class="mb-3 border-bottom pb-3">
+                        <label class="form-label small text-uppercase fw-bold text-secondary">Card Heading / Section Title</label>
+                        <input type="text" class="form-control fw-bold card-heading-input" placeholder="e.g., Finding Accommodation..." required>
+                    </div>
+                    <div class="nested-items-container d-flex flex-column gap-2 mb-3"></div>
+                    <div class="bg-light p-2 rounded border d-flex gap-2 align-items-center">
+                        <select class="form-select form-select-sm nested-type-select" style="max-width: 200px;">
+                            <option value="">Add details to card...</option>
+                            <option value="subheading">Subheading</option>
+                            <option value="paragraph">Paragraph Text</option>
+                            <option value="image">Image Asset URL</option>
+                        </select>
+                        <button type="button" onclick="addNestedElement('${cardId}')" class="btn btn-outline-primary btn-sm fw-bold">
+                            + Add Detail
+                        </button>
+                    </div>
+                </div>
             `;
+
+            container.appendChild(topicCard);
+            cardCount++;
+            reIndexAllInputs();
         }
 
+        function addNestedElement(cardId) {
+            const card = document.getElementById(cardId);
+            const typeSelect = card.querySelector(".nested-type-select");
+            const selectedType = typeSelect.value;
 
-        else if (contentType === "subheading") {
+            if (selectedType === "") {
+                alert("Please select a detail type to add.");
+                return;
+            }
 
-            block.innerHTML = `
+            const nestedContainer = card.querySelector(".nested-items-container");
+            const elementRow = document.createElement("div");
+            elementRow.className = "nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1";
+            elementRow.setAttribute("data-type", selectedType);
 
-                <div class="content-block-header">
+            let inputHtml = '';
+            let badgeColor = 'bg-secondary';
 
-                    <strong>Subheading</strong>
+            if (selectedType === "subheading") {
+                badgeColor = 'bg-info text-dark';
+                inputHtml = `<input type="text" class="form-control form-control-sm item-content-field" placeholder="Enter subheading text..." required>`;
+            } else if (selectedType === "paragraph") {
+                badgeColor = 'bg-secondary text-white';
+                inputHtml = `<textarea class="form-control form-control-sm item-content-field" rows="2" placeholder="Enter text details copy..." required></textarea>`;
+            } else if (selectedType === "image") {
+                badgeColor = 'bg-warning text-dark';
+                inputHtml = `<input type="text" class="form-control form-control-sm item-content-field" placeholder="Paste image asset URL...">`;
+            }
 
-                    <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
-
-                        Remove
-
-                    </button>
-
+            elementRow.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
+                    <span class="badge ${badgeColor} text-uppercase px-1 py-0 font-monospace" style="font-size:0.7rem;">${selectedType}</span>
+                    <button type="button" onclick="this.closest('.nested-item-row').remove(); reIndexAllInputs();" class="btn-close" style="font-size:0.65rem;" aria-label="Close"></button>
                 </div>
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].Type"
-                       value="subheading">
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].DisplayOrder"
-                       value="${blockIndex}">
-
-                <input type="text"
-                       name="ContentBlocks[${blockIndex}].Content"
-                       class="admin-form-input"
-                       placeholder="Enter subheading..."
-                       required>
-
+                <div>${inputHtml}</div>
             `;
+
+            nestedContainer.appendChild(elementRow);
+            typeSelect.value = "";
+            reIndexAllInputs();
         }
 
+        function reIndexAllInputs() {
+            const topicCards = document.querySelectorAll("#topicCardsContainer .topic-card");
+            let overallIndex = 0;
 
-        else if (contentType === "paragraph") {
+            topicCards.forEach((card) => {
+                const headingInput = card.querySelector(".card-heading-input");
+                
+                let headingType = card.querySelector(".card-heading-type-hidden");
+                if (!headingType) {
+                    headingType = document.createElement("input");
+                    headingType.type = "hidden";
+                    headingType.className = "card-heading-type-hidden";
+                    headingType.value = "heading";
+                    card.appendChild(headingType);
+                }
+                
+                let headingOrder = card.querySelector(".card-heading-order-hidden");
+                if (!headingOrder) {
+                    headingOrder = document.createElement("input");
+                    headingOrder.type = "hidden";
+                    headingOrder.className = "card-heading-order-hidden";
+                    card.appendChild(headingOrder);
+                }
 
-            block.innerHTML = `
+                headingType.name = `ContentBlocks[${overallIndex}].Type`;
+                headingOrder.name = `ContentBlocks[${overallIndex}].DisplayOrder`;
+                headingOrder.value = overallIndex;
+                headingInput.name = `ContentBlocks[${overallIndex}].Content`;
+                overallIndex++;
 
-                <div class="content-block-header">
+                const nestedItems = card.querySelectorAll(".nested-item-row");
+                nestedItems.forEach((row) => {
+                    const itemType = row.getAttribute("data-type");
+                    const contentField = row.querySelector(".item-content-field");
 
-                    <strong>Paragraph</strong>
+                    let typeHidden = row.querySelector(".row-type-hidden");
+                    if (!typeHidden) {
+                        typeHidden = document.createElement("input");
+                        typeHidden.type = "hidden";
+                        typeHidden.className = "row-type-hidden";
+                        typeHidden.value = itemType;
+                        row.appendChild(typeHidden);
+                    }
 
-                    <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                    let orderHidden = row.querySelector(".row-order-hidden");
+                    if (!orderHidden) {
+                        orderHidden = document.createElement("input");
+                        orderHidden.type = "hidden";
+                        orderHidden.className = "row-order-hidden";
+                        row.appendChild(orderHidden);
+                    }
 
-                        Remove
+                    typeHidden.name = `ContentBlocks[${overallIndex}].Type`;
+                    orderHidden.name = `ContentBlocks[${overallIndex}].DisplayOrder`;
+                    orderHidden.value = overallIndex;
+                    contentField.name = `ContentBlocks[${overallIndex}].Content`;
+                    overallIndex++;
+                });
+            });
 
-                    </button>
-
-                </div>
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].Type"
-                       value="paragraph">
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].DisplayOrder"
-                       value="${blockIndex}">
-
-                <textarea name="ContentBlocks[${blockIndex}].Content"
-                          class="admin-form-input admin-textarea"
-                          placeholder="Enter paragraph..."
-                          required></textarea>
-
-            `;
+            const badge = document.getElementById("cardCounter");
+            if (badge) {
+                badge.innerText = `${topicCards.length} Topic Cards Active`;
+            }
         }
 
+        // 2. Form Submission Interceptor Layer
+        $(document).ready(function () {
+            // Re-index immediately on page mount to properly structure server-rendered blocks
+            reIndexAllInputs();
 
-        else if (contentType === "image") {
+            $("#settlementForm").on("submit", function (event) {
+                const formElement = this;
 
-            block.innerHTML = `
+                // Validate baseline HTML parameters (like 'required')
+                if (!formElement.checkValidity()) {
+                    formElement.reportValidity();
+                    event.preventDefault();
+                    return false;
+                }
 
-                <div class="content-block-header">
+                const categoryInput = $("#CategoryName");
+                categoryInput.removeClass("is-invalid");
+                let hasError = false;
 
-                    <strong>Image</strong>
+                // Sync indices before executing the duplicate checks loop
+                reIndexAllInputs();
+                const headings = $(".card-heading-input");
+                const uniqueHeadings = [];
 
-                    <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                headings.each(function () {
+                    const value = $(this).val().trim().toLowerCase();
+                    if (uniqueHeadings.includes(value)) {
+                        alert(`⚠️ Validation Error: You cannot enter the same Topic Card Heading twice: "${$(this).val()}"`);
+                        $(this).addClass("is-invalid").focus();
+                        hasError = true;
+                        return false; // Break the jQuery loop execution
+                    }
+                    if (value !== "") {
+                        uniqueHeadings.push(value);
+                        $(this).removeClass("is-invalid");
+                    }
+                });
 
-                        Remove
+                if (hasError) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+}
 
-                    </button>
-
-                </div>
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].Type"
-                       value="image">
-
-                <input type="hidden"
-                       name="ContentBlocks[${blockIndex}].DisplayOrder"
-                       value="${blockIndex}">
-
-                <input type="text"
-                       name="ContentBlocks[${blockIndex}].Content"
-                       class="admin-form-input"
-                       placeholder="Image URL...">
-
-            `;
-        }
-
-
-        container.appendChild(block);
-
-        blockIndex++;
-
-        document.getElementById("contentType").value = "";
-
-    }
-
-</script>
