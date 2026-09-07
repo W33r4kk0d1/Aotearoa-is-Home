@@ -1,113 +1,235 @@
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
     font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    padding: 74px 0 0 0;
+    background-color: #ffffff;
+    color: #222222;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
+/* =========================================================
+NAVBAR
+========================================================= */
+
+.navbar-color {
+    background-color: #2f2f2f;
+    min-height: 74px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+    .navbar-color .navbar-brand,
+    .navbar-color .nav-link {
+        color: #ffffff !important;
+    }
+
+    .navbar-color .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+
+    .navbar-color .nav-link {
+        padding: 24px 16px !important;
+        font-size: 0.98rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .navbar-color .nav-link:hover {
+            background-color: #444444;
+            color: #ffffff !important;
+        }
+
+.navbar-logo {
+    height: 48px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* =========================================================
+STUDENT HOME
+========================================================= */
+
+.student-home {
+    width: 100%;
+    min-height: calc(100vh - 74px);
+    padding: 0 20px 80px;
+    box-sizing: border-box;
+    background-color: #f6f6f6;
+}
+
+/* =========================================================
+HOME BANNER
+========================================================= */
+
+.student-home-title {
+    width: calc(100% + 40px);
+    margin: 0 0 45px -20px;
+    min-height: 330px;
+    padding: 50px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-image: url('/images/HomeBanner5.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    text-align: center;
+    font-size: 3.3rem;
+    line-height: 1.15;
+    font-weight: 700;
+    isolation: isolate;
+}
+
+    .student-home-title::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient( 90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.28) );
+    }
+
+    .student-home-title span {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+    }
+
+/* =========================================================
+CATEGORY GRID
+========================================================= */
+
+.category-grid {
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 25px;
+}
+
+/* =========================================================
+CATEGORY CARDS
+========================================================= */
+
+.category-box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #dddddd;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 14px;
+    color: #ffffff !important;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .category-box::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to top, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.38) 45%, rgba(0, 0, 0, 0.05) 78% );
+        transition: background 0.25s ease;
+    }
+
+    .category-box span {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 25px;
+        color: #ffffff;
+        font-size: 1.55rem;
+        line-height: 1.25;
+        font-weight: 600;
+        text-align: center;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+    }
+
+    .category-box:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.20);
+        color: #ffffff !important;
+    }
+
+        .category-box:hover::before {
+            background: linear-gradient( to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.08) 80% );
+        }
+
+/* =========================================================
+GENERAL HOME
+========================================================= */
+
 .home-container {
-    padding-top: 40px;
-    padding-bottom: 60px;
+    width: 100%;
+    max-width: none;
+    padding: 50px 60px 70px;
+    box-sizing: border-box;
 }
 
     .home-container h1 {
         margin-bottom: 40px;
     }
 
-.category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.category-box {
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 25px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #222;
-    font-size: 24px;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .category-box:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    }
-
-@media (max-width: 768px) {
-    .category-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* =========================================================
+ADMIN
+========================================================= */
 
 .admin-container {
-    padding-top: 40px;
-    padding-bottom: 60px;
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 55px 45px 80px;
+    box-sizing: border-box;
 }
 
     .admin-container h1 {
         margin-bottom: 10px;
+        color: #222222;
+        font-size: 2.2rem;
     }
 
 .admin-subtitle {
     margin-bottom: 40px;
-    color: #666;
+    color: #666666;
 }
+
+/* =========================================================
+ADMIN CATEGORY GRID
+========================================================= */
 
 .admin-category-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 25px;
-    margin-top: 25px;
+    margin-top: 30px;
 }
-
-.admin-category-box {
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #222;
-    font-size: 22px;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .admin-category-box:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    }
 
 .admin-category-item {
     display: flex;
@@ -115,24 +237,33 @@ body {
     gap: 10px;
 }
 
-    .admin-category-item .admin-category-box {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-.admin-edit-button {
-    display: block;
-    padding: 10px;
+.admin-category-box {
+    height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    background-color: #222;
-    color: white;
+    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid #d7d7d7;
+    border-radius: 12px;
     text-decoration: none;
-    border-radius: 6px;
+    color: #222222;
+    font-size: 21px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-    .admin-edit-button:hover {
-        opacity: 0.85;
+    .admin-category-box:hover {
+        transform: translateY(-5px);
+        color: #222222;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
     }
+
+/* =========================================================
+ADMIN BUTTONS
+========================================================= */
 
 .admin-category-actions {
     display: flex;
@@ -144,38 +275,71 @@ body {
         flex: 1;
     }
 
-.admin-delete-button {
-    padding: 10px;
+.admin-edit-button,
+.admin-create-button,
+.admin-save-button {
+    background-color: #2f2f2f;
+    color: #ffffff;
+}
+
+.admin-edit-button {
+    display: block;
+    padding: 11px;
+    text-align: center;
+    text-decoration: none;
     border: none;
     border-radius: 6px;
-    background-color: #ddd;
-    color: #222;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .admin-edit-button:hover {
+        background-color: #444444;
+        color: #ffffff;
+    }
+
+.admin-delete-button {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 6px;
+    background-color: #e2e2e2;
+    color: #222222;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.2s ease;
 }
 
     .admin-delete-button:hover {
-        background-color: #ccc;
+        background-color: #d0d0d0;
     }
 
 .admin-create-section {
-    margin-top: 40px;
+    margin-top: 45px;
     text-align: center;
 }
 
 .admin-create-button {
     display: inline-block;
-    padding: 14px 25px;
-    background-color: #222;
-    color: white;
+    padding: 14px 27px;
+    border: none;
+    border-radius: 7px;
     text-decoration: none;
-    border-radius: 6px;
     font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
     .admin-create-button:hover {
-        opacity: 0.85;
+        background-color: #444444;
+        color: #ffffff;
+        transform: translateY(-2px);
     }
+
+/* =========================================================
+CONTENT BUILDER
+========================================================= */
 
 .content-builder-controls {
     display: flex;
@@ -185,32 +349,464 @@ body {
 }
 
     .content-builder-controls select {
-        max-width: 300px;
+        max-width: 320px;
     }
 
 .content-block {
-    border: 1px solid #ddd;
+    border: 1px solid #d7d7d7;
     border-radius: 10px;
-    padding: 20px;
+    padding: 22px;
     margin-bottom: 20px;
-    background: #f8f8f8;
+    background-color: #ffffff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.05);
 }
 
 .content-block-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
 }
+
+    .content-block-header strong {
+        text-transform: capitalize;
+        color: #333333;
+    }
 
     .content-block-header button {
         border: none;
-        background: #ddd;
-        padding: 7px 12px;
-        border-radius: 5px;
+        background-color: #e0e0e0;
+        padding: 8px 13px;
+        border-radius: 6px;
         cursor: pointer;
+        transition: background-color 0.2s ease;
     }
 
         .content-block-header button:hover {
-            background: #ccc;
+            background-color: #cccccc;
         }
+
+/* =========================================================
+SETTLEMENT PAGE
+========================================================= */
+
+.settlement-page {
+    width: 100%;
+    padding: 0 0 80px;
+    box-sizing: border-box;
+    background-color: #f3f3f3;
+}
+
+/* =========================================================
+SETTLEMENT HERO
+========================================================= */
+
+.settlement-page-header {
+    width: 100%;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-top: -17px;
+    border-bottom: 4px solid #2f2f2f;
+}
+
+.settlement-page-header-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 90deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.30) );
+}
+
+.settlement-page-header h1 {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0;
+    color: #ffffff;
+    font-size: 3.4rem;
+    line-height: 1.15;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* =========================================================
+SETTLEMENT CONTENT
+========================================================= */
+
+.settlement-content {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 55px 60px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
+    gap: 55px;
+    align-items: start;
+}
+
+.settlement-text {
+    background-color: #ffffff;
+    padding: 38px 42px;
+    border-radius: 12px;
+    border: 1px solid #dddddd;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.settlement-heading {
+    margin: 0 0 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #dddddd;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222222;
+}
+
+.settlement-subheading {
+    margin: 38px 0 14px;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: #333333;
+}
+
+.settlement-paragraph {
+    margin: 0 0 26px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #444444;
+}
+
+/* =========================================================
+SETTLEMENT IMAGES
+========================================================= */
+
+.settlement-images {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    position: sticky;
+    top: 100px;
+}
+
+.settlement-image-container {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 1px solid #dddddd;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.settlement-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 7px;
+    object-fit: cover;
+}
+
+/* =========================================================
+ACCORDION
+========================================================= */
+
+.settlement-subtopic {
+    margin: 22px 0;
+    border: 1px solid #d5d5d5;
+    border-radius: 9px;
+    background-color: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+    .settlement-subtopic:hover {
+        transform: translateY(-3px);
+        border-color: #aeb8b2;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+    }
+
+.settlement-subtopic-button {
+    width: 100%;
+    padding: 20px 22px;
+    border: none;
+    background-color: #f5f7f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #222222;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .settlement-subtopic-button:hover {
+        background-color: #eef2f0;
+    }
+
+.settlement-subtopic-icon {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #22a447;
+    transition: transform 0.25s ease, color 0.2s ease;
+}
+
+/* OPEN = RED X */
+.settlement-subtopic.open .settlement-subtopic-icon {
+    transform: rotate(45deg);
+    color: #e53935;
+}
+
+.settlement-subtopic-details {
+    display: none;
+    padding: 0 22px 22px;
+    color: #555555;
+    line-height: 1.75;
+    border-top: 1px solid #eeeeee;
+    background-color: #ffffff;
+}
+
+    .settlement-subtopic-details p {
+        margin: 18px 0 0;
+    }
+
+.settlement-subtopic.open .settlement-subtopic-details {
+    display: block;
+}
+
+/* =========================================================
+FORMS
+========================================================= */
+
+.admin-form-group {
+    margin-bottom: 25px;
+}
+
+    .admin-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333333;
+    }
+
+.admin-form-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 15px;
+    color: #222222;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .admin-form-input:focus {
+        outline: none;
+        border-color: #555555;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.07);
+    }
+
+.admin-textarea {
+    min-height: 140px;
+    resize: vertical;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 35px;
+}
+
+.admin-save-button {
+    padding: 14px 26px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+    .admin-save-button:hover {
+        background-color: #444444;
+        transform: translateY(-1px);
+    }
+
+.admin-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 26px;
+    border-radius: 7px;
+    background-color: #dddddd;
+    color: #222222;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+    .admin-cancel-button:hover {
+        background-color: #cccccc;
+        color: #222222;
+    }
+
+/* =========================================================
+TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .student-home {
+        padding: 0 20px 60px;
+    }
+
+    .student-home-title {
+        width: calc(100% + 40px);
+        margin-left: -20px;
+        min-height: 270px;
+    }
+
+        .student-home-title span {
+            font-size: 2.6rem;
+        }
+
+    .category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .settlement-content {
+        grid-template-columns: 1fr;
+        padding: 35px 25px;
+    }
+
+    .settlement-images {
+        position: static;
+    }
+
+    .settlement-text {
+        padding: 30px;
+    }
+
+    .admin-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding-top: 60px;
+    }
+
+    .navbar-color {
+        min-height: 60px;
+    }
+
+        .navbar-color .nav-link {
+            padding: 12px 10px !important;
+        }
+
+    .student-home {
+        min-height: calc(100vh - 60px);
+        padding: 0 15px 45px;
+    }
+
+    .student-home-title {
+        width: calc(100% + 30px);
+        margin-left: -15px;
+        min-height: 220px;
+        margin-bottom: 30px;
+        padding: 25px 20px;
+    }
+
+        .student-home-title span {
+            font-size: 2rem;
+        }
+
+    .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .category-box {
+        aspect-ratio: 1 / 1;
+    }
+
+        .category-box span {
+            padding: 22px;
+            font-size: 1.35rem;
+            text-align: center;
+        }
+
+    .admin-container {
+        padding: 30px 20px 50px;
+    }
+
+    .admin-category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-builder-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .content-builder-controls select {
+            max-width: none;
+        }
+
+    .admin-form-actions {
+        flex-direction: column;
+    }
+
+    .settlement-page-header {
+        height: 220px;
+    }
+
+        .settlement-page-header h1 {
+            font-size: 2rem;
+        }
+
+    .settlement-content {
+        padding: 25px 15px;
+    }
+
+    .settlement-text {
+        padding: 25px 22px;
+    }
+
+    .settlement-heading {
+        font-size: 1.7rem;
+    }
+
+    .settlement-subheading {
+        font-size: 1.3rem;
+    }
+}
+
+/* =========================================================
+SMALL MOBILE
+========================================================= */
+
+@media (max-width: 450px) {
+
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}

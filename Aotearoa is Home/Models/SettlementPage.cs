@@ -4,8 +4,12 @@
     {
         public int Id { get; set; }
 
-        public string CategoryName { get; set; } = string.Empty;
+    public string CategoryName { get; set; } = string.Empty;
 
-        public List<ContentBlock> ContentBlocks { get; set; } = new();
+        public byte[]? BackgroundImage { get; set; }
+
+        public string? BackgroundImageContentType { get; set; }
+
+        public List<ContentBlock> ContentBlocks { get; set; } = new List<ContentBlock>();
     }
 }

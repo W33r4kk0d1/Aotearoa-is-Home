@@ -12,7 +12,9 @@
     <form asp-area="Admin"
           asp-controller="Settlement"
           asp-action="Edit"
-          method="post">
+          method="post"
+          enctype="multipart/form-data"
+          id="editSettlementForm">
 
         @Html.AntiForgeryToken()
 
@@ -35,6 +37,32 @@
 
         </div>
 
+        <div class="admin-form-group">
+
+            <label for="backgroundImage">
+                Category Background Image
+            </label>
+
+            <input type="file"
+                   id="backgroundImage"
+                   name="backgroundImage"
+                   class="admin-form-input"
+                   accept="image/*" />
+
+            @if (Model.BackgroundImage != null)
+            {
+                <div style="margin-top: 15px;">
+
+                    <p>Current background image:</p>
+
+                    <img src="/Admin/Settlement/BackgroundImage/@Model.Id"
+                         style="max-width: 400px; border-radius: 10px;" />
+
+                </div>
+            }
+
+        </div>
+
         <h2>Page Content</h2>
 
         <div id="contentBlocks">
@@ -50,15 +78,11 @@
                         </strong>
 
                         <button type="button"
-                                onclick="this.parentElement.parentElement.remove()">
+                                class="remove-content-button">
                             Remove
                         </button>
 
                     </div>
-
-                    <input type="hidden"
-                           name="ContentBlocks[@block.DisplayOrder].Id"
-                           value="@block.Id" />
 
                     <input type="hidden"
                            name="ContentBlocks[@block.DisplayOrder].Type"
@@ -77,32 +101,65 @@
                                placeholder="Enter heading..."
                                required />
                     }
-
                     else if (block.Type == "subheading")
                     {
-                        <input type="text"
-                               name="ContentBlocks[@block.DisplayOrder].Content"
-                               value="@block.Content"
-                               class="admin-form-input"
-                               placeholder="Enter subheading..."
-                               required />
-                    }
+                        <div class="admin-form-group">
 
+                            <label>
+                                Subheading
+                            </label>
+
+                            <input type="text"
+                                   name="ContentBlocks[@block.DisplayOrder].Content"
+                                   value="@block.Content"
+                                   class="admin-form-input"
+                                   placeholder="Enter subheading..."
+                                   required />
+
+                        </div>
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Subheading Details
+                            </label>
+
+                            <textarea name="ContentBlocks[@block.DisplayOrder].Details"
+                                      class="admin-form-input admin-textarea"
+                                      placeholder="Enter the information that appears when this subheading is opened..."
+                                      required>@block.Details</textarea>
+
+                        </div>
+                    }
                     else if (block.Type == "paragraph")
                     {
                         <textarea name="ContentBlocks[@block.DisplayOrder].Content"
-                          class="admin-form-input admin-textarea"
-                          placeholder="Enter paragraph..."
-                          required>@block.Content</textarea>
+                                  class="admin-form-input admin-textarea"
+                                  placeholder="Enter paragraph..."
+                                  required>@block.Content</textarea>
                     }
-
                     else if (block.Type == "image")
                     {
-                        <input type="text"
-                               name="ContentBlocks[@block.DisplayOrder].Content"
-                               value="@block.Content"
+                        @if (block.ImageData != null)
+                        {
+                            <div style="margin-bottom: 15px;">
+
+                                <p>Current image:</p>
+
+                                <img src="/Admin/Settlement/ContentImage/@block.Id"
+                                     style="max-width: 300px; border-radius: 10px;" />
+
+                            </div>
+                        }
+
+                        <label>
+                            Replace image
+                        </label>
+
+                        <input type="file"
+                               name="contentImages"
                                class="admin-form-input"
-                               placeholder="Image URL..." />
+                               accept="image/*" />
                     }
 
                 </div>
@@ -138,11 +195,9 @@
             </select>
 
             <button type="button"
-                    onclick="addContentBlock()"
+                    id="addContentButton"
                     class="admin-create-button">
-
                 + Add Content
-
             </button>
 
         </div>
@@ -151,18 +206,14 @@
 
             <button type="submit"
                     class="admin-save-button">
-
                 Save Changes
-
             </button>
 
             <a asp-area="Admin"
                asp-controller="Home"
                asp-action="Index"
                class="admin-cancel-button">
-
                 Cancel
-
             </a>
 
         </div>
@@ -171,31 +222,48 @@
 
 </div>
 
-
 <script>
 
     let blockIndex = @Model.ContentBlocks.Count();
+
+    function attachRemoveButton(block) {
+
+        const removeButton =
+            block.querySelector(".remove-content-button");
+
+        if (removeButton) {
+
+            removeButton.addEventListener("click", function () {
+
+                block.remove();
+
+            });
+
+        }
+
+    }
 
     function addContentBlock() {
 
         const contentType =
             document.getElementById("contentType").value;
 
+        const container =
+            document.getElementById("contentBlocks");
+
         if (contentType === "") {
 
             alert("Please select a content type.");
 
             return;
-        }
 
-        const container =
-            document.getElementById("contentBlocks");
+        }
 
         const block =
             document.createElement("div");
 
-        block.className = "content-block";
-
+        block.className =
+            "content-block";
 
         if (contentType === "heading") {
 
@@ -203,10 +271,12 @@
 
                 <div class="content-block-header">
 
-                    <strong>Heading</strong>
+                    <strong>
+                        Heading
+                    </strong>
 
                     <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                            class="remove-content-button">
 
                         Remove
 
@@ -229,8 +299,8 @@
                        required>
 
             `;
-        }
 
+        }
 
         else if (contentType === "subheading") {
 
@@ -238,10 +308,12 @@
 
                 <div class="content-block-header">
 
-                    <strong>Subheading</strong>
+                    <strong>
+                        Subheading
+                    </strong>
 
                     <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                            class="remove-content-button">
 
                         Remove
 
@@ -257,15 +329,36 @@
                        name="ContentBlocks[${blockIndex}].DisplayOrder"
                        value="${blockIndex}">
 
-                <input type="text"
-                       name="ContentBlocks[${blockIndex}].Content"
-                       class="admin-form-input"
-                       placeholder="Enter subheading..."
-                       required>
+                <div class="admin-form-group">
+
+                    <label>
+                        Subheading
+                    </label>
+
+                    <input type="text"
+                           name="ContentBlocks[${blockIndex}].Content"
+                           class="admin-form-input"
+                           placeholder="Enter subheading..."
+                           required>
+
+                </div>
+
+                <div class="admin-form-group">
+
+                    <label>
+                        Subheading Details
+                    </label>
+
+                    <textarea name="ContentBlocks[${blockIndex}].Details"
+                              class="admin-form-input admin-textarea"
+                              placeholder="Enter the information that appears when this subheading is opened..."
+                              required></textarea>
+
+                </div>
 
             `;
-        }
 
+        }
 
         else if (contentType === "paragraph") {
 
@@ -273,10 +366,12 @@
 
                 <div class="content-block-header">
 
-                    <strong>Paragraph</strong>
+                    <strong>
+                        Paragraph
+                    </strong>
 
                     <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                            class="remove-content-button">
 
                         Remove
 
@@ -298,8 +393,8 @@
                           required></textarea>
 
             `;
-        }
 
+        }
 
         else if (contentType === "image") {
 
@@ -307,10 +402,12 @@
 
                 <div class="content-block-header">
 
-                    <strong>Image</strong>
+                    <strong>
+                        Image
+                    </strong>
 
                     <button type="button"
-                            onclick="this.parentElement.parentElement.remove()">
+                            class="remove-content-button">
 
                         Remove
 
@@ -326,21 +423,37 @@
                        name="ContentBlocks[${blockIndex}].DisplayOrder"
                        value="${blockIndex}">
 
-                <input type="text"
-                       name="ContentBlocks[${blockIndex}].Content"
+                <input type="file"
+                       name="contentImages"
                        class="admin-form-input"
-                       placeholder="Image URL...">
+                       accept="image/*"
+                       required>
 
             `;
+
         }
 
-
         container.appendChild(block);
+
+        attachRemoveButton(block);
 
         blockIndex++;
 
         document.getElementById("contentType").value = "";
 
     }
+
+    document.querySelectorAll(".content-block").forEach(function (block) {
+
+        attachRemoveButton(block);
+
+    });
+
+    document.getElementById("addContentButton")
+        .addEventListener("click", function () {
+
+            addContentBlock();
+
+        });
 
 </script>

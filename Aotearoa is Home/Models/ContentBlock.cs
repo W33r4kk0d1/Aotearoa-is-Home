@@ -10,6 +10,12 @@
 
         public string Content { get; set; } = string.Empty;
 
+        public string Details { get; set; } = string.Empty;
+
+        public byte[]? ImageData { get; set; }
+
+        public string? ImageContentType { get; set; }
+
         public int DisplayOrder { get; set; }
 
         public SettlementPage? SettlementPage { get; set; }
