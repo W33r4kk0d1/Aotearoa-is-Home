@@ -14,17 +14,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            var pages = await _context.SettlementPages
-                .OrderBy(p => p.CategoryName)
-                .ToListAsync();
-
-            return View(pages);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> View(int id)
         {
             var page = await _context.SettlementPages
@@ -41,40 +30,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 .ToList();
 
             return View(page);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> BackgroundImage(int id)
-        {
-            var page = await _context.SettlementPages
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (page == null || page.BackgroundImage == null)
-            {
-                return NotFound();
-            }
-
-            return File(
-                page.BackgroundImage,
-                page.BackgroundImageContentType ?? "image/jpeg"
-            );
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ContentImage(int id)
-        {
-            var block = await _context.ContentBlocks
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-            if (block == null || block.ImageData == null)
-            {
-                return NotFound();
-            }
-
-            return File(
-                block.ImageData,
-                block.ImageContentType ?? "image/jpeg"
-            );
         }
     }
 }

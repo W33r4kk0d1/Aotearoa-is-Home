@@ -9,18 +9,35 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
     public class SettlementController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public SettlementController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // CREATE - GET
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        // ASYNC API CHECK FOR DUPLICATE CATEGORIES
+        [HttpGet]
+        public async Task<IActionResult> IsCategoryUnique(string categoryName)
+        {
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                return Json(true);
+            }
+
+            bool exists = await _context.SettlementPages
+                .AnyAsync(p => p.CategoryName != null && 
+                            p.CategoryName.Trim().ToLower() == categoryName.Trim().ToLower());
+
+            return Json(!exists);
+        }
+
+        // CREATE - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -32,111 +49,127 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             {
                 ModelState.AddModelError(
                     "CategoryName",
-                    "Category name is required."
+                    "Category Hub Name is required."
                 );
-
                 return View(page);
             }
 
-            if (page.ContentBlocks == null)
+            page.CategoryName =
+                page.CategoryName.Trim();
+
+            // Check duplicate category
+            bool categoryExists =
+                await _context.SettlementPages
+                    .AnyAsync(p =>
+                        p.CategoryName != null &&
+                        p.CategoryName.Trim().ToLower()
+                        == page.CategoryName.ToLower()
+                    );
+
+            if (categoryExists)
             {
-                page.ContentBlocks = new List<ContentBlock>();
+                ModelState.AddModelError(
+                    "CategoryName",
+                    $"The settlement category \"{page.CategoryName}\" already exists."
+                );
+                return View(page);
             }
-
-            if (backgroundImage != null && backgroundImage.Length > 0)
+            // Check duplicate topic headings
+            if (page.ContentBlocks != null)
             {
-                using var stream = new MemoryStream();
+                var headings =
+                    new HashSet<string>(
+                        StringComparer.OrdinalIgnoreCase
+                    );
 
-                await backgroundImage.CopyToAsync(stream);
-
-                page.BackgroundImage = stream.ToArray();
-                page.BackgroundImageContentType =
-                    backgroundImage.ContentType;
-            }
-
-            var uploadedImages =
-                contentImages ?? new List<IFormFile>();
-
-            int imageIndex = 0;
-
-            foreach (var block in page.ContentBlocks
-                .OrderBy(b => b.DisplayOrder))
-            {
-                block.Id = 0;
-
-                if (block.Type == "image")
+                foreach (var block in page.ContentBlocks)
                 {
-                    if (imageIndex < uploadedImages.Count)
+                    if (string.Equals(
+                        block.Type,
+                        "heading",
+                        StringComparison.OrdinalIgnoreCase))
                     {
-                        var image = uploadedImages[imageIndex];
+                        var heading =
+                            block.Content?.Trim();
 
-                        if (image != null && image.Length > 0)
+
+                        if (!string.IsNullOrWhiteSpace(heading))
                         {
-                            using var stream = new MemoryStream();
+                            if (!headings.Add(heading))
+                            {
+                                ModelState.AddModelError(
+                                    "",
+                                    $"You cannot have the same Topic Card Heading twice: \"{heading}\""
+                                );
 
-                            await image.CopyToAsync(stream);
-
-                            block.ImageData =
-                                stream.ToArray();
-
-                            block.ImageContentType =
-                                image.ContentType;
+                                return View(page);
+                            }
                         }
                     }
-
-                    imageIndex++;
                 }
             }
-
+            // Save
             _context.SettlementPages.Add(page);
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(
-                "Index",
-                "Home",
-                new { area = "Admin" }
-            );
+
+            return RedirectToAction("Index", "Home");
         }
 
+        // VIEW
         [HttpGet]
         public async Task<IActionResult> View(int id)
         {
-            var page = await _context.SettlementPages
-                .Include(p => p.ContentBlocks)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var page =
+                await _context.SettlementPages
+                    .Include(p => p.ContentBlocks)
+                    .FirstOrDefaultAsync(
+                        p => p.Id == id
+                    );
+
 
             if (page == null)
             {
                 return NotFound();
             }
 
-            page.ContentBlocks = page.ContentBlocks
-                .OrderBy(b => b.DisplayOrder)
-                .ToList();
+
+            page.ContentBlocks =
+                page.ContentBlocks
+                    .OrderBy(b => b.DisplayOrder)
+                    .ToList();
+
 
             return View(page);
         }
 
+        // EDIT - GET
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var page = await _context.SettlementPages
-                .Include(p => p.ContentBlocks)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var page =
+                await _context.SettlementPages
+                    .Include(p => p.ContentBlocks)
+                    .FirstOrDefaultAsync(
+                        p => p.Id == id
+                    );
 
             if (page == null)
             {
                 return NotFound();
             }
 
-            page.ContentBlocks = page.ContentBlocks
-                .OrderBy(b => b.DisplayOrder)
-                .ToList();
+            page.ContentBlocks =
+                page.ContentBlocks
+                    .OrderBy(b => b.DisplayOrder)
+                    .ToList();
+
 
             return View(page);
         }
 
+        // EDIT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -144,82 +177,86 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             IFormFile? backgroundImage,
             List<IFormFile>? contentImages)
         {
-            var existingPage = await _context.SettlementPages
-                .Include(p => p.ContentBlocks)
-                .FirstOrDefaultAsync(p => p.Id == page.Id);
+            if (string.IsNullOrWhiteSpace(page.CategoryName))
+            {
+                ModelState.AddModelError(
+                    "CategoryName",
+                    "Category Hub Name is required."
+                );
+
+                page.ContentBlocks =
+                    page.ContentBlocks?
+                        .OrderBy(b => b.DisplayOrder)
+                        .ToList()
+                    ?? new List<ContentBlock>();
+
+                return View(page);
+            }
+
+
+            page.CategoryName =
+                page.CategoryName.Trim();
+
+
+            // Check duplicate category except current page
+            bool duplicate =
+                await _context.SettlementPages
+                    .AnyAsync(p =>
+                        p.Id != page.Id &&
+                        p.CategoryName != null &&
+                        p.CategoryName.Trim().ToLower()
+                        == page.CategoryName.ToLower()
+                    );
+
+            if (duplicate)
+            {
+                ModelState.AddModelError(
+                    "CategoryName",
+                    $"Another settlement category named \"{page.CategoryName}\" already exists."
+                );
+
+                page.ContentBlocks =
+                    page.ContentBlocks?
+                        .OrderBy(b => b.DisplayOrder)
+                        .ToList()
+                    ?? new List<ContentBlock>();
+
+                return View(page);
+            }
+
+            // Find existing page
+            var existingPage =
+                await _context.SettlementPages
+                    .Include(p => p.ContentBlocks)
+                    .FirstOrDefaultAsync(
+                        p => p.Id == page.Id
+                    );
 
             if (existingPage == null)
             {
                 return NotFound();
             }
 
+            // Update name
             existingPage.CategoryName =
                 page.CategoryName;
 
-            if (backgroundImage != null &&
-                backgroundImage.Length > 0)
-            {
-                using var stream = new MemoryStream();
-
-                await backgroundImage.CopyToAsync(stream);
-
-                existingPage.BackgroundImage =
-                    stream.ToArray();
-
-                existingPage.BackgroundImageContentType =
-                    backgroundImage.ContentType;
-            }
-
+            // Delete old blocks
             _context.ContentBlocks.RemoveRange(
                 existingPage.ContentBlocks
             );
 
-            existingPage.ContentBlocks =
-                new List<ContentBlock>();
-
-            var uploadedImages =
-                contentImages ?? new List<IFormFile>();
-
-            int imageIndex = 0;
-
+            // Add new blocks
             if (page.ContentBlocks != null)
             {
-                foreach (var block in page.ContentBlocks
-                    .OrderBy(b => b.DisplayOrder))
+                foreach (var block in page.ContentBlocks)
                 {
                     block.Id = 0;
+
                     block.SettlementPageId =
                         existingPage.Id;
 
-                    if (block.Type == "image")
-                    {
-                        if (imageIndex < uploadedImages.Count)
-                        {
-                            var image =
-                                uploadedImages[imageIndex];
-
-                            if (image != null &&
-                                image.Length > 0)
-                            {
-                                using var stream =
-                                    new MemoryStream();
-
-                                await image.CopyToAsync(
-                                    stream
-                                );
-
-                                block.ImageData =
-                                    stream.ToArray();
-
-                                block.ImageContentType =
-                                    image.ContentType;
-                            }
-                        }
-
-                        imageIndex++;
-                    }
-
-                    existingPage.ContentBlocks.Add(block);
+                    _context.ContentBlocks.Add(block);
                 }
             }
 
@@ -236,9 +273,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var page = await _context.SettlementPages
-                .Include(p => p.ContentBlocks)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var page =
+                await _context.SettlementPages
+                    .Include(p => p.ContentBlocks)
+                    .FirstOrDefaultAsync(
+                        p => p.Id == id
+                    );
 
             if (page == null)
             {
@@ -255,46 +295,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             return RedirectToAction(
                 "Index",
-                "Home",
-                new { area = "Admin" }
-            );
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> BackgroundImage(int id)
-        {
-            var page = await _context.SettlementPages
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (page == null ||
-                page.BackgroundImage == null)
-            {
-                return NotFound();
-            }
-
-            return File(
-                page.BackgroundImage,
-                page.BackgroundImageContentType ??
-                "image/jpeg"
-            );
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ContentImage(int id)
-        {
-            var block = await _context.ContentBlocks
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-            if (block == null ||
-                block.ImageData == null)
-            {
-                return NotFound();
-            }
-
-            return File(
-                block.ImageData,
-                block.ImageContentType ??
-                "image/jpeg"
+                "Home"
             );
         }
     }
