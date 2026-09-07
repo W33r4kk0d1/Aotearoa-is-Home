@@ -40,7 +40,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         // CREATE - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SettlementPage page)
+        public async Task<IActionResult> Create(
+            SettlementPage page,
+            IFormFile? backgroundImage,
+            List<IFormFile>? contentImages)
         {
             if (string.IsNullOrWhiteSpace(page.CategoryName))
             {
@@ -169,7 +172,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         // EDIT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SettlementPage page)
+        public async Task<IActionResult> Edit(
+            SettlementPage page,
+            IFormFile? backgroundImage,
+            List<IFormFile>? contentImages)
         {
             if (string.IsNullOrWhiteSpace(page.CategoryName))
             {
@@ -256,10 +262,13 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(
+                "Index",
+                "Home",
+                new { area = "Admin" }
+            );
         }
 
-        // DELETE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
