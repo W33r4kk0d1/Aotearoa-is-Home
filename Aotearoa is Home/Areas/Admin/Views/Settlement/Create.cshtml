@@ -1,4 +1,5 @@
-﻿@{
+﻿```cshtml
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Settlement Information";
 }
@@ -7,22 +8,16 @@
 
     <h1>Create Settlement Information</h1>
 
-    <form asp-action="Create"
+    <form asp-area="Admin"
+          asp-controller="Settlement"
+          asp-action="Create"
           method="post"
-          enctype="multipart/form-data"
-          id="settlementForm">
+          enctype="multipart/form-data">
 
         @Html.AntiForgeryToken()
 
-        <!-- =====================================================
-             CATEGORY NAME
-             ===================================================== -->
-
         <div class="admin-form-group">
-
-            <label for="CategoryName">
-                Category Name
-            </label>
+            <label for="CategoryName">Category Name</label>
 
             <input type="text"
                    id="CategoryName"
@@ -30,94 +25,53 @@
                    class="admin-form-input"
                    placeholder="Enter category name..."
                    required />
-
         </div>
 
-        <!-- =====================================================
-             BACKGROUND IMAGE
-             ===================================================== -->
-
         <div class="admin-form-group">
-
-            <label for="backgroundImage">
-                Category Background Image
-            </label>
+            <label for="backgroundImage">Category Background Image</label>
 
             <input type="file"
                    id="backgroundImage"
                    name="backgroundImage"
                    class="admin-form-input"
                    accept="image/*" />
-
         </div>
-
-        <!-- =====================================================
-             PAGE CONTENT
-             ===================================================== -->
 
         <h2>Page Content</h2>
 
         <div id="contentBlocks"></div>
 
-        <!-- =====================================================
-             CONTENT BUILDER
-             ===================================================== -->
-
         <div class="content-builder-controls">
 
-            <select id="contentType"
-                    class="admin-form-input">
-
-                <option value="">
-                    Add content...
-                </option>
-
-                <option value="heading">
-                    Heading
-                </option>
-
-                <option value="subheading">
-                    Subheading
-                </option>
-
-                <option value="paragraph">
-                    Paragraph
-                </option>
-
-                <option value="image">
-                    Image
-                </option>
-
+            <select id="contentType" class="admin-form-input">
+                <option value="">Add content...</option>
+                <option value="heading">Heading</option>
+                <option value="subheading">Subheading</option>
+                <option value="paragraph">Paragraph</option>
+                <option value="list">List</option>
+                <option value="image">Image</option>
             </select>
 
             <button type="button"
-                    onclick="addContentBlock()"
+                    id="addContentButton"
                     class="admin-create-button">
-
                 + Add Content
-
             </button>
 
         </div>
-
-        <!-- =====================================================
-             FORM BUTTONS
-             ===================================================== -->
 
         <div class="admin-form-actions">
 
             <button type="submit"
                     class="admin-save-button">
-
                 Create Settlement Information
-
             </button>
 
-            <a href="/Admin/Home"
+            <a asp-area="Admin"
+               asp-controller="Home"
+               asp-action="Index"
                class="admin-cancel-button">
-
                 Cancel
-
             </a>
 
         </div>
@@ -127,301 +81,195 @@
 </div>
 
 <script>
+        let blockIndex = 0;
 
-    let blockIndex = 0;
+    document.addEventListener("DOMContentLoaded", function () {
 
-    // =========================================================
-    // ADD CONTENT BLOCK
-    // =========================================================
+        const addButton = document.getElementById("addContentButton");
+        const contentType = document.getElementById("contentType");
+    const contentBlocks = document.getElementById("contentBlocks");
 
-    function addContentBlock() {
+    addButton.addEventListener("click", function () {
 
-        const contentType =
-            document.getElementById("contentType").value;
+        const type = contentType.value;
 
-        if (contentType === "") {
-
+            if (type === "") {
             alert("Please select a content type.");
-
             return;
         }
 
-        const container =
-            document.getElementById("contentBlocks");
+            const index = blockIndex;
 
-        const block =
-            document.createElement("div");
+        const block = document.createElement("div");
 
         block.className = "content-block";
 
-        // Store the type on the block itself
-        block.dataset.type = contentType;
+            if (type === "heading") {
 
-        // =====================================================
-        // HEADING
-        // =====================================================
+                block.innerHTML =
+                '<div class="content-block-header">' +
+                        '<strong>Heading</strong>' +
+                    '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
 
-        if (contentType === "heading") {
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="heading">' +
 
-            block.innerHTML = `
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
 
-                <div class="content-block-header">
+                    '<input type="text" ' +
+                           'name="ContentBlocks[' + index + '].Content" ' +
+                           'class="admin-form-input" ' +
+                           'placeholder="Enter heading..." ' +
+                           'required>';
+            }
 
-                    <strong>Heading</strong>
+            else if (type === "subheading") {
 
-                    <button type="button"
-                            onclick="removeContentBlock(this)">
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Subheading</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
 
-                        Remove
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="subheading">' +
 
-                    </button>
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
 
-                </div>
+                    '<div class="admin-form-group">' +
+                        '<label>Subheading</label>' +
 
-                <input type="hidden"
-                       class="block-type"
-                       value="heading">
+                        '<input type="text" ' +
+                           'name="ContentBlocks[' + index + '].Content" ' +
+                               'class="admin-form-input" ' +
+                           'placeholder="Enter subheading..." ' +
+                               'required>' +
+                '</div>' +
 
-                <input type="hidden"
-                       class="block-order">
+                    '<div class="admin-form-group">' +
+                        '<label>Subheading Details</label>' +
 
-                <input type="text"
-                       class="block-content admin-form-input"
-                       placeholder="Enter heading..."
-                       required>
+                        '<textarea name="ContentBlocks[' + index + '].Details" ' +
+                                  'class="admin-form-input admin-textarea" ' +
+                                  'placeholder="Enter information..." ' +
+                                  'required></textarea>' +
+                    '</div>';
+            }
 
-            `;
-        }
+            else if (type === "paragraph") {
 
-        // =====================================================
-        // SUBHEADING
-        // =====================================================
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Paragraph</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
 
-        else if (contentType === "subheading") {
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="paragraph">' +
 
-            block.innerHTML = `
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
 
-                <div class="content-block-header">
+                    '<textarea name="ContentBlocks[' + index + '].Content" ' +
+                              'class="admin-form-input admin-textarea" ' +
+                              'placeholder="Enter paragraph..." ' +
+                              'required></textarea>';
+            }
 
-                    <strong>Subheading</strong>
+        else if (type === "list") {
 
-                    <button type="button"
-                            onclick="removeContentBlock(this)">
+            block.innerHTML =
+                    '<div class="content-block-header">' +
+                    '<strong>List</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
 
-                        Remove
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="list">' +
 
-                    </button>
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
 
-                </div>
+                    '<div class="admin-form-group">' +
+                        '<label>List Items</label>' +
 
-                <input type="hidden"
-                       class="block-type"
-                       value="subheading">
+                        '<textarea name="ContentBlocks[' + index + '].Content" ' +
+                                  'class="admin-form-input admin-textarea" ' +
+                                  'placeholder="Enter each list item on a new line..." ' +
+                                  'required></textarea>' +
+                    '</div>';
+            }
 
-                <input type="hidden"
-                       class="block-order">
+            else if (type === "image") {
 
-                <div class="admin-form-group">
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Image</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
 
-                    <label>
-                        Subheading
-                    </label>
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="image">' +
 
-                    <input type="text"
-                           class="block-content admin-form-input"
-                           placeholder="Enter subheading..."
-                           required>
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
 
-                </div>
+                    '<input type="file" ' +
+                       'name="contentImages" ' +
+                           'class="admin-form-input" ' +
+                       'accept="image/*" ' +
+                           'required>';
+            }
 
-                <div class="admin-form-group">
+            contentBlocks.appendChild(block);
 
-                    <label>
-                        Subheading Details
-                    </label>
+            blockIndex++;
 
-                    <textarea
-                        class="block-details admin-form-input admin-textarea"
-                        placeholder="Enter the information that should appear when this subheading is opened..."
-                        required></textarea>
+            contentType.value = "";
+        });
+    });
 
-                </div>
+    function removeBlock(button) {
 
-            `;
-        }
-
-        // =====================================================
-        // PARAGRAPH
-        // =====================================================
-
-        else if (contentType === "paragraph") {
-
-            block.innerHTML = `
-
-                <div class="content-block-header">
-
-                    <strong>Paragraph</strong>
-
-                    <button type="button"
-                            onclick="removeContentBlock(this)">
-
-                        Remove
-
-                    </button>
-
-                </div>
-
-                <input type="hidden"
-                       class="block-type"
-                       value="paragraph">
-
-                <input type="hidden"
-                       class="block-order">
-
-                <textarea
-                    class="block-content admin-form-input admin-textarea"
-                    placeholder="Enter paragraph..."
-                    required></textarea>
-
-            `;
-        }
-
-        // =====================================================
-        // IMAGE
-        // =====================================================
-
-        else if (contentType === "image") {
-
-            block.innerHTML = `
-
-                <div class="content-block-header">
-
-                    <strong>Image</strong>
-
-                    <button type="button"
-                            onclick="removeContentBlock(this)">
-
-                        Remove
-
-                    </button>
-
-                </div>
-
-                <input type="hidden"
-                       class="block-type"
-                       value="image">
-
-                <input type="hidden"
-                       class="block-order">
-
-                <input type="file"
-                       name="contentImages"
-                       class="block-image admin-form-input"
-                       accept="image/*"
-                       required>
-
-            `;
-        }
-
-        container.appendChild(block);
-
-        blockIndex++;
-
-        document.getElementById("contentType").value = "";
-
-        updateBlockNames();
-    }
-
-    // =========================================================
-    // REMOVE CONTENT BLOCK
-    // =========================================================
-
-    function removeContentBlock(button) {
-
-        const block =
-            button.closest(".content-block");
+        const block = button.closest(".content-block");
 
         if (block) {
-
             block.remove();
-
-            updateBlockNames();
         }
+
+        reindexBlocks();
     }
 
-    // =========================================================
-    // UPDATE ALL MODEL BINDING NAMES
-    // =========================================================
+    function reindexBlocks() {
 
-    function updateBlockNames() {
+        const blocks = document.querySelectorAll(
+            "#contentBlocks .content-block"
+        );
 
-        const blocks =
-            document.querySelectorAll(
-                "#contentBlocks .content-block"
+        blocks.forEach(function (block, index) {
+
+            const fields = block.querySelectorAll("[name]");
+
+            fields.forEach(function (field) {
+
+                const name = field.getAttribute("name");
+
+                const match = name.match(
+                /^ContentBlocks\[\d+\]\.(.+)$/
+                );
+
+                if (match) {
+
+                    field.setAttribute(
+                        "name",
+                        "ContentBlocks[" + index + "]." + match[1]
+                    );
+                }
+            });
+
+            const displayOrder = block.querySelector(
+                '[name$=".DisplayOrder"]'
             );
 
-        blocks.forEach((block, index) => {
-
-            const type =
-                block.querySelector(".block-type");
-
-            const order =
-                block.querySelector(".block-order");
-
-            const content =
-                block.querySelector(".block-content");
-
-            const details =
-                block.querySelector(".block-details");
-
-            // Set type
-            if (type) {
-
-                type.name =
-                    `ContentBlocks[${index}].Type`;
-
+            if (displayOrder) {
+                displayOrder.value = index;
             }
-
-            // Set display order
-            if (order) {
-
-                order.name =
-                    `ContentBlocks[${index}].DisplayOrder`;
-
-                order.value = index;
-
-            }
-
-            // Set content
-            if (content) {
-
-                content.name =
-                    `ContentBlocks[${index}].Content`;
-
-            }
-
-            // Set subheading details
-            if (details) {
-
-                details.name =
-                    `ContentBlocks[${index}].Details`;
-
-            }
-
         });
+
+        blockIndex = blocks.length;
     }
-
-    // =========================================================
-    // REBUILD NAMES BEFORE SUBMITTING
-    // =========================================================
-
-    document
-        .getElementById("settlementForm")
-        .addEventListener("submit", function () {
-
-            updateBlockNames();
-
-        });
-
 </script>
-
+```

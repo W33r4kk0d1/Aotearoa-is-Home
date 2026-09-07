@@ -15,5 +15,8 @@ namespace Aotearoa_is_Home.Data
         public DbSet<SettlementPage> SettlementPages { get; set; }
 
         public DbSet<ContentBlock> ContentBlocks { get; set; }
+
+        public DbSet<Aotearoa_is_Home.Models.ServiceProvider> ServiceProviders { get; set; }
+        public DbSet<Event> Events { get; set; }
     }
 }

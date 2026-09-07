@@ -1,0 +1,151 @@
+﻿@model Aotearoa_is_Home.Models.Event
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Event";
+}
+
+<div class="container admin-container">
+
+    <h1>Create Event</h1>
+
+    <p class="admin-subtitle">
+        Create an event for users to discover.
+    </p>
+
+    <form action="/ServiceProvider/Event/Create"
+          method="post"
+          enctype="multipart/form-data">
+
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">
+                Event Title
+            </label>
+
+            <input asp-for="Title"
+                   class="form-control"
+                   placeholder="Enter event title" />
+
+            <span asp-validation-for="Title"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">
+                Description
+            </label>
+
+            <textarea asp-for="Description"
+                      class="form-control"
+                      rows="6"
+                      placeholder="Describe the event"></textarea>
+
+            <span asp-validation-for="Description"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Location" class="form-label">
+                Location
+            </label>
+
+            <input asp-for="Location"
+                   class="form-control"
+                   placeholder="Enter event location" />
+
+            <span asp-validation-for="Location"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label asp-for="StartDate" class="form-label">
+                    Start Date & Time
+                </label>
+
+                <input asp-for="StartDate"
+                       type="datetime-local"
+                       class="form-control" />
+
+                <span asp-validation-for="StartDate"
+                      class="text-danger"></span>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label asp-for="EndDate" class="form-label">
+                    End Date & Time
+                </label>
+
+                <input asp-for="EndDate"
+                       type="datetime-local"
+                       class="form-control" />
+
+                <span asp-validation-for="EndDate"
+                      class="text-danger"></span>
+
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label asp-for="Category" class="form-label">
+                Event Category
+            </label>
+
+            <select asp-for="Category"
+                    class="form-select">
+
+                <option value="">Select a category</option>
+                <option value="Community">Community</option>
+                <option value="Education">Education</option>
+                <option value="Employment">Employment</option>
+                <option value="Culture">Culture</option>
+                <option value="Sports">Sports</option>
+                <option value="Family">Family</option>
+                <option value="Other">Other</option>
+
+            </select>
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Event Image
+            </label>
+
+            <input type="file"
+                   name="eventImage"
+                   class="form-control"
+                   accept="image/*" />
+
+        </div>
+
+        <div>
+
+            <button type="submit"
+                    class="admin-create-button">
+                Create Event
+            </button>
+
+            <a href="/ServiceProvider/Event/Index"
+               class="admin-edit-button">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
