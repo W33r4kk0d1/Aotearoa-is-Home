@@ -2,135 +2,56 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = Model?.CategoryName ?? "Settlement Information";
+    ViewData["Title"] = Model.CategoryName;
 }
 
-@if (Model != null)
-{
-    <div class="settlement-page">
+<div class="container settlement-page">
 
-        <div class="settlement-page-header"
-             style="background-image: url('/Student/Settlement/BackgroundImage/@Model.Id');">
+    <div class="settlement-page-header">
 
-            <div class="settlement-page-header-overlay"></div>
-
-            <h1>
-                @Model.CategoryName
-            </h1>
-
-        </div>
-
-        <div class="settlement-content">
-
-            <div class="settlement-text">
-
-                @if (Model.ContentBlocks != null && Model.ContentBlocks.Any())
-                {
-                    @foreach (var block in Model.ContentBlocks
-                        .Where(b => b != null && b.Type != "image")
-                        .OrderBy(b => b.DisplayOrder))
-                    {
-                        @if (block.Type == "heading")
-                        {
-                            <h1 class="settlement-heading">
-                                @block.Content
-                            </h1>
-                        }
-                        else if (block.Type == "subheading")
-                        {
-                            <div class="settlement-subtopic">
-
-                                <button type="button"
-                                        class="settlement-subtopic-button"
-                                        onclick="toggleSubtopic(this)">
-
-                                    <span>
-                                        @block.Content
-                                    </span>
-
-                                    <span class="settlement-subtopic-icon">+</span>
-
-                                </button>
-
-                                <div class="settlement-subtopic-details">
-
-                                    @if (!string.IsNullOrWhiteSpace(block.Details))
-                                    {
-                                        <div class="settlement-formatted-content">
-                                            @Html.Raw(
-                                                block.Details
-                                                    .Replace("\r\n", "<br>")
-                                                    .Replace("\n", "<br>")
-                                            )
-                                        </div>
-                                    }
-
-                                </div>
-
-                            </div>
-                        }
-                        else if (block.Type == "paragraph")
-                        {
-                            <div class="settlement-paragraph">
-                                @Html.Raw(
-                                    block.Content
-                                        .Replace("\r\n", "<br>")
-                                        .Replace("\n", "<br>")
-                                )
-                            </div>
-                        }
-                    }
-                }
-                else
-                {
-                    <p class="settlement-paragraph">
-                        No information has been added to this page yet.
-                    </p>
-                }
-
-            </div>
-
-            <div class="settlement-images">
-
-                @if (Model.ContentBlocks != null)
-                {
-                    @foreach (var block in Model.ContentBlocks
-                        .Where(b => b != null && b.Type == "image")
-                        .OrderBy(b => b.DisplayOrder))
-                    {
-                        @if (block.ImageData != null)
-                        {
-                            <div class="settlement-image-container">
-
-                                <img src="/Student/Settlement/ContentImage/@block.Id"
-                                     alt="@Model.CategoryName"
-                                     class="settlement-image" />
-
-                            </div>
-                        }
-                    }
-                }
-
-            </div>
-
-        </div>
+        <h1>
+            @(Model.CategoryName)
+        </h1>
 
     </div>
 
-    <script>
-        function toggleSubtopic(button) {
-            const subtopic = button.parentElement;
-            subtopic.classList.toggle("open");
-        }
-    </script>
-}
-else
-{
     <div class="settlement-content">
-        <div class="settlement-text">
-            <p class="settlement-paragraph">
-                Settlement information could not be found.
-            </p>
-        </div>
+
+        @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
+        {
+            @if (block.Type == "heading")
+            {
+                <h1 class="settlement-heading">
+                    @(block.Content)
+                </h1>
+            }
+
+            else if (block.Type == "subheading")
+            {
+                <h2 class="settlement-subheading">
+                    @(block.Content)
+                </h2>
+            }
+
+            else if (block.Type == "paragraph")
+            {
+                <p class="settlement-paragraph">
+                    @(block.Content)
+                </p>
+            }
+
+            else if (block.Type == "image")
+            {
+                <div class="settlement-image-container">
+
+                    <img src="@block.Content"
+                         alt="@(Model.CategoryName)"
+                         class="settlement-image" />
+
+                </div>
+            }
+        }
+
     </div>
-}
+
+</div>
