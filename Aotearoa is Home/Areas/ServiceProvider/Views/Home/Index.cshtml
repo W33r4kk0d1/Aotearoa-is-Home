@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Service Provider Dashboard";
+}
+
+<div class="container admin-container">
+
+    <h1>Service Provider Dashboard</h1>
+
+    <p class="admin-subtitle">
+        Manage your events and service provider information.
+    </p>
+
+    <div class="admin-category-grid">
+
+        <a href="/ServiceProvider/Event/Create"
+           class="admin-category-box">
+            <span>Create Event</span>
+        </a>
+
+        <a href="/ServiceProvider/Event/Index"
+           class="admin-category-box">
+            <span>Manage Events</span>
+        </a>
+
+    </div>
+
+</div>

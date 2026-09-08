@@ -1,0 +1,55 @@
+﻿@model List<Aotearoa_is_Home.Models.Event>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Manage Events";
+}
+
+<div class="container admin-container">
+
+    <h1>Manage Events</h1>
+
+    <p class="admin-subtitle">
+        View and manage your events.
+    </p>
+
+    @if (!Model.Any())
+    {
+        <p>No events have been created yet.</p>
+    }
+    else
+    {
+        <div class="admin-category-grid">
+
+            @foreach (var eventItem in Model)
+            {
+                <div class="admin-category-item">
+
+                    <div class="admin-category-box">
+                        <span>@eventItem.Title</span>
+                    </div>
+
+                    <div class="admin-category-actions">
+
+                        <span>
+                            @eventItem.StartDate.ToString("dd/MM/yyyy")
+                        </span>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+    <div class="admin-create-section">
+
+        <a href="/ServiceProvider/Event/Create"
+           class="admin-create-button">
+            + Create Event
+        </a>
+
+    </div>
+
+</div>

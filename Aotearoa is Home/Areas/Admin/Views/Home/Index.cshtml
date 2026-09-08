@@ -6,6 +6,55 @@
     ViewData["Title"] = "Administrator Dashboard";
 }
 
+<<<<<<< HEAD
+<div class="container admin-container">
+
+    ```
+    <h1>Administrator Dashboard</h1>
+
+    <p class="admin-subtitle">
+        Manage settlement information.
+    </p>
+
+    <div class="admin-category-grid">
+
+        @foreach (var settlementPage in Model)
+        {
+            <div class="admin-category-item">
+
+                <a href="/Admin/Settlement/Edit/@settlementPage.Id"
+                   class="admin-category-box">
+
+                    <span>@settlementPage.CategoryName</span>
+
+                </a>
+
+                <div class="admin-category-actions">
+
+                    <a href="/Admin/Settlement/Edit/@settlementPage.Id"
+                       class="admin-edit-button">
+                        Edit
+                    </a>
+
+                    <form action="/Admin/Settlement/Delete"
+                          method="post"
+                          style="display:inline;">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@settlementPage.Id" />
+
+                        <button type="submit"
+                                class="admin-delete-button">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+=======
 <div class="container my-5" style="max-width: 1000px;">
     <!-- Dashboard Hero Header -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center border-bottom pb-4 mb-4 gap-3">
@@ -19,6 +68,7 @@
             </a>
         </div>
     </div>
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded
 
     @if (Model == null || !Model.Any())
     {
@@ -118,6 +168,21 @@
         }
     </script>
 
+<<<<<<< HEAD
+    </div>
+
+    <div class="admin-create-section">
+
+        <a href="/Admin/Settlement/Create"
+           class="admin-create-button">
+            + Create Settlement Information
+        </a>
+
+    </div>
+    ```
+
+</div>
+=======
     <style>
         /* Interactive transition styles accents blocks definitions */
         .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -128,3 +193,4 @@
         @@keyframes subtleBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
     </style>
 }
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded

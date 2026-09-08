@@ -1,19 +1,295 @@
+<<<<<<< HEAD
+﻿```cshtml
+=======
 ﻿@model Aotearoa_is_Home.Models.SettlementPage
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Settlement Information";
 }
 
+<<<<<<< HEAD
+<div class="container admin-container">
+
+    <h1>Create Settlement Information</h1>
+
+    <form asp-area="Admin"
+          asp-controller="Settlement"
+          asp-action="Create"
+          method="post"
+          enctype="multipart/form-data">
+
+        @Html.AntiForgeryToken()
+
+        <div class="admin-form-group">
+            <label for="CategoryName">Category Name</label>
+
+            <input type="text"
+                   id="CategoryName"
+                   name="CategoryName"
+                   class="admin-form-input"
+                   placeholder="Enter category name..."
+                   required />
+=======
 <div class="container my-5" style="max-width: 850px;">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-dark text-white p-3 d-flex align-items-center justify-content-between">
             <h1 class="h4 mb-0">New Settlement Category</h1>
             <span class="badge bg-primary text-white" id="cardCounter">0 Topic Cards Created</span>
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded
         </div>
         <div class="card-body p-4 bg-light-groove">
             <form id="settlementForm" asp-area="Admin" asp-controller="Settlement" asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
 
+<<<<<<< HEAD
+        <div class="admin-form-group">
+            <label for="backgroundImage">Category Background Image</label>
+
+            <input type="file"
+                   id="backgroundImage"
+                   name="backgroundImage"
+                   class="admin-form-input"
+                   accept="image/*" />
+        </div>
+
+        <h2>Page Content</h2>
+
+        <div id="contentBlocks"></div>
+
+        <div class="content-builder-controls">
+
+            <select id="contentType" class="admin-form-input">
+                <option value="">Add content...</option>
+                <option value="heading">Heading</option>
+                <option value="subheading">Subheading</option>
+                <option value="paragraph">Paragraph</option>
+                <option value="list">List</option>
+                <option value="image">Image</option>
+            </select>
+
+            <button type="button"
+                    id="addContentButton"
+                    class="admin-create-button">
+                + Add Content
+            </button>
+
+        </div>
+
+        <div class="admin-form-actions">
+
+            <button type="submit"
+                    class="admin-save-button">
+                Create Settlement Information
+            </button>
+
+            <a asp-area="Admin"
+               asp-controller="Home"
+               asp-action="Index"
+               class="admin-cancel-button">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+        let blockIndex = 0;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const addButton = document.getElementById("addContentButton");
+        const contentType = document.getElementById("contentType");
+    const contentBlocks = document.getElementById("contentBlocks");
+
+    addButton.addEventListener("click", function () {
+
+        const type = contentType.value;
+
+            if (type === "") {
+            alert("Please select a content type.");
+            return;
+        }
+
+            const index = blockIndex;
+
+        const block = document.createElement("div");
+
+        block.className = "content-block";
+
+            if (type === "heading") {
+
+                block.innerHTML =
+                '<div class="content-block-header">' +
+                        '<strong>Heading</strong>' +
+                    '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="heading">' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
+
+                    '<input type="text" ' +
+                           'name="ContentBlocks[' + index + '].Content" ' +
+                           'class="admin-form-input" ' +
+                           'placeholder="Enter heading..." ' +
+                           'required>';
+            }
+
+            else if (type === "subheading") {
+
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Subheading</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="subheading">' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
+
+                    '<div class="admin-form-group">' +
+                        '<label>Subheading</label>' +
+
+                        '<input type="text" ' +
+                           'name="ContentBlocks[' + index + '].Content" ' +
+                               'class="admin-form-input" ' +
+                           'placeholder="Enter subheading..." ' +
+                               'required>' +
+                '</div>' +
+
+                    '<div class="admin-form-group">' +
+                        '<label>Subheading Details</label>' +
+
+                        '<textarea name="ContentBlocks[' + index + '].Details" ' +
+                                  'class="admin-form-input admin-textarea" ' +
+                                  'placeholder="Enter information..." ' +
+                                  'required></textarea>' +
+                    '</div>';
+            }
+
+            else if (type === "paragraph") {
+
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Paragraph</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="paragraph">' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
+
+                    '<textarea name="ContentBlocks[' + index + '].Content" ' +
+                              'class="admin-form-input admin-textarea" ' +
+                              'placeholder="Enter paragraph..." ' +
+                              'required></textarea>';
+            }
+
+        else if (type === "list") {
+
+            block.innerHTML =
+                    '<div class="content-block-header">' +
+                    '<strong>List</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="list">' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
+
+                    '<div class="admin-form-group">' +
+                        '<label>List Items</label>' +
+
+                        '<textarea name="ContentBlocks[' + index + '].Content" ' +
+                                  'class="admin-form-input admin-textarea" ' +
+                                  'placeholder="Enter each list item on a new line..." ' +
+                                  'required></textarea>' +
+                    '</div>';
+            }
+
+            else if (type === "image") {
+
+                block.innerHTML =
+                    '<div class="content-block-header">' +
+                        '<strong>Image</strong>' +
+                        '<button type="button" onclick="removeBlock(this)">Remove</button>' +
+                    '</div>' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].Type" value="image">' +
+
+                    '<input type="hidden" name="ContentBlocks[' + index + '].DisplayOrder" value="' + index + '">' +
+
+                    '<input type="file" ' +
+                       'name="contentImages" ' +
+                           'class="admin-form-input" ' +
+                       'accept="image/*" ' +
+                           'required>';
+            }
+
+            contentBlocks.appendChild(block);
+
+            blockIndex++;
+
+            contentType.value = "";
+        });
+    });
+
+    function removeBlock(button) {
+
+        const block = button.closest(".content-block");
+
+        if (block) {
+            block.remove();
+        }
+
+        reindexBlocks();
+    }
+
+    function reindexBlocks() {
+
+        const blocks = document.querySelectorAll(
+            "#contentBlocks .content-block"
+        );
+
+        blocks.forEach(function (block, index) {
+
+            const fields = block.querySelectorAll("[name]");
+
+            fields.forEach(function (field) {
+
+                const name = field.getAttribute("name");
+
+                const match = name.match(
+                /^ContentBlocks\[\d+\]\.(.+)$/
+                );
+
+                if (match) {
+
+                    field.setAttribute(
+                        "name",
+                        "ContentBlocks[" + index + "]." + match[1]
+                    );
+                }
+            });
+
+            const displayOrder = block.querySelector(
+                '[name$=".DisplayOrder"]'
+            );
+
+            if (displayOrder) {
+                displayOrder.value = index;
+            }
+        });
+
+        blockIndex = blocks.length;
+    }
+</script>
+```
+=======
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div class="alert alert-danger d-flex align-items-center gap-2 fw-bold shadow-sm mb-4" role="alert">
@@ -312,3 +588,4 @@
 }
 
 
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded

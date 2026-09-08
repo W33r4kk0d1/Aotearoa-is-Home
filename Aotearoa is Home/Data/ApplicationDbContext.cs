@@ -13,6 +13,13 @@ namespace Aotearoa_is_Home.Data
         public DbSet<SettlementInformation> SettlementInformation { get; set; }
         public DbSet<SettlementPage> SettlementPages { get; set; }
         public DbSet<ContentBlock> ContentBlocks { get; set; }
+<<<<<<< HEAD
+
+        public DbSet<Aotearoa_is_Home.Models.ServiceProvider> ServiceProviders { get; set; }
+        public DbSet<Event> Events { get; set; }
+    }
+}
+=======
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -162,3 +169,4 @@ namespace Aotearoa_is_Home.Data
                 }
         }
     }}
+>>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded

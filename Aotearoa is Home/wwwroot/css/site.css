@@ -397,10 +397,6 @@ SETTLEMENT PAGE
     background-color: #f3f3f3;
 }
 
-/* =========================================================
-SETTLEMENT HERO
-========================================================= */
-
 .settlement-page-header {
     width: 100%;
     height: 360px;
@@ -419,7 +415,7 @@ SETTLEMENT HERO
 .settlement-page-header-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient( 90deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.30) );
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.30));
 }
 
 .settlement-page-header h1 {
@@ -435,10 +431,6 @@ SETTLEMENT HERO
     text-align: center;
     text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
 }
-
-/* =========================================================
-SETTLEMENT CONTENT
-========================================================= */
 
 .settlement-content {
     width: 100%;
@@ -469,23 +461,14 @@ SETTLEMENT CONTENT
     color: #222222;
 }
 
-.settlement-subheading {
-    margin: 38px 0 14px;
-    font-size: 1.45rem;
-    font-weight: 600;
-    color: #333333;
-}
-
 .settlement-paragraph {
     margin: 0 0 26px;
     font-size: 1.05rem;
     line-height: 1.8;
     color: #444444;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
-
-/* =========================================================
-SETTLEMENT IMAGES
-========================================================= */
 
 .settlement-images {
     display: flex;
@@ -513,10 +496,6 @@ SETTLEMENT IMAGES
     object-fit: cover;
 }
 
-/* =========================================================
-ACCORDION
-========================================================= */
-
 .settlement-subtopic {
     margin: 22px 0;
     border: 1px solid #d5d5d5;
@@ -524,20 +503,19 @@ ACCORDION
     background-color: #ffffff;
     overflow: hidden;
     box-shadow: 0 2px 7px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
     .settlement-subtopic:hover {
-        transform: translateY(-3px);
-        border-color: #aeb8b2;
         box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+        transform: translateY(-2px);
     }
 
 .settlement-subtopic-button {
     width: 100%;
     padding: 20px 22px;
     border: none;
-    background-color: #f5f7f6;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -546,11 +524,11 @@ ACCORDION
     font-weight: 600;
     color: #222222;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.25s ease;
 }
 
     .settlement-subtopic-button:hover {
-        background-color: #eef2f0;
+        background-color: #f0f0f0;
     }
 
 .settlement-subtopic-icon {
@@ -560,7 +538,6 @@ ACCORDION
     transition: transform 0.25s ease, color 0.2s ease;
 }
 
-/* OPEN = RED X */
 .settlement-subtopic.open .settlement-subtopic-icon {
     transform: rotate(45deg);
     color: #e53935;
@@ -572,21 +549,73 @@ ACCORDION
     color: #555555;
     line-height: 1.75;
     border-top: 1px solid #eeeeee;
-    background-color: #ffffff;
 }
-
-    .settlement-subtopic-details p {
-        margin: 18px 0 0;
-    }
 
 .settlement-subtopic.open .settlement-subtopic-details {
     display: block;
 }
 
+.settlement-subtopic-details-content {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+
+    .settlement-content {
+        grid-template-columns: 1fr;
+        padding: 35px 25px;
+    }
+
+    .settlement-images {
+        position: static;
+    }
+
+    .settlement-text {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .settlement-page-header {
+        height: 220px;
+    }
+
+        .settlement-page-header h1 {
+            font-size: 2rem;
+        }
+
+    .settlement-content {
+        padding: 25px 15px;
+    }
+
+    .settlement-text {
+        padding: 25px 22px;
+    }
+
+    .settlement-heading {
+        font-size: 1.7rem;
+    }
+
+    .settlement-paragraph {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .settlement-subtopic-button {
+        padding: 17px 18px;
+    }
+
+    .settlement-subtopic-details {
+        padding: 0 18px 20px;
+    }
+}
+
 /* =========================================================
 FORMS
 ========================================================= */
-
 .admin-form-group {
     margin-bottom: 25px;
 }
