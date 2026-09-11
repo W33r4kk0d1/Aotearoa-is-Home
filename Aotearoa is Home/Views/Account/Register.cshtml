@@ -1,0 +1,528 @@
+@model Aotearoa_is_Home.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <h1>Create an account</h1>
+
+        <form asp-action="Register"
+              asp-controller="Account"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger">
+            </div>
+
+            <!-- Account type -->
+
+            <div class="form-group">
+
+                <label asp-for="AccountType">
+                    Account type
+                </label>
+
+                <select asp-for="AccountType"
+                        id="accountType"
+                        class="form-control">
+
+                    <option value="">
+                        Select account type
+                    </option>
+
+                    <option value="Student">
+                        Student
+                    </option>
+
+                    <option value="Admin">
+                        Admin
+                    </option>
+
+                    <option value="Event Provider">
+                        Event Provider
+                    </option>
+
+                    <option value="Family Member">
+                        Family Member
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="AccountType"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+
+            <!-- Common information -->
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label asp-for="FirstName">
+                        First name
+                    </label>
+
+                    <input asp-for="FirstName"
+                           class="form-control"
+                           placeholder="First name" />
+
+                    <span asp-validation-for="FirstName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="LastName">
+                        Last name
+                    </label>
+
+                    <input asp-for="LastName"
+                           class="form-control"
+                           placeholder="Last name" />
+
+                    <span asp-validation-for="LastName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Email">
+                        Email
+                    </label>
+
+                    <input asp-for="Email"
+                           class="form-control"
+                           placeholder="Email" />
+
+                    <span asp-validation-for="Email"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="ContactNumber">
+                        Contact number
+                    </label>
+
+                    <input asp-for="ContactNumber"
+                           class="form-control"
+                           placeholder="Contact number" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Password">
+                        Password
+                    </label>
+
+                    <input asp-for="Password"
+                           class="form-control"
+                           placeholder="Password" />
+
+                    <span asp-validation-for="Password"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="ConfirmPassword">
+                        Confirm password
+                    </label>
+
+                    <input asp-for="ConfirmPassword"
+                           class="form-control"
+                           placeholder="Confirm password" />
+
+                    <span asp-validation-for="ConfirmPassword"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT -->
+
+            <div id="studentFields"
+                 class="role-fields">
+
+                <div class="form-group">
+
+                    <label asp-for="StudentId">
+                        Student ID
+                    </label>
+
+                    <input asp-for="StudentId"
+                           class="form-control"
+                           placeholder="Student ID" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="LanguageId">
+                        Preferred language
+                    </label>
+
+                    <select asp-for="LanguageId"
+                            class="form-control">
+
+                        <option value="">
+                            Select preferred language
+                        </option>
+
+                        @foreach (var language in ViewBag.Languages)
+                        {
+                            <option value="@language.Id">
+                                @language.Name
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADMIN -->
+
+            <div id="adminFields"
+                 class="role-fields">
+
+                <h3>Administration details</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label asp-for="EmployeeId">
+                            Employee ID
+                        </label>
+
+                        <input asp-for="EmployeeId"
+                               class="form-control"
+                               placeholder="Employee ID" />
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label asp-for="DepartmentOrganisation">
+                            Department / Organisation
+                        </label>
+
+                        <input asp-for="DepartmentOrganisation"
+                               class="form-control"
+                               placeholder="Department / Organisation" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FAMILY -->
+
+            <div id="familyFields"
+                 class="role-fields">
+
+                <h3>Family details</h3>
+
+                <div class="form-group">
+
+                    <label asp-for="RelationshipToStudent">
+                        Relationship to student
+                    </label>
+
+                    <select asp-for="RelationshipToStudent"
+                            class="form-control">
+
+                        <option value="">
+                            Select relationship
+                        </option>
+
+                        <option value="Parent">
+                            Parent
+                        </option>
+
+                        <option value="Spouse/Partner">
+                            Spouse / Partner
+                        </option>
+
+                        <option value="Sibling">
+                            Sibling
+                        </option>
+
+                        <option value="Child">
+                            Child
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="StudentReference">
+                        Student ID / Student email
+                    </label>
+
+                    <input asp-for="StudentReference"
+                           class="form-control"
+                           placeholder="Student ID / Student email" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="LanguageId">
+                        Preferred language
+                    </label>
+
+                    <select asp-for="LanguageId"
+                            class="form-control">
+
+                        <option value="">
+                            Select preferred language
+                        </option>
+
+                        @foreach (var language in ViewBag.Languages)
+                        {
+                            <option value="@language.Id">
+                                @language.Name
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- EVENT PROVIDER -->
+
+            <div id="eventProviderFields"
+                 class="role-fields">
+
+                <h3>Organisation details</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label asp-for="OrganisationName">
+                            Organisation name
+                        </label>
+
+                        <input asp-for="OrganisationName"
+                               class="form-control"
+                               placeholder="Organisation name" />
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label asp-for="OrganisationType">
+                            Organisation type
+                        </label>
+
+                        <input asp-for="OrganisationType"
+                               class="form-control"
+                               placeholder="Organisation type" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="OrganisationDescription">
+                        Organisation description
+                    </label>
+
+                    <textarea asp-for="OrganisationDescription"
+                              class="form-control"
+                              placeholder="Organisation description">
+                    </textarea>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label asp-for="OrganisationPhone">
+                            Organisation phone
+                        </label>
+
+                        <input asp-for="OrganisationPhone"
+                               class="form-control"
+                               placeholder="Organisation phone" />
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label asp-for="Website">
+                            Website
+                        </label>
+
+                        <input asp-for="Website"
+                               class="form-control"
+                               placeholder="Website" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="OfficeAddress">
+                        Office address
+                    </label>
+
+                    <textarea asp-for="OfficeAddress"
+                              class="form-control"
+                              placeholder="Office address">
+                    </textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="SupportingInformation">
+                        Supporting information
+                    </label>
+
+                    <textarea asp-for="SupportingInformation"
+                              class="form-control"
+                              placeholder="Supporting information">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+
+            <button type="submit"
+                    class="btn-register">
+                Register
+            </button>
+
+        </form>
+
+        <p class="login-link">
+            Already have an account?
+            <a asp-action="Login"
+               asp-controller="Account">
+                Login
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const accountType =
+            document.getElementById("accountType");
+
+        const studentFields =
+            document.getElementById("studentFields");
+
+        const adminFields =
+            document.getElementById("adminFields");
+
+        const familyFields =
+            document.getElementById("familyFields");
+
+        const eventProviderFields =
+            document.getElementById("eventProviderFields");
+
+
+        function hideAllFields()
+        {
+            studentFields.style.display = "none";
+            adminFields.style.display = "none";
+            familyFields.style.display = "none";
+            eventProviderFields.style.display = "none";
+        }
+
+
+        function updateFields()
+        {
+            hideAllFields();
+
+            switch (accountType.value)
+            {
+                case "Student":
+                    studentFields.style.display = "block";
+                    break;
+
+                case "Admin":
+                    adminFields.style.display = "block";
+                    break;
+
+                case "Family Member":
+                    familyFields.style.display = "block";
+                    break;
+
+                case "Event Provider":
+                    eventProviderFields.style.display = "block";
+                    break;
+            }
+        }
+
+
+        accountType.addEventListener(
+            "change",
+            updateFields
+        );
+
+        updateFields();
+
+    </script>
+}

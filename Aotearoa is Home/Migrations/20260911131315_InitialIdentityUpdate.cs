@@ -5,7 +5,7 @@
 namespace Aotearoa_is_Home.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSubheadingDetails1 : Migration
+    public partial class InitialIdentityUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
