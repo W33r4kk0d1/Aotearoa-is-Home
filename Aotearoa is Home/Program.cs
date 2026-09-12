@@ -48,6 +48,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "areas",
@@ -55,7 +56,13 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "",
+    defaults: new
+    {
+        area = "Student",
+        controller = "Home",
+        action = "Index"
+    });
 
 using (var scope = app.Services.CreateScope())
 {
