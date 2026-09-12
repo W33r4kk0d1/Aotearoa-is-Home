@@ -34,11 +34,9 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -47,15 +45,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
+// Area routes
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+// Root URL
 app.MapControllerRoute(
-    name: "default",
+    name: "root",
     pattern: "",
     defaults: new
     {
@@ -64,10 +64,14 @@ app.MapControllerRoute(
         action = "Index"
     });
 
+// Normal controller routes
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     await DbInitializer.InitializeAsync(services);
 }
 

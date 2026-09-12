@@ -23,7 +23,7 @@ namespace Aotearoa_is_Home.Controllers
             _context = context;
         }
 
-        // GET: /Account/Login
+        // LOGIN
         [HttpGet]
         public IActionResult Login()
         {
@@ -40,9 +40,11 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+            // Try email first
             var user = await _userManager.FindByEmailAsync(
                 model.UserNameOrEmail);
 
+            // If not found, try username
             if (user == null)
             {
                 user = await _userManager.FindByNameAsync(
@@ -66,9 +68,19 @@ namespace Aotearoa_is_Home.Controllers
 
             if (result.Succeeded)
             {
+                // Send user to the existing Student Home page
                 return RedirectToAction(
                     "Index",
-                    "Home");
+                    "Home",
+                    new { area = "Student" });
+            }
+
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Your account is temporarily locked. Please try again later.");
+                return View(model);
             }
 
             ModelState.AddModelError(
@@ -78,16 +90,16 @@ namespace Aotearoa_is_Home.Controllers
             return View(model);
         }
 
-        // GET: /Account/Register
+
+        // REGISTER
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            ViewBag.Languages = await _context.Languages
-                .OrderBy(x => x.Name)
-                .ToListAsync();
+            await LoadLanguages();
 
             return View();
         }
+
 
         // POST: /Account/Register
         [HttpPost]
@@ -102,6 +114,26 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+
+            // Check account type
+            var validAccountTypes = new[]
+            {
+                "Student",
+                "Admin",
+                "Event Provider",
+                "Family Member"
+            };
+
+            if (!validAccountTypes.Contains(model.AccountType))
+            {
+                ModelState.AddModelError(
+                    "AccountType",
+                    "Please select a valid account type.");
+
+                return View(model);
+            }
+
+            // Check existing email
             var existingUser =
                 await _userManager.FindByEmailAsync(model.Email);
 
@@ -114,19 +146,26 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+
+            // Create Identity user
             var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
+
                 FirstName = model.FirstName,
                 LastName = model.LastName,
+
                 PhoneNumber = model.ContactNumber,
+
                 LanguageId = model.LanguageId
             };
+
 
             var result = await _userManager.CreateAsync(
                 user,
                 model.Password);
+
 
             if (!result.Succeeded)
             {
@@ -140,6 +179,8 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+
+            // Create role-specific profile
             switch (model.AccountType)
             {
                 case "Student":
@@ -153,19 +194,23 @@ namespace Aotearoa_is_Home.Controllers
 
                     break;
 
+
                 case "Family Member":
 
                     _context.FamilyProfiles.Add(
                         new FamilyProfile
                         {
                             UserId = user.Id,
+
                             RelationshipToStudent =
                                 model.RelationshipToStudent!,
+
                             StudentReference =
                                 model.StudentReference!
                         });
 
                     break;
+
 
                 case "Admin":
 
@@ -173,12 +218,16 @@ namespace Aotearoa_is_Home.Controllers
                         new AdminProfile
                         {
                             UserId = user.Id,
-                            EmployeeId = model.EmployeeId!,
+
+                            EmployeeId =
+                                model.EmployeeId!,
+
                             DepartmentOrganisation =
                                 model.DepartmentOrganisation
                         });
 
                     break;
+
 
                 case "Event Provider":
 
@@ -186,61 +235,81 @@ namespace Aotearoa_is_Home.Controllers
                         new EventProviderProfile
                         {
                             UserId = user.Id,
+
                             OrganisationName =
                                 model.OrganisationName!,
+
                             OrganisationType =
                                 model.OrganisationType!,
+
                             OrganisationDescription =
                                 model.OrganisationDescription,
+
                             OrganisationPhone =
                                 model.OrganisationPhone,
+
                             Website =
                                 model.Website,
+
                             OfficeAddress =
                                 model.OfficeAddress,
+
                             SupportingInformation =
                                 model.SupportingInformation
                         });
 
                     break;
-
-                default:
-
-                    await _userManager.DeleteAsync(user);
-
-                    ModelState.AddModelError(
-                        "AccountType",
-                        "Please select a valid account type.");
-
-                    return View(model);
             }
 
+
+            // Save profile
             await _context.SaveChangesAsync();
 
-            await _userManager.AddToRoleAsync(
-                user,
-                model.AccountType);
 
-            await _signInManager.SignInAsync(
-                user,
-                isPersistent: false);
+            // Add Identity role
+            var roleResult =
+                await _userManager.AddToRoleAsync(
+                    user,
+                    model.AccountType);
 
-            return RedirectToAction(
-                "Index",
-                "Home");
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
+            if (!roleResult.Succeeded)
+            {
+                foreach (var error in roleResult.Errors)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        error.Description);
+                }
+
+                return View(model);
+            }
+
+            // Registration successful → Login page
+            TempData["RegistrationSuccess"] =
+                "Account created successfully!";
 
             return RedirectToAction(
                 "Login",
                 "Account");
         }
 
+        // LOGOUT
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            // Return to the existing Student Home page
+            return RedirectToAction(
+                "Index",
+                "Home",
+                new { area = "Student" });
+        }
+
+
+        // LOAD LANGUAGES
         private async Task LoadLanguages()
         {
             ViewBag.Languages = await _context.Languages

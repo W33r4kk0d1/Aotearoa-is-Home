@@ -8,8 +8,7 @@ namespace Aotearoa_is_Home.Data
             IServiceProvider serviceProvider)
         {
             var roleManager =
-                serviceProvider.GetRequiredService
-                <RoleManager<IdentityRole>>();
+                serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             string[] roles =
             {
@@ -23,8 +22,16 @@ namespace Aotearoa_is_Home.Data
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleManager.CreateAsync(
+                    var result = await roleManager.CreateAsync(
                         new IdentityRole(role));
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(
+                            $"Failed to create role '{role}': " +
+                            string.Join(", ",
+                                result.Errors.Select(e => e.Description)));
+                    }
                 }
             }
         }

@@ -2,16 +2,41 @@
 
 @{
     ViewData["Title"] = "Register";
+    ViewData["HideHeader"] = true;
 }
 
 <div class="account-page">
 
+    @* <!-- Home button -->
+    <div class="account-home-link">
+        <a asp-area="Student"
+           asp-controller="Home"
+           asp-action="Index"
+           title="Back to Home">
+            🏠
+        </a>
+    </div> *@
+
     <div class="account-card">
 
-        <h1>Create an account</h1>
+        <div class="register-banner">
+            <img src="~/images/Register.png"
+                alt="Welcome to Aotearoa is Home"
+                class="register-banner-image" />
 
-        <form asp-action="Register"
+            <div class="register-banner-overlay">
+                <div class="register-banner-content">
+                    <h1>Welcome to Aotearoa is Home</h1>
+                    <p>
+                        Your journey to settling, connecting and feeling at home in New Zealand starts here.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <form asp-area=""
               asp-controller="Account"
+              asp-action="Register"
               method="post">
 
             @Html.AntiForgeryToken()
@@ -20,8 +45,7 @@
                  class="text-danger">
             </div>
 
-            <!-- Account type -->
-
+            <!-- ACCOUNT TYPE -->
             <div class="form-group">
 
                 <label asp-for="AccountType">
@@ -61,8 +85,7 @@
             </div>
 
 
-            <!-- Common information -->
-
+            <!-- COMMON INFORMATION -->
             <div class="form-grid">
 
                 <div class="form-group">
@@ -126,6 +149,10 @@
                            class="form-control"
                            placeholder="Contact number" />
 
+                    <span asp-validation-for="ContactNumber"
+                          class="text-danger">
+                    </span>
+
                 </div>
 
 
@@ -166,7 +193,6 @@
 
 
             <!-- STUDENT -->
-
             <div id="studentFields"
                  class="role-fields">
 
@@ -180,7 +206,12 @@
                            class="form-control"
                            placeholder="Student ID" />
 
+                    <span asp-validation-for="StudentId"
+                          class="text-danger">
+                    </span>
+
                 </div>
+
 
                 <div class="form-group">
 
@@ -204,13 +235,16 @@
 
                     </select>
 
+                    <span asp-validation-for="LanguageId"
+                          class="text-danger">
+                    </span>
+
                 </div>
 
             </div>
 
 
             <!-- ADMIN -->
-
             <div id="adminFields"
                  class="role-fields">
 
@@ -228,7 +262,12 @@
                                class="form-control"
                                placeholder="Employee ID" />
 
+                        <span asp-validation-for="EmployeeId"
+                              class="text-danger">
+                        </span>
+
                     </div>
+
 
                     <div class="form-group">
 
@@ -240,6 +279,10 @@
                                class="form-control"
                                placeholder="Department / Organisation" />
 
+                        <span asp-validation-for="DepartmentOrganisation"
+                              class="text-danger">
+                        </span>
+
                     </div>
 
                 </div>
@@ -248,7 +291,6 @@
 
 
             <!-- FAMILY -->
-
             <div id="familyFields"
                  class="role-fields">
 
@@ -289,6 +331,10 @@
 
                     </select>
 
+                    <span asp-validation-for="RelationshipToStudent"
+                          class="text-danger">
+                    </span>
+
                 </div>
 
 
@@ -301,6 +347,10 @@
                     <input asp-for="StudentReference"
                            class="form-control"
                            placeholder="Student ID / Student email" />
+
+                    <span asp-validation-for="StudentReference"
+                          class="text-danger">
+                    </span>
 
                 </div>
 
@@ -333,7 +383,6 @@
 
 
             <!-- EVENT PROVIDER -->
-
             <div id="eventProviderFields"
                  class="role-fields">
 
@@ -351,7 +400,12 @@
                                class="form-control"
                                placeholder="Organisation name" />
 
+                        <span asp-validation-for="OrganisationName"
+                              class="text-danger">
+                        </span>
+
                     </div>
+
 
                     <div class="form-group">
 
@@ -362,6 +416,10 @@
                         <input asp-for="OrganisationType"
                                class="form-control"
                                placeholder="Organisation type" />
+
+                        <span asp-validation-for="OrganisationType"
+                              class="text-danger">
+                        </span>
 
                     </div>
 
@@ -376,8 +434,11 @@
 
                     <textarea asp-for="OrganisationDescription"
                               class="form-control"
-                              placeholder="Organisation description">
-                    </textarea>
+                              placeholder="Organisation description"></textarea>
+
+                    <span asp-validation-for="OrganisationDescription"
+                          class="text-danger">
+                    </span>
 
                 </div>
 
@@ -394,7 +455,12 @@
                                class="form-control"
                                placeholder="Organisation phone" />
 
+                        <span asp-validation-for="OrganisationPhone"
+                              class="text-danger">
+                        </span>
+
                     </div>
+
 
                     <div class="form-group">
 
@@ -405,6 +471,10 @@
                         <input asp-for="Website"
                                class="form-control"
                                placeholder="Website" />
+
+                        <span asp-validation-for="Website"
+                              class="text-danger">
+                        </span>
 
                     </div>
 
@@ -419,8 +489,11 @@
 
                     <textarea asp-for="OfficeAddress"
                               class="form-control"
-                              placeholder="Office address">
-                    </textarea>
+                              placeholder="Office address"></textarea>
+
+                    <span asp-validation-for="OfficeAddress"
+                          class="text-danger">
+                    </span>
 
                 </div>
 
@@ -433,8 +506,11 @@
 
                     <textarea asp-for="SupportingInformation"
                               class="form-control"
-                              placeholder="Supporting information">
-                    </textarea>
+                              placeholder="Supporting information"></textarea>
+
+                    <span asp-validation-for="SupportingInformation"
+                          class="text-danger">
+                    </span>
 
                 </div>
 
@@ -448,12 +524,17 @@
 
         </form>
 
+
         <p class="login-link">
+
             Already have an account?
-            <a asp-action="Login"
-               asp-controller="Account">
+
+            <a asp-area=""
+               asp-controller="Account"
+               asp-action="Login">
                 Login
             </a>
+
         </p>
 
     </div>
@@ -483,21 +564,22 @@
             document.getElementById("eventProviderFields");
 
 
-        function hideAllFields()
-        {
+        function hideAllFields() {
+
             studentFields.style.display = "none";
             adminFields.style.display = "none";
             familyFields.style.display = "none";
             eventProviderFields.style.display = "none";
+
         }
 
 
-        function updateFields()
-        {
+        function updateFields() {
+
             hideAllFields();
 
-            switch (accountType.value)
-            {
+            switch (accountType.value) {
+
                 case "Student":
                     studentFields.style.display = "block";
                     break;
