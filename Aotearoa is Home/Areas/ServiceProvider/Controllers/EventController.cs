@@ -56,7 +56,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
             // Temporary provider ID.
-            // Your teammate's login system will replace this later.
             eventItem.ServiceProviderId = 1;
 
             _context.Events.Add(eventItem);
