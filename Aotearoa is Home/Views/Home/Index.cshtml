@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Home";
 }
 
@@ -41,6 +41,64 @@
         <a href="/Settlement/Community" class="category-box">
             <span>Community Support</span>
         </a>
+
+    </div>
+
+</div> *@
+
+
+@{
+    ViewData["Title"] = "Welcome";
+    ViewData["HideHeader"] = true;
+}
+
+<div class="splash-page">
+
+    <div class="splash-background"></div>
+
+    <div class="splash-content">
+
+        <img src="~/images/Logo.png"
+             alt="Aotearoa is Home"
+             class="splash-logo"
+             asp-append-version="true" />
+
+        <div class="splash-divider"></div>
+
+        <h1>
+            Welcome to Aotearoa is Home
+        </h1>
+
+        <p class="splash-tagline">
+            Your journey to settling, connecting and feeling
+            at home in New Zealand starts here.
+        </p>
+
+        <div class="splash-buttons">
+
+            <a asp-controller="Account"
+               asp-action="Login"
+               class="splash-btn splash-btn-primary">
+
+                Sign In
+                <span>→</span>
+
+            </a>
+
+            <a asp-controller="Account"
+               asp-action="Register"
+               class="splash-btn splash-btn-secondary">
+
+                Create an Account
+
+            </a>
+
+        </div>
+
+        <p class="splash-footer">
+            Supporting international students and families
+            across Aotearoa New Zealand
+        </p>
 
     </div>
 

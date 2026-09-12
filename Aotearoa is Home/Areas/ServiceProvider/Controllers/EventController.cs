@@ -1,11 +1,13 @@
 ﻿using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 {
     [Area("ServiceProvider")]
+    [Authorize(Roles = "Service Provider")]
     public class EventController : Controller
     {
         private readonly ApplicationDbContext _context;

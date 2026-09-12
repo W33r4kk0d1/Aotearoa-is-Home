@@ -53,18 +53,6 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// Root URL
-app.MapControllerRoute(
-    name: "root",
-    pattern: "",
-    defaults: new
-    {
-        area = "Student",
-        controller = "Home",
-        action = "Index"
-    });
-
-// Normal controller routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -72,6 +60,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     await DbInitializer.InitializeAsync(services);
 }
 

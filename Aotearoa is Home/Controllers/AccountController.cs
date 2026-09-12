@@ -68,11 +68,45 @@ namespace Aotearoa_is_Home.Controllers
 
             if (result.Succeeded)
             {
-                // Send user to the existing Student Home page
-                return RedirectToAction(
-                    "Index",
-                    "Home",
-                    new { area = "Student" });
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Home",
+                        new { area = "Admin" });
+                }
+
+                if (await _userManager.IsInRoleAsync(user, "Service Provider"))
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Home",
+                        new { area = "ServiceProvider" });
+                }
+
+                if (await _userManager.IsInRoleAsync(user, "Family Member"))
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Home",
+                        new { area = "Family" });
+                }
+
+                if (await _userManager.IsInRoleAsync(user, "Student"))
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Home",
+                        new { area = "Student" });
+                }
+
+                await _signInManager.SignOutAsync();
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Your account does not have a valid role.");
+
+                return View(model);
             }
 
             if (result.IsLockedOut)
@@ -120,7 +154,7 @@ namespace Aotearoa_is_Home.Controllers
             {
                 "Student",
                 "Admin",
-                "Event Provider",
+                "Service Provider",
                 "Family Member"
             };
 
@@ -229,7 +263,7 @@ namespace Aotearoa_is_Home.Controllers
                     break;
 
 
-                case "Event Provider":
+                case "Service Provider":
 
                     _context.EventProviderProfiles.Add(
                         new EventProviderProfile
@@ -304,8 +338,7 @@ namespace Aotearoa_is_Home.Controllers
             // Return to the existing Student Home page
             return RedirectToAction(
                 "Index",
-                "Home",
-                new { area = "Student" });
+                "Home");
         }
 
 
@@ -315,6 +348,13 @@ namespace Aotearoa_is_Home.Controllers
             ViewBag.Languages = await _context.Languages
                 .OrderBy(x => x.Name)
                 .ToListAsync();
+        }
+
+        // Access Denied
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

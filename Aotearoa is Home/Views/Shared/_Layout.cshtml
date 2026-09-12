@@ -37,63 +37,177 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
-                    <!-- Main navigation -->
-                    <ul class="navbar-nav flex-grow-1">
+<ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area="Student"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
+                        @if (User.Identity != null &&
+                             User.Identity.IsAuthenticated)
+                        { 
+                             <!-- STUDENT NAVIGATION -->
+                            @if (User.IsInRole("Student"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Student"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Home
+                                    </a>
+                                </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Checklist
-                            </a>
-                        </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Checklist
+                                    </a>
+                                </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Calendar
-                            </a>
-                        </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Calendar
+                                    </a>
+                                </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Posts
-                            </a>
-                        </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Posts
+                                    </a>
+                                </li>
+                            }
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Profile
-                            </a>
-                        </li>
 
+                            <!-- FAMILY MEMBER NAVIGATION-->
+
+                            @if (User.IsInRole("Family Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Family"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Home
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Checklist
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Calendar
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Privacy">
+                                        Posts
+                                    </a>
+                                </li>
+                            }
+
+
+                            <!-- ADMIN NAVIGATION -->
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Admin"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Dashboard
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Admin"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Users
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Admin"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Settlement Content
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Admin"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Events
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Service PROVIDER NAVIGATION -->
+
+                            @if (User.IsInRole("Service Provider"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="ServiceProvider"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Home
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="ServiceProvider"
+                                       asp-controller="Event"
+                                       asp-action="Index">
+                                        My Events
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="ServiceProvider"
+                                       asp-controller="Event"
+                                       asp-action="Index">
+                                        Create Event
+                                    </a>
+                                </li>
+                            }
+                        }
                     </ul>
 
-                    <!-- Account navigation -->
+
+                    <!-- ACCOUNT NAVIGATION -->
+
                     <ul class="navbar-nav">
 
                         @if (User.Identity != null &&
                              User.Identity.IsAuthenticated)
                         {
-                            <!-- Logged-in user -->
                             <li class="nav-item dropdown">
 
                                 <a class="nav-link dropdown-toggle text-dark"
@@ -105,21 +219,54 @@
                                     @User.Identity.Name
                                 </a>
 
+
                                 <ul class="dropdown-menu dropdown-menu-end"
                                     aria-labelledby="userDropdown">
 
                                     <li>
-                                        <a class="dropdown-item"
-                                           asp-area=""
-                                           asp-controller="Home"
-                                           asp-action="Privacy">
-                                            Profile
-                                        </a>
+                                        @if (User.IsInRole("Student"))
+                                        {
+                                            <a class="dropdown-item"
+                                               asp-area="Student"
+                                               asp-controller="Home"
+                                               asp-action="Index">
+                                                Profile
+                                            </a>
+                                        }
+                                        else if (User.IsInRole("Family Member"))
+                                        {
+                                            <a class="dropdown-item"
+                                               asp-area="Family"
+                                               asp-controller="Home"
+                                               asp-action="Index">
+                                                Profile
+                                            </a>
+                                        }
+                                        else if (User.IsInRole("Admin"))
+                                        {
+                                            <a class="dropdown-item"
+                                               asp-area="Admin"
+                                               asp-controller="Home"
+                                               asp-action="Index">
+                                                Profile
+                                            </a>
+                                        }
+                                        else if (User.IsInRole("Service Provider"))
+                                        {
+                                            <a class="dropdown-item"
+                                               asp-area="ServiceProvider"
+                                               asp-controller="Home"
+                                               asp-action="Index">
+                                                Profile
+                                            </a>
+                                        }
                                     </li>
+
 
                                     <li>
                                         <hr class="dropdown-divider" />
                                     </li>
+
 
                                     <li>
                                         <button type="button"
@@ -128,47 +275,113 @@
                                             Logout
                                         </button>
                                     </li>
-
                                 </ul>
-
                             </li>
                         }
                         else
                         {
                             <!-- Not logged in -->
-                            <li class="nav-item">
 
+                            <li class="nav-item">
                                 <a class="nav-link text-dark"
                                    asp-area=""
                                    asp-controller="Account"
                                    asp-action="Login">
                                     Sign In
                                 </a>
-
                             </li>
                         }
-
                     </ul>
-
                 </div>
 
-                <!-- Logo -->
-                <a class="navbar-brand d-flex align-items-center gap-2"
-                   asp-area="Student"
-                   asp-controller="Home"
-                   asp-action="Index">
 
-                    <img src="~/images/Logo.png"
-                         alt="Logo"
-                         height="60"
-                         class="d-inline-block align-top rounded"
-                         asp-append-version="true"
-                         onerror="this.style.display='none';" />
-                </a>
+                <!-- ROLE-BASED LOGO LINK-->
+
+                @if (User.Identity != null &&
+                     User.Identity.IsAuthenticated)
+                {
+                    @if (User.IsInRole("Student"))
+                    {
+                        <a class="navbar-brand d-flex align-items-center gap-2"
+                           asp-area="Student"
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <img src="~/images/Logo.png"
+                                 alt="Aotearoa is Home"
+                                 height="60"
+                                 class="d-inline-block align-top rounded"
+                                 asp-append-version="true" />
+                        </a>
+                    }
+                    else if (User.IsInRole("Family Member"))
+                    {
+                        <a class="navbar-brand d-flex align-items-center gap-2"
+                           asp-area="Family"
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <img src="~/images/Logo.png"
+                                 alt="Aotearoa is Home"
+                                 height="60"
+                                 class="d-inline-block align-top rounded"
+                                 asp-append-version="true" />
+
+                        </a>
+                    }
+                    else if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand d-flex align-items-center gap-2"
+                           asp-area="Admin"
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <img src="~/images/Logo.png"
+                                 alt="Aotearoa is Home"
+                                 height="60"
+                                 class="d-inline-block align-top rounded"
+                                 asp-append-version="true" />
+
+                        </a>
+                    }
+                    else if (User.IsInRole("Service Provider"))
+                    {
+                        <a class="navbar-brand d-flex align-items-center gap-2"
+                           asp-area="ServiceProvider"
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <img src="~/images/Logo.png"
+                                 alt="Aotearoa is Home"
+                                 height="60"
+                                 class="d-inline-block align-top rounded"
+                                 asp-append-version="true" />
+
+                        </a>
+                    }
+                }
+                else
+                {
+                    <!-- Anonymous user -->
+
+                    <a class="navbar-brand d-flex align-items-center gap-2"
+                       asp-area=""
+                       asp-controller="Account"
+                       asp-action="Login">
+
+                        <img src="~/images/Logo.png"
+                             alt="Aotearoa is Home"
+                             height="60"
+                             class="d-inline-block align-top rounded"
+                             asp-append-version="true" />
+                    </a>
+                }
+
             </div>
         </nav>
     </header>
 }
+
 
 <main role="main" class="pb-3">
     @RenderBody()

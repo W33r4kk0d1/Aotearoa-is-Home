@@ -14,7 +14,7 @@ namespace Aotearoa_is_Home.Data
             {
                 "Student",
                 "Admin",
-                "Event Provider",
+                "Service Provider",
                 "Family Member"
             };
 
@@ -22,16 +22,8 @@ namespace Aotearoa_is_Home.Data
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    var result = await roleManager.CreateAsync(
+                    await roleManager.CreateAsync(
                         new IdentityRole(role));
-
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(
-                            $"Failed to create role '{role}': " +
-                            string.Join(", ",
-                                result.Errors.Select(e => e.Description)));
-                    }
                 }
             }
         }
