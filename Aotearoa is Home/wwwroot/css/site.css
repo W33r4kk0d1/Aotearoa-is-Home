@@ -56,6 +56,186 @@ NAVBAR
     object-fit: contain;
 }
 
+/* =========================
+   ACCOUNT PAGES
+   ========================= */
+
+.account-page,
+.login-page {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+
+/* =========================
+   REGISTER
+   ========================= */
+
+.account-card {
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.account-card h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+
+.form-control {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+
+textarea.form-control {
+    min-height: 90px;
+    resize: vertical;
+}
+
+
+.role-fields {
+    display: none;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+
+.role-fields h3 {
+    margin-bottom: 20px;
+}
+
+
+.btn-register,
+.btn-login {
+    display: block;
+    margin: 25px auto 0;
+    padding: 12px 45px;
+    border: none;
+    border-radius: 5px;
+    background: #1687ed;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.btn-register:hover,
+.btn-login:hover {
+    background: #0d6fc5;
+}
+
+
+.text-danger {
+    color: #dc3545;
+    font-size: 13px;
+}
+
+
+.login-link,
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+/* =========================
+   LOGIN
+   ========================= */
+
+.login-card {
+    width: 100%;
+    max-width: 850px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: white;
+    border: 1px solid #ccc;
+}
+
+
+.login-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+
+.login-image img {
+    width: 100%;
+    max-width: 320px;
+}
+
+
+.login-form {
+    padding: 40px;
+}
+
+
+.login-form h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+
+@media (max-width: 768px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .login-card {
+        grid-template-columns: 1fr;
+    }
+
+    .login-image {
+        display: none;
+    }
+
+    .account-card {
+        padding: 25px;
+    }
+
+}
+
 /* =========================================================
 STUDENT HOME
 ========================================================= */
@@ -839,3 +1019,5 @@ SMALL MOBILE
         grid-template-columns: 1fr;
     }
 }
+
+

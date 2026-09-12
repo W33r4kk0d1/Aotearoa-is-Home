@@ -1,0 +1,106 @@
+@model Aotearoa_is_Home.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="login-page">
+
+    <div class="login-card">
+
+        <div class="login-image">
+            <img src="~/images/login-image.png"
+                 alt="Aotearoa landscape" />
+        </div>
+
+        <div class="login-form">
+
+            <h1>Login</h1>
+
+            <form asp-action="Login"
+                  asp-controller="Account"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="UserNameOrEmail">
+                        User Name
+                    </label>
+
+                    <input asp-for="UserNameOrEmail"
+                           class="form-control"
+                           placeholder="User name or email" />
+
+                    <span asp-validation-for="UserNameOrEmail"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Password">
+                        Password
+                    </label>
+
+                    <input asp-for="Password"
+                           class="form-control"
+                           placeholder="Password" />
+
+                    <span asp-validation-for="Password"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="remember-me">
+
+                    <input asp-for="RememberMe" />
+
+                    <label asp-for="RememberMe">
+                        Remember me
+                    </label>
+
+                </div>
+
+
+                <button type="submit"
+                        class="btn-login">
+                    Sign in
+                </button>
+
+            </form>
+
+
+            <p class="register-link">
+
+                Don't have an account?
+
+                <a asp-action="Register"
+                   asp-controller="Account">
+                    Register
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}
