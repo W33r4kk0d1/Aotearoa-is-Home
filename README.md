@@ -134,11 +134,9 @@ The project provides an opportunity to apply software development practices incl
 
 ## 👨‍💻 Development Team
 
-**Aotearoa Is Home** is developed collaboratively by a **Team VAAS** as part of the project.
+**Aotearoa Is Home** is developed collaboratively by a <img width="100" height="36" alt="WhatsApp Image 2026-09-12 at 17 05 32" src="https://github.com/user-attachments/assets/40f36a0e-ba5d-4376-a9df-834c7492a48d" /> as part of the project.
 
-### Team
-<img width="624" height="400" alt="02 - 1" src="https://github.com/user-attachments/assets/d8895da6-8636-4717-9a96-5e9d76025a4b" />
-
+### Team Members
 
 * **Sudhari**
 * **Viduka**
