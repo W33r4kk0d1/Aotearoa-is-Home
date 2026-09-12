@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - Aotearoa_is_Home</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Aotearoa_is_Home.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
@@ -15,7 +16,7 @@
     var hideHeader = ViewData["HideHeader"] as bool? ?? false;
 }
 
-@if (!hideHeader)
+@if (ViewData["HideHeader"] as bool? != true)
 {
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light navbar-color border-bottom box-shadow mb-3">

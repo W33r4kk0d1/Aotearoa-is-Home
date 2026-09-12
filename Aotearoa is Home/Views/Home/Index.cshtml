@@ -1,5 +1,222 @@
 ﻿@{
     ViewData["Title"] = "Home";
+    ViewData["HideHeader"] = true;
+}
+
+<div class="public-home">
+
+<div class="public-home">
+
+    <section class="public-hero">
+
+        <div class="public-hero-content">
+
+            <span class="public-eyebrow">
+                AOTEAROA IS HOME
+            </span>
+
+            <h1>
+                Welcome to Aotearoa
+            </h1>
+
+            <p>
+                Helping international students and their families settle into life, study and community in New Zealand.
+            </p>
+
+            <form asp-controller="Home"
+                    asp-action="Search"
+                    method="get"
+                    class="public-search-form">
+
+                    <div class="public-search-box">
+                        <span class="public-search-icon">   🔍  </span>
+                        <input type="text"
+                            name="searchString"
+                            placeholder="Search for information..."
+                            autocomplete="off" />
+
+                        <button type="submit">  Search </button>
+                    </div>
+                </form>
+
+            <div class="public-hero-actions">
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="public-btn public-btn-primary">
+                    Create an Account
+                </a>
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="public-btn public-btn-secondary">
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="public-section">
+        <div class="public-section-heading">
+            <span>
+                EXPLORE AOTEAROA
+            </span>
+            <h2>
+                Information to help you settle in
+            </h2>
+            <p>
+                Find useful information about everyday life essential services and support available in New Zealand.
+            </p>
+        </div>
+
+
+        <div class="public-category-grid">
+
+            <div class="public-category-card">
+
+                <h3>
+                    Healthcare
+                </h3>
+
+                <p>
+                    Learn about healthcare services, medical centres,
+                    pharmacies and medical support in New Zealand.
+                </p>
+
+                <a href="#">
+                    Explore
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            <div class="public-category-card">
+
+                <h3>
+                    Childcare
+                </h3>
+
+                <p>
+                    Find information about childcare services and
+                    support available to families.
+                </p>
+
+                <a href="#">
+                    Explore
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            <div class="public-category-card">
+
+                <h3>
+                    Emergency
+                </h3>
+
+                <p>
+                    Find important emergency information and
+                    essential services in New Zealand.
+                </p>
+
+                <a href="#">
+                    Explore
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            <div class="public-category-card">
+
+                <h3>
+                    Community
+                </h3>
+
+                <p>
+                    Discover useful community resources and
+                    opportunities to connect with others.
+                </p>
+
+                <a href="#">
+                    Explore
+                    <span>→</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+    <section class="public-about">
+
+        <div class="public-about-content">
+
+            <span>
+                ABOUT AOTEAROA IS HOME
+            </span>
+
+            <h2>
+                Making your settlement journey easier
+            </h2>
+
+            <p>
+                Moving to a new country can be exciting, but it can
+                also be challenging. Aotearoa is Home brings useful
+                information, services and support together in one
+                place to help international students and their
+                families navigate life in New Zealand.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Account CTA -->
+    <section class="public-cta">
+
+        <div class="public-cta-content">
+
+            <h2>
+                Ready to get started?
+            </h2>
+
+            <p>
+                Create an account to access personalised features
+                designed for international students and families.
+            </p>
+
+            <div class="public-hero-actions">
+
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="public-btn public-btn-primary">
+                    Create an Account
+                </a>
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="public-btn public-btn-secondary">
+                    Sign In
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+@* @{
+    ViewData["Title"] = "Home";
 }
 
 <div class="container home-container">
@@ -44,7 +261,7 @@
 
     </div>
 
-</div>
+</div> *@
 
 
 @* @{
