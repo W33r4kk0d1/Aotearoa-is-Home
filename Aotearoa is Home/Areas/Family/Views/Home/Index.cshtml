@@ -1,0 +1,29 @@
+@model List<Aotearoa_is_Home.Models.SettlementPage>
+
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container home-container">
+
+    <div class="category-grid">
+
+        @foreach (var settlementPage in Model)
+        {
+            <a asp-area="Family"
+               asp-controller="Settlement"
+               asp-action="View"
+               asp-route-id="@settlementPage.Id"
+               class="category-box">
+
+                <span>
+                    @settlementPage.CategoryName
+                </span>
+
+            </a>
+        }
+
+    </div>
+
+</div>

@@ -1,0 +1,95 @@
+@model List<Aotearoa_is_Home.Models.SettlementPage>
+
+@{
+    ViewData["Title"] = "Search";
+    ViewData["HideHeader"] = true;
+
+    var searchString = ViewData["SearchString"]?.ToString();
+}
+
+<div class="public-search-page">
+
+    <div class="public-search-page-header">
+
+        <span>
+            SEARCH AOTEAROA IS HOME
+        </span>
+
+        <h1>
+            Search Results
+        </h1>
+
+        @if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            <p>
+                Showing results for
+                <strong>"@searchString"</strong>
+            </p>
+        }
+
+    </div>
+
+
+    <div class="public-search-results">
+
+        @if (Model.Any())
+        {
+            foreach (var page in Model)
+            {
+                <div class="public-search-result-card">
+
+                    <div class="public-search-result-icon">
+                        📖
+                    </div>
+
+                    <div class="public-search-result-content">
+
+                        <h2>
+                            CategoryName
+                        </h2>
+
+                        <p>
+                            Explore information about
+                            CategoryName and useful
+                            resources available through
+                            Aotearoa is Home.
+                        </p>
+
+                    </div>
+
+                    <span class="public-search-result-arrow">
+                        →
+                    </span>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="public-no-results">
+
+                <div class="public-no-results-icon">
+                    🔎
+                </div>
+
+                <h2>
+                    No results found
+                </h2>
+
+                <p>
+                    We couldn't find any information matching
+                    your search. Try using a different keyword.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="public-btn public-btn-primary">
+                    Back to Home
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+</div>

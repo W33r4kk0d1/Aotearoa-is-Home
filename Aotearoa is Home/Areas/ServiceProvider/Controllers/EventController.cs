@@ -1,11 +1,13 @@
 ﻿using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 {
     [Area("ServiceProvider")]
+    [Authorize(Roles = "Service Provider")]
     public class EventController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -54,7 +56,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
             // Temporary provider ID.
-            // Your teammate's login system will replace this later.
             eventItem.ServiceProviderId = 1;
 
             _context.Events.Add(eventItem);

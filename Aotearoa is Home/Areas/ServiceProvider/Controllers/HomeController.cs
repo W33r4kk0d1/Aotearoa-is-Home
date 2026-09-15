@@ -1,9 +1,11 @@
 ﻿using Aotearoa_is_Home.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 {
     [Area("ServiceProvider")]
+    [Authorize(Roles = "Service Provider")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

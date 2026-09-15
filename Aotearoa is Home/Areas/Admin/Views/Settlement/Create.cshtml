@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-﻿```cshtml
-=======
-﻿@model Aotearoa_is_Home.Models.SettlementPage
->>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded
+@model Aotearoa_is_Home.Models.SettlementPage
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Settlement Information";
 }
 
-<<<<<<< HEAD
 <div class="container admin-container">
 
     <h1>Create Settlement Information</h1>
@@ -30,19 +25,16 @@
                    class="admin-form-input"
                    placeholder="Enter category name..."
                    required />
-=======
 <div class="container my-5" style="max-width: 850px;">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-dark text-white p-3 d-flex align-items-center justify-content-between">
             <h1 class="h4 mb-0">New Settlement Category</h1>
             <span class="badge bg-primary text-white" id="cardCounter">0 Topic Cards Created</span>
->>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded
         </div>
         <div class="card-body p-4 bg-light-groove">
             <form id="settlementForm" asp-area="Admin" asp-controller="Settlement" asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
 
-<<<<<<< HEAD
         <div class="admin-form-group">
             <label for="backgroundImage">Category Background Image</label>
 
@@ -288,8 +280,6 @@
         blockIndex = blocks.length;
     }
 </script>
-```
-=======
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div class="alert alert-danger d-flex align-items-center gap-2 fw-bold shadow-sm mb-4" role="alert">
@@ -587,5 +577,3 @@
     </script>
 }
 
-
->>>>>>> 035b03543d471e342bc829195d9e12b5f9abcded

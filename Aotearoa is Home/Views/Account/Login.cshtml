@@ -1,0 +1,218 @@
+@model Aotearoa_is_Home.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    ViewData["HideHeader"] = true;
+}
+
+<div class="login-page">
+
+    <!-- Home Button -->
+    <a asp-area="Student"
+       asp-controller="Home"
+       asp-action="Index"
+       class="login-home-button"
+       title="Back to Home"
+       aria-label="Back to Home">
+        🏠
+    </a>
+
+    <div class="login-card">
+
+        <!-- Left Image Section -->
+        <div class="login-image">
+
+            <img src="~/images/Login.jpeg"
+                 alt="Aotearoa is Home"
+                 asp-append-version="true" />
+
+            <div class="login-image-overlay">
+                <h2>Welcome Home</h2>
+                <p>
+                    Connect, settle and make Aotearoa your home.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Right Login Section -->
+        <div class="login-form">
+
+            <div class="login-heading">
+
+                <span class="login-small-title">
+                    AOTEAROA IS HOME
+                </span>
+
+                <h1>Welcome back</h1>
+
+                <p>
+                    Sign in to continue your journey.
+                </p>
+
+            </div>
+
+
+            @if (TempData["RegistrationSuccess"] != null)
+            {
+                <div class="alert alert-success login-success">
+                    <span>✓</span>
+                    @TempData["RegistrationSuccess"]
+                </div>
+            }
+
+
+            <form asp-area=""
+                  asp-controller="Account"
+                  asp-action="Login"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="login-validation"></div>
+
+
+                <!-- Username -->
+                <div class="login-input-group">
+
+                    <label asp-for="UserNameOrEmail">
+                        User Name or Email
+                    </label>
+
+                    <div class="login-input-wrapper">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+                        <input asp-for="UserNameOrEmail"
+                               class="login-input"
+                               placeholder="Enter your email"
+                               autocomplete="username" />
+
+                    </div>
+
+                    <span asp-validation-for="UserNameOrEmail"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="login-input-group">
+
+                    <label asp-for="Password">
+                        Password
+                    </label>
+
+                    <div class="login-input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+                        <input asp-for="Password"
+                               id="passwordInput"
+                               class="login-input password-input"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+
+                        <button type="button"
+                                class="password-toggle"
+                                onclick="togglePassword()"
+                                aria-label="Show password">
+
+                            <span id="passwordIcon">👁</span>
+
+                        </button>
+
+                    </div>
+
+                    <span asp-validation-for="Password"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <!-- Remember Me -->
+                <div class="login-options">
+
+                    <label class="remember-container">
+
+                        <input asp-for="RememberMe" />
+
+                        <span class="custom-checkbox"></span>
+
+                        <span>Remember me</span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Sign In -->
+                <button type="submit"
+                        class="login-submit">
+
+                    <span>Sign in</span>
+                    <span class="login-arrow">→</span>
+
+                </button>
+
+            </form>
+
+
+            <!-- Register -->
+            <div class="register-section">
+
+                <span>Don't have an account?</span>
+
+                <a asp-area=""
+                   asp-controller="Account"
+                   asp-action="Register">
+                    Create an account
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        function togglePassword() {
+
+            const passwordInput =
+                document.getElementById("passwordInput");
+
+            const passwordIcon =
+                document.getElementById("passwordIcon");
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                passwordIcon.textContent = "🙈";
+
+            } else {
+
+                passwordInput.type = "password";
+
+                passwordIcon.textContent = "👁";
+
+            }
+        }
+
+    </script>
+}

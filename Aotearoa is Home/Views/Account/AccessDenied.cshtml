@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    ViewData["HideHeader"] = true;
+}
+
+<div class="access-denied-page">
+
+    <div class="access-denied-card">
+
+        <div class="access-denied-icon">
+            🔒
+        </div>
+
+        <h1>Access Denied</h1>
+
+        <p>
+            You don't have permission to access this page.
+        </p>
+
+        <a asp-area=""
+           asp-controller="Account"
+           asp-action="Login"
+           class="access-denied-button">
+            Back to Login
+        </a>
+
+    </div>
+
+</div>
