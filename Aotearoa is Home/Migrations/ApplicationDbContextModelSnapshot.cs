@@ -190,6 +190,9 @@ namespace Aotearoa_is_Home.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EventProviderProfileId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageContentType")
                         .HasColumnType("nvarchar(max)");
 
@@ -200,7 +203,7 @@ namespace Aotearoa_is_Home.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceProviderId")
+                    b.Property<int?>("ServiceProviderId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -212,6 +215,8 @@ namespace Aotearoa_is_Home.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventProviderProfileId");
 
                     b.HasIndex("ServiceProviderId");
 
@@ -596,13 +601,17 @@ namespace Aotearoa_is_Home.Migrations
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.Event", b =>
                 {
-                    b.HasOne("Aotearoa_is_Home.Models.ServiceProvider", "ServiceProvider")
-                        .WithMany("Events")
-                        .HasForeignKey("ServiceProviderId")
+                    b.HasOne("Aotearoa_is_Home.Models.EventProviderProfile", "EventProviderProfile")
+                        .WithMany()
+                        .HasForeignKey("EventProviderProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ServiceProvider");
+                    b.HasOne("Aotearoa_is_Home.Models.ServiceProvider", null)
+                        .WithMany("Events")
+                        .HasForeignKey("ServiceProviderId");
+
+                    b.Navigation("EventProviderProfile");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.EventProviderProfile", b =>

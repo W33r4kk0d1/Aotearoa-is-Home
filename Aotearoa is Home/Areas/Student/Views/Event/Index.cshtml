@@ -1,5 +1,195 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<Aotearoa_is_Home.Models.Event>
+
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Events";
 }
+
+<div class="container admin-container">
+
+    <h1>Events</h1>
+
+    <p class="admin-subtitle">
+        Discover events and activities happening in your community.
+    </p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No events are currently available.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            <div class="col-md-5">
+
+                @foreach (var eventItem in Model)
+                {
+                    <div class="card mb-3 event-card"
+                         onclick="showEvent(@eventItem.Id)"
+                         style="cursor: pointer;">
+
+                        @if (eventItem.ImageData != null)
+                        {
+                            <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
+                                 class="card-img-top"
+                                 alt="@eventItem.Title" />
+                        }
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @eventItem.Title
+                            </h5>
+
+                            @if (!string.IsNullOrEmpty(eventItem.Category))
+                            {
+                                <span class="badge bg-primary mb-2">
+                                    @eventItem.Category
+                                </span>
+                            }
+
+                            <p class="card-text">
+                                @eventItem.Description
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Location:</strong>
+                                @eventItem.Location
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>Starts:</strong>
+                                @eventItem.StartDate.ToString("dd/MM/yyyy h:mm tt")
+                            </p>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="col-md-7">
+
+                <div id="eventDetails"
+                     class="card"
+                     style="display: none;">
+
+                    <div class="card-body">
+
+                        <div id="eventImageContainer"></div>
+
+                        <h2 id="eventTitle"></h2>
+
+                        <span id="eventCategory"
+                              class="badge bg-primary mb-3"></span>
+
+                        <p id="eventDescription"></p>
+
+                        <p>
+                            <strong>Location:</strong>
+                            <span id="eventLocation"></span>
+                        </p>
+
+                        <p>
+                            <strong>Start:</strong>
+                            <span id="eventStart"></span>
+                        </p>
+
+                        <p>
+                            <strong>End:</strong>
+                            <span id="eventEnd"></span>
+                        </p>
+
+                        <p>
+                            <strong>Organised by:</strong>
+                            <span id="eventOrganisation"></span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<script>
+    const events = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(e => new
+        {
+            id = e.Id,
+                title = e.Title,
+                description = e.Description,
+                location = e.Location,
+                startDate = e.StartDate.ToString("dd/MM/yyyy h:mm tt"),
+                endDate = e.EndDate.ToString("dd/MM/yyyy h:mm tt"),
+                category = e.Category,
+                organisation = e.EventProviderProfile != null
+                ? e.EventProviderProfile.OrganisationName
+                : "",
+                image = e.ImageData != null
+                ? "data:" + e.ImageContentType + ";base64," + Convert.ToBase64String(e.ImageData)
+                : null
+        })));
+
+    function showEvent(id) {
+
+        const eventItem = events.find(e => e.id === id);
+
+        if (!eventItem) {
+            return;
+        }
+
+        document.getElementById("eventDetails").style.display = "block";
+
+        document.getElementById("eventTitle").textContent =
+            eventItem.title;
+
+        document.getElementById("eventDescription").textContent =
+            eventItem.description;
+
+        document.getElementById("eventLocation").textContent =
+            eventItem.location;
+
+        document.getElementById("eventStart").textContent =
+            eventItem.startDate;
+
+        document.getElementById("eventEnd").textContent =
+            eventItem.endDate;
+
+        document.getElementById("eventOrganisation").textContent =
+            eventItem.organisation;
+
+        const category = document.getElementById("eventCategory");
+
+        if (eventItem.category) {
+            category.textContent = eventItem.category;
+            category.style.display = "inline-block";
+        }
+        else {
+            category.style.display = "none";
+        }
+
+        const imageContainer =
+            document.getElementById("eventImageContainer");
+
+        imageContainer.innerHTML = "";
+
+        if (eventItem.image) {
+
+            const image = document.createElement("img");
+
+            image.src = eventItem.image;
+            image.alt = eventItem.title;
+            image.className = "img-fluid mb-4";
+
+            imageContainer.appendChild(image);
+        }
+    }
+</script>
