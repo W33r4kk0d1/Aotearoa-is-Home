@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Aotearoa_is_Home.Controllers
+namespace Aotearoa_is_Home.Areas.Public.Controllers
 {
+    [Area("Public")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

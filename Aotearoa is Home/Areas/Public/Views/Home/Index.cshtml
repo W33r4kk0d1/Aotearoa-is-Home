@@ -5,8 +5,6 @@
 
 <div class="public-home">
 
-<div class="public-home">
-
     <section class="public-hero">
 
         <div class="public-hero-content">
@@ -22,17 +20,19 @@
             </h1>
 
             <p>Find the information you need to
-                <a asp-controller="Home"
-                asp-action="SupportingInformation"
-                class="settle-link"
-                target="_blank"
-                rel="noopener noreferrer">
-                settle
+                <a asp-area="Public"
+                    asp-controller="Home"
+                    asp-action="SupportingInformation"
+                    class="settle-link"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    settle
                 </a>
                 &nbsp;connect and feel at home in Aotearoa New Zealand.
             </p>
 
-            <form asp-controller="Home"
+            <form asp-area="Public"
+                    asp-controller="Home"
                     asp-action="Search"
                     method="get"
                     class="public-search-form">
@@ -49,13 +49,15 @@
                 </form>
 
             <div class="public-hero-actions">
-                <a asp-controller="Account"
+                <a asp-area="Identity"
+                   asp-controller="Account"
                    asp-action="Register"
                    class="public-btn public-btn-primary">
                     Create an Account
                 </a>
 
-                <a asp-controller="Account"
+                <a asp-area="Identity"
+                   asp-controller="Account"
                    asp-action="Login"
                    class="public-btn public-btn-secondary">
                     Sign In
@@ -204,13 +206,15 @@
 
             <div class="public-hero-actions">
 
-                <a asp-controller="Account"
+                <a asp-area="Identity"
+                   asp-controller="Account"
                    asp-action="Register"
                    class="public-btn public-btn-primary">
                     Create an Account
                 </a>
 
-                <a asp-controller="Account"
+                <a asp-area="Identity"
+                   asp-controller="Account"
                    asp-action="Login"
                    class="public-btn public-btn-secondary">
                     Sign In

@@ -1,12 +1,14 @@
 using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Aotearoa_is_Home.Controllers
+namespace Aotearoa_is_Home.Areas.Identity.Controllers
 {
+    [Area("Identity")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -325,7 +327,8 @@ namespace Aotearoa_is_Home.Controllers
 
             return RedirectToAction(
                 "Login",
-                "Account");
+                "Account",
+                new { area = "Identity" });
         }
 
         // LOGOUT
@@ -338,7 +341,8 @@ namespace Aotearoa_is_Home.Controllers
             // Return to the existing Student Home page
             return RedirectToAction(
                 "Index",
-                "Home");
+                "Home",
+                new { area = "Public" });
         }
 
 

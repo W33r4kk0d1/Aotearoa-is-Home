@@ -10,7 +10,7 @@
     @* <!-- Home button -->
     <div class="account-home-link">
         <a asp-area="Student"
-           asp-controller="Home"
+           asp-controller="Public"
            asp-action="Index"
            title="Back to Home">
             🏠
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <form asp-area=""
+        <form asp-area="Identity"
               asp-controller="Account"
               asp-action="Register"
               method="post">
@@ -529,7 +529,7 @@
 
             Already have an account?
 
-            <a asp-area=""
+            <a asp-area="Identity"
                asp-controller="Account"
                asp-action="Login">
                 Login

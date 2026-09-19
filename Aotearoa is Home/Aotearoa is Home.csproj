@@ -34,4 +34,10 @@
     <Folder Include="Areas\Student\Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Aotearoa is Home.Models\Aotearoa is Home.Models.csproj" />
+    <ProjectReference Include="..\Aotearoa is Home.DataAccess\Aotearoa is Home.DataAccess.csproj" />
+    <ProjectReference Include="..\Aotearoa is Home.Utilities\Aotearoa is Home.Utilities.csproj" />
+  </ItemGroup>
+
 </Project>

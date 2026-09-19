@@ -8,7 +8,7 @@
 <div class="login-page">
 
     <!-- Home Button -->
-    <a asp-area="Student"
+    <a asp-area="Public"
        asp-controller="Home"
        asp-action="Index"
        class="login-home-button"
@@ -63,7 +63,7 @@
             }
 
 
-            <form asp-area=""
+            <form asp-area="Identity"
                   asp-controller="Account"
                   asp-action="Login"
                   method="post">
@@ -169,7 +169,7 @@
 
                 <span>Don't have an account?</span>
 
-                <a asp-area=""
+                <a asp-area="Identity"
                    asp-controller="Account"
                    asp-action="Register">
                     Create an account

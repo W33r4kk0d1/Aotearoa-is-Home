@@ -54,8 +54,9 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "public",
+    pattern: "{controller=Home}/{action=Index}/{id?}",
+    defaults: new { area = "Public" });
 
 using (var scope = app.Services.CreateScope())
 {
