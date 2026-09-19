@@ -42,5 +42,10 @@ namespace Aotearoa_is_Home.Controllers
 
             return View(results);
         }
+
+        public IActionResult SupportingInformation()
+        {
+            return View();
+        }
     }
 }

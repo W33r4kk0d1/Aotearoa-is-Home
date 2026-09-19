@@ -5,6 +5,8 @@
 .public-home {
     width: 100%;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 
@@ -13,6 +15,7 @@
    ========================================= */
 
 .public-hero {
+    margin-top: 0;
     min-height: 560px;
     display: flex;
     align-items: center;
@@ -59,6 +62,38 @@
     color: #53645f;
 }
 
+/* =========================================
+   PUBLIC HOME LOGO
+   ========================================= */
+
+.public-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.public-logo img {
+    width: 650px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.settle-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.settle-logo img {
+    width: 200px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
 
 /* =========================================
    BUTTONS
@@ -76,11 +111,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 150px;
-    padding: 13px 25px;
+    min-width: 200px;
+    padding: 20px 25px;
     border-radius: 8px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 800;
     transition: all 0.25s ease;
 }
 
@@ -146,6 +181,18 @@
     line-height: 1.8;
 }
 
+.public-hero p .settle-link {
+    color: #2f6f5e;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+}
+
+.public-hero p .settle-link:hover {
+    color: #245a4c;
+}
 
 /* =========================================
    CATEGORY CARDS
@@ -329,13 +376,11 @@
 .public-search-box {
     display: flex;
     align-items: center;
-
     width: 100%;
-    padding: 6px;
-
+    padding: 15px;
     background: #ffffff;
     border: 1px solid #d5e3de;
-    border-radius: 12px;
+    border-radius: 15px;
 
     box-shadow: 0 8px 25px rgba(30, 70, 60, 0.08);
 }
@@ -344,25 +389,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     width: 50px;
-
-    font-size: 1.15rem;
+    font-size: 2.15rem;
 }
 
 .public-search-box input {
     flex: 1;
-
     min-width: 0;
-
-    padding: 14px 10px;
-
+    padding: 10px 10px;
     border: none;
     outline: none;
-
     background: transparent;
-
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #19352e;
 }
 
@@ -371,19 +409,14 @@
 }
 
 .public-search-box button {
-    padding: 13px 22px;
-
+    padding: 15px 22px;
     border: none;
     border-radius: 8px;
-
     background: #2f6f5e;
     color: #ffffff;
-
-    font-size: 0.95rem;
+    font-size: 1.5rem;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: all 0.25s ease;
 }
 
@@ -391,7 +424,6 @@
     background: #245a4c;
     transform: translateY(-1px);
 }
-
 
 /* Mobile */
 
@@ -458,14 +490,11 @@
     display: flex;
     align-items: center;
     gap: 22px;
-
     margin-bottom: 18px;
     padding: 24px;
-
     background: #ffffff;
     border: 1px solid #e0ebe7;
     border-radius: 14px;
-
     transition: all 0.25s ease;
 }
 
@@ -476,17 +505,13 @@
 
 .public-search-result-icon {
     flex-shrink: 0;
-
     width: 55px;
     height: 55px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 12px;
     background: #edf6f2;
-
     font-size: 1.5rem;
 }
 
@@ -496,14 +521,12 @@
 
 .public-search-result-content h2 {
     margin: 0 0 8px;
-
     color: #19352e;
     font-size: 1.25rem;
 }
 
 .public-search-result-content p {
     margin: 0;
-
     color: #6b7773;
     line-height: 1.6;
 }
@@ -518,9 +541,7 @@
     max-width: 600px;
     margin: 50px auto;
     padding: 50px 30px;
-
     text-align: center;
-
     background: #ffffff;
     border-radius: 16px;
     border: 1px solid #e0ebe7;
@@ -540,4 +561,93 @@
     margin-bottom: 25px;
     color: #6b7773;
     line-height: 1.7;
+}
+
+/* =========================================
+   SUPPORTING INFORMATION PAGE
+   ========================================= */
+
+.supporting-information-page {
+    min-height: 100vh;
+    padding: 80px 30px;
+    background: #f5faf8;
+}
+
+.supporting-information-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.supporting-eyebrow {
+    display: block;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #3c7564;
+}
+
+.supporting-information-container > h1 {
+    margin: 0 0 20px;
+    text-align: center;
+    color: #19352e;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+}
+
+.supporting-intro {
+    max-width: 750px;
+    margin: 0 auto 45px;
+    text-align: center;
+    color: #66736f;
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.supporting-card {
+    margin-bottom: 22px;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid #e0ebe7;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(30, 70, 60, 0.05);
+}
+
+.supporting-card h2 {
+    margin: 0 0 15px;
+    color: #19352e;
+    font-size: 1.4rem;
+}
+
+.supporting-card p {
+    margin: 0 0 15px;
+    color: #66736f;
+    line-height: 1.8;
+}
+
+.supporting-card p:last-child {
+    margin-bottom: 0;
+}
+
+.supporting-back {
+    display: flex;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+@media (max-width: 600px) {
+
+    .supporting-information-page {
+        padding: 60px 20px;
+    }
+
+    .supporting-card {
+        padding: 24px 20px;
+    }
+
+    .supporting-card h2 {
+        font-size: 1.25rem;
+    }
+
 }
