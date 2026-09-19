@@ -11,16 +11,25 @@
 
         <div class="public-hero-content">
 
-            <span class="public-eyebrow">
-                AOTEAROA IS HOME
-            </span>
+            <div class="public-logo">
+                <img src="~/images/Logo.png"
+                    alt="Aotearoa is Home"
+                    asp-append-version="true" />
+            </div>
 
             <h1>
                 Welcome to Aotearoa
             </h1>
 
-            <p>
-                Helping international students and their families settle into life, study and community in New Zealand.
+            <p>Find the information you need to
+                <a asp-controller="Home"
+                asp-action="SupportingInformation"
+                class="settle-link"
+                target="_blank"
+                rel="noopener noreferrer">
+                settle
+                </a>
+                &nbsp;connect and feel at home in Aotearoa New Zealand.
             </p>
 
             <form asp-controller="Home"
