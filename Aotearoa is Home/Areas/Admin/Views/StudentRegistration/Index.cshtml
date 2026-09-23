@@ -1,0 +1,174 @@
+@model List<Aotearoa_is_Home.Models.PendingStudentRegistration>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Pending Student Registrations";
+}
+
+<div class="admin-registration-page">
+
+    <div class="admin-registration-header">
+
+        <div>
+            <span class="admin-registration-eyebrow">
+                STUDENT MANAGEMENT
+            </span>
+
+            <h1>Pending Student Registrations</h1>
+
+            <p>
+                Review student registration requests submitted for administrator approval.
+            </p>
+        </div>
+
+        <a href="/Admin/Home" class="admin-back-button">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="admin-registration-content">
+
+        @if (!Model.Any())
+        {
+            <div class="admin-registration-empty">
+
+                <div class="admin-registration-empty-icon">
+                    ✓
+                </div>
+
+                <h2>No Pending Registrations</h2>
+
+                <p>
+                    There are currently no student registration requests waiting for approval.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="admin-registration-summary">
+
+                <div>
+                    <span class="admin-summary-label">
+                        PENDING REQUESTS
+                    </span>
+
+                    <strong>
+                        @Model.Count
+                    </strong>
+                </div>
+
+                <div class="admin-summary-description">
+                    Registration requests requiring administrator review
+                </div>
+
+            </div>
+
+
+            <div class="admin-registration-list">
+
+                @foreach (var registration in Model)
+                {
+                    <div class="admin-registration-card">
+
+                        <div class="admin-registration-card-main">
+
+                            <div class="admin-registration-avatar">
+                                @registration.FirstName.Substring(0, 1).ToUpper()
+                            </div>
+
+
+                            <div class="admin-registration-details">
+
+                                <div class="admin-registration-name-row">
+
+                                    <h2>
+                                        @registration.FirstName
+                                        @registration.LastName
+                                    </h2>
+
+                                    <span class="admin-pending-badge">
+                                        Pending
+                                    </span>
+
+                                </div>
+
+
+                                <div class="admin-registration-info">
+
+                                    <div class="admin-registration-info-item">
+
+                                        <span class="info-label">
+                                            EMAIL
+                                        </span>
+
+                                        <span class="info-value">
+                                            @registration.Email
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="admin-registration-info-item">
+
+                                        <span class="info-label">
+                                            STUDENT ID
+                                        </span>
+
+                                        <span class="info-value">
+
+                                            @if (string.IsNullOrWhiteSpace(registration.StudentId))
+                                            {
+                                                <span class="not-provided">
+                                                    Not provided yet
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                @registration.StudentId
+                                            }
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="admin-registration-info-item">
+
+                                        <span class="info-label">
+                                            SUBMITTED
+                                        </span>
+
+                                        <span class="info-value">
+                                            @registration.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-registration-actions">
+
+                            <a href="/Admin/StudentRegistration/Review/@registration.Id"
+                            class="admin-review-button">
+                                Review
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

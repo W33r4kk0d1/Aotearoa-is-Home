@@ -5,125 +5,196 @@
     ViewData["Title"] = Model.CategoryName;
 }
 
-<div class="container my-5" style="max-width: 950px;">
+<div class="admin-view-page">
 
-    <div class="card bg-dark text-white border-0 shadow-sm overflow-hidden mb-4 position-relative">
-        <div class="card-body p-4 p-md-5 position-relative" style="z-index: 2;">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-2 text-uppercase font-monospace small">
-                    <li class="breadcrumb-item"><a href="/Admin/Home" class="text-info text-decoration-none">Settlement Hub</a></li>
-                    <li class="breadcrumb-item active text-light opacity-75" aria-current="page">@Model.CategoryName</li>
-                </ol>
-            </nav>
-            <h1 class="display-5 fw-bold mb-0">@Model.CategoryName</h1>
+    <div class="admin-view-header">
+        <div class="admin-view-header-content">
+            <span class="admin-eyebrow">
+                SETTLEMENT HUB
+            </span>
+
+            <h1>
+                @Model.CategoryName
+            </h1>
+
+            <p>
+                View the information and resources available in this settlement category.
+            </p>
         </div>
-        
-        <div class="position-absolute top-0 end-0 m-3 m-md-4" style="z-index: 3;">
-            
-                <a href="/Admin/Home" class="btn btn-secondary px-4 fw-semibold shadow-xs">
-                    🔙 Return to Dashboard Directory
-                </a>
-            <div class="d-flex justify-content-start align-items-center mt-5 pt-4 border-top">
 
-            <a href="/Admin/Settlement/Edit/@Model.Id" class="btn btn-primary shadow-sm d-flex align-items-center gap-2 px-3 fw-bold border-2 border-white transition-all hover-lift">
+        <div class="admin-view-header-actions">
+            <a href="/Admin/Home"
+               class="admin-back-button">
+                ← Back to Dashboard
+            </a>
+
+            <a href="/Admin/Settlement/Edit/@Model.Id"
+               class="admin-view-edit-button">
                 ✏️ Edit Page
             </a>
+        </div>
+    </div>
+
+    <!-- ============== SEARCH ===================== -->
+
+    <div class="admin-view-search">
+
+        <div class="admin-search-wrapper">
+            <span class="admin-search-icon">
+                🔍
+            </span>
+
+            <input type="text"
+                   id="topicSearchBar"
+                   onkeyup="filterTopicsBySearch()"
+                   class="admin-search-input"
+                   placeholder="Search entries inside the @Model.CategoryName collection..."
+                   aria-label="Search filter field input bar" />
+
+            <button type="button"
+                    id="clearSearchBtn"
+                    onclick="clearSearchField()"
+                    class="admin-search-clear"
+                    style="display:none;">
+                Clear
+            </button>
+        </div>
+    </div>
+
+<!-- ================= TOPIC CONTENT ==================== -->
+
+@{
+    var contentBlocks = Model.ContentBlocks
+        .OrderBy(b => b.DisplayOrder)
+        .ToList();
+}
+
+<div id="topicCardsWorkspaceGrid"
+     class="admin-view-topics">
+
+    @for (int i = 0; i < contentBlocks.Count; i++)
+    {
+        if (contentBlocks[i].Type != "heading")
+        {
+            continue;
+        }
+
+        var headingBlock = contentBlocks[i];
+        var detailBlocks = new List<Aotearoa_is_Home.Models.ContentBlock>();
+
+        for (int j = i + 1;
+             j < contentBlocks.Count && contentBlocks[j].Type != "heading";
+             j++)
+        {
+            detailBlocks.Add(contentBlocks[j]);
+        }
+
+        <!-- ================== TOPIC CARD ================= -->
+
+        <div class="admin-view-topic search-target-topic-block">
+            <div class="admin-view-topic-header">
+                <div class="admin-topic-heading-icon">
+                    📌
+                </div>
+                <h2 class="search-heading-text">
+                    @headingBlock.Content
+                </h2>
+            </div>
+
+            <div class="admin-view-topic-body">
+                <div class="search-body-wrapper-text">
+                    @foreach (var detail in detailBlocks)
+                    {
+                        @if (detail.Type == "subheading")
+                        {
+                            <h3 class="admin-view-subheading">
+                                @detail.Content
+                            </h3>
+                        }
+
+                        @if (detail.Type == "paragraph")
+                        {
+                            <p class="admin-view-paragraph">
+                                @detail.Content
+                            </p>
+                        }
+
+                        @if (detail.Type == "image")
+                        {
+                            <div class="admin-view-image-wrapper">
+
+                                <img src="@detail.Content"
+                                     class="admin-view-image"
+                                     alt="Settlement information image"
+                                     onerror="this.parentElement.innerHTML='<div class=&quot;admin-view-image-error&quot;>🔗 Image could not be displayed. <a href=&quot;' + this.src + '&quot; target=&quot;_blank&quot;>Open image link</a></div>'" />
+                            </div>
+                        }
+
+
+                        @if (detail.Type == "link")
+                        {
+                            var linkDisplayText = "Visit Resource";
+                            var linkTargetUrl = "#";
+
+                            if (!string.IsNullOrWhiteSpace(detail.Content) &&
+                                detail.Content.Contains("||"))
+                            {
+                                var pieces = detail.Content.Split("||", 2);
+
+                                linkDisplayText = pieces[0];
+
+                                linkTargetUrl =
+                                    pieces.Length > 1
+                                        ? pieces[1]
+                                        : "#";
+                            }
+                            else
+                            {
+                                linkTargetUrl = detail.Content ?? "#";
+                            }
+
+
+                            <div class="admin-view-link-wrapper">
+
+                                <a href="@linkTargetUrl"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="admin-view-resource-link">
+                                    🌐
+                                    <span>
+                                        @linkDisplayText
+                                    </span>
+                                    <span class="admin-view-link-arrow">
+                                        ↗
+                                    </span>
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
-    
-        
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at right, rgba(13,110,253,0.15), transparent); z-index: 1;"></div>
+    }
+</div>
+
+
+<!-- ================= NO SEARCH RESULTS ============== -->
+
+<div id="noSearchResultsAlert"
+     class="admin-view-no-results"
+     style="display: none !important;">
+
+    <div class="admin-view-no-results-icon">
+        🔍
     </div>
+    <h3>
+        No Topic Results Found
+    </h3>
 
-    <!-- REFRESHED SEARCH CONTROL BAR PANEL -->
-    <div class="card border-0 shadow-sm mb-4 bg-white p-3 rounded-3">
-        <div class="input-group input-group-lg border rounded-3 overflow-hidden">
-            <span class="input-group-text bg-light border-0 text-muted px-3">🔍</span>
-            <input type="text" 
-                   id="topicSearchBar" 
-                   onkeyup="filterTopicsBySearch()" 
-                   class="form-control border-0 ps-1 py-3 text-dark bg-white" 
-                   placeholder="Search entries inside the @Model.CategoryName collection (e.g. guidelines, rules, forms)..." 
-                   aria-label="Search filter field input bar" />
-            <button type="button" class="btn btn-outline-secondary border-0 px-3 fs-6" id="clearSearchBtn" onclick="clearSearchField()" style="display:none;">✕ Clear</button>
-        </div>
-    </div>
-
-    <!-- SEPARATE FORUM-STYLE VISUAL TOPIC CARDS GRID SYSTEM CONTAINER -->
-    <div class="row g-4" id="topicCardsWorkspaceGrid">
-        @{
-            bool hasRenderedHeading = false;
-        }
-
-        @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
-        {
-            @if (block.Type == "heading")
-            {
-                if (hasRenderedHeading)
-                {
-                    @:</div></div></div></div>
-                }
-                hasRenderedHeading = true;
-
-                @:<div class="col-12 search-target-topic-block"><div class="card border-0 border-start border-primary border-4 shadow-sm bg-white rounded-3 overflow-hidden h-100"><div class="card-header bg-light py-3 border-bottom px-4"><h3 class="h4 mb-0 fw-bold text-dark tracking-tight d-flex align-items-center gap-2"><span class="text-primary fs-5">📌</span> <span class="search-heading-text">@block.Content</span></h3></div><div class="card-body p-4"><div class="d-flex flex-column gap-3 search-body-wrapper-text">
-            }
-            else
-            {
-                // Format the nested sub elements safely layout system properties
-                if (block.Type == "subheading")
-                {
-                    <h4 class="h6 text-primary fw-bold text-uppercase tracking-wider mt-2 mb-0">🔹 @block.Content</h4>
-                }
-                else if (block.Type == "paragraph")
-                {
-                    <p class="text-secondary leading-relaxed mb-0 font-normal" style="white-space: pre-line; font-size: 1.05rem;">@block.Content</p>
-                }
-                else if (block.Type == "image")
-                {
-                    <div class="my-2 rounded border bg-light text-center p-2 shadow-inner overflow-hidden border-2 border-dashed" style="max-width: 600px;">
-                        <img src="@block.Content" class="img-fluid rounded shadow-sm hover-scale transition-all" alt="Topic Document Asset Illustration" onerror="this.parentElement.innerHTML='<div class=\"p-2 text-start small text-muted font-monospace bg-white border rounded\">🔗 Resource Link Asset Address: <a href=\"' + this.src + '\" target=\"_blank\" class=\"text-decoration-underline text-info fw-bold\">' + this.src + '</a>'" />
-                    </div>
-                }
-                else if (block.Type == "link")
-                {
-                    var linkDisplayText = "Click Here to Visit Link";
-                    var linkTargetUrl = "#";
-
-                    if (block.Content != null && block.Content.Contains("||"))
-                    {
-                        var pieces = block.Content.Split("||");
-                        linkDisplayText = pieces[0];
-                        linkTargetUrl = pieces[1];
-                    }
-                    else
-                    {
-                        linkTargetUrl = block.Content ?? "#";
-                    }
-
-                    <div class="my-2 mt-3">
-                        <a href="@linkTargetUrl" target="_blank" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold transition-all hover-lift rounded-3 shadow-xs">
-                            🌐 @linkDisplayText <span class="small opacity-75">↗</span>
-                        </a>
-                    </div>
-                }
-            }
-        }
-
-        @if (hasRenderedHeading)
-        {
-            // Securely close out trailing collection elements looping context parameters tags
-            @:</div></div></div></div>
-        }
-    </div>
-
-    <!-- EMPTY SEARCH RESULTS STATE SYSTEM BANNER DISPLAY -->
-    <div id="noSearchResultsAlert" class="card text-center p-5 border-2 border-dashed shadow-sm my-4 bg-white" style="display: none !important;">
-        <div class="display-3 mb-2">🏜️</div>
-        <h4 class="fw-bold text-dark">No Topic Results Found</h4>
-        <p class="text-muted mb-0">We couldn't find any content components matching your text keywords search inside this active folder directory path.</p>
-    </div>
-
-    
+    <p>
+        We couldn't find any content matching your search. Try another keyword.
+    </p>
+</div>
 </div>
 
 @section Scripts {

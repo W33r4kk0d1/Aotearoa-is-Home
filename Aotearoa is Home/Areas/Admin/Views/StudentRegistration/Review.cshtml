@@ -1,0 +1,215 @@
+@model Aotearoa_is_Home.Models.PendingStudentRegistration
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Review Student Registration";
+}
+
+<div class="admin-review-page">
+
+    <!-- HEADER -->
+    <div class="admin-review-header">
+
+        <div>
+            <span class="admin-review-eyebrow">
+                STUDENT MANAGEMENT
+            </span>
+
+            <h1>Review Student Registration</h1>
+
+            <p>
+                Review the registration details before approving this student account.
+            </p>
+        </div>
+
+        <a href="/Admin/StudentRegistration"
+           class="admin-back-button">
+            ← Back to Registrations
+        </a>
+
+    </div>
+
+
+    <!-- REGISTRATION DETAILS -->
+    <section class="admin-review-card">
+
+        <div class="admin-review-card-header">
+
+            <div class="admin-review-profile">
+
+                <div class="admin-review-avatar">
+                    @Model.FirstName.Substring(0, 1).ToUpper()
+                </div>
+
+                <div>
+                    <h2>
+                        @Model.FirstName @Model.LastName
+                    </h2>
+
+                    <span class="admin-pending-badge">
+                        @Model.Status
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-review-divider"></div>
+
+
+        <div class="admin-review-details">
+
+            <!-- FIRST NAME -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    FIRST NAME
+                </span>
+
+                <span class="admin-review-value">
+                    @Model.FirstName
+                </span>
+
+            </div>
+
+
+            <!-- LAST NAME -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    LAST NAME
+                </span>
+
+                <span class="admin-review-value">
+                    @Model.LastName
+                </span>
+
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    EMAIL ADDRESS
+                </span>
+
+                <span class="admin-review-value">
+                    @Model.Email
+                </span>
+
+            </div>
+
+
+            <!-- STUDENT ID -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    STUDENT ID
+                </span>
+
+                <span class="admin-review-value">
+
+                    @if (string.IsNullOrWhiteSpace(Model.StudentId))
+                    {
+                        <span class="admin-review-missing">
+                            Not provided yet
+                        </span>
+                    }
+                    else
+                    {
+                        @Model.StudentId
+                    }
+
+                </span>
+
+            </div>
+
+
+            <!-- SUBMITTED -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    SUBMITTED
+                </span>
+
+                <span class="admin-review-value">
+                    @Model.SubmittedAt
+                        .ToLocalTime()
+                        .ToString("dd MMMM yyyy, h:mm tt")
+                </span>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="admin-review-field">
+
+                <span class="admin-review-label">
+                    REGISTRATION STATUS
+                </span>
+
+                <span class="admin-review-value">
+                    <span class="admin-pending-badge">
+                        @Model.Status
+                    </span>
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- APPROVAL INFORMATION -->
+    <section class="admin-review-information">
+
+        <div class="admin-review-information-icon">
+            i
+        </div>
+
+        <div>
+
+            <h3>Before approving</h3>
+
+            @if (string.IsNullOrWhiteSpace(Model.StudentId))
+            {
+                <p>
+                    This student has not provided a Student ID.
+                    A valid Student ID will be required before the student
+                    account can be approved.
+                </p>
+            }
+            else
+            {
+                <p>
+                    This registration includes Student ID
+                    <strong>@Model.StudentId</strong>.
+                    You can review the details before approving the account.
+                </p>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+    <div class="admin-review-actions">
+
+        <a href="/Admin/StudentRegistration"
+        class="admin-review-cancel">
+            ← Back
+        </a>
+
+        <a href="/Admin/StudentRegistration/Approve/@Model.Id"
+        class="admin-review-approve">
+            Approve Registration
+        </a>
+
+    </div>
+
+</div>

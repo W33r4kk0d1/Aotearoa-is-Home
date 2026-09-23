@@ -1,0 +1,154 @@
+@model Aotearoa_is_Home.Models.ViewModels.ApproveStudentRegistrationViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Approve Student Registration";
+}
+
+<div class="admin-approve-page">
+
+    <!-- HEADER -->
+
+    <div class="admin-approve-header">
+
+        <div>
+            <span class="admin-approve-eyebrow">
+                STUDENT MANAGEMENT
+            </span>
+
+            <h1>Approve Student Registration</h1>
+
+            <p>
+                Confirm the student's details and create their account.
+            </p>
+        </div>
+
+        <a href="/Admin/StudentRegistration/Review/@Model.Id"
+           class="admin-back-button">
+            ← Back to Review
+        </a>
+
+    </div>
+
+
+    <!-- VALIDATION -->
+
+    <div asp-validation-summary="ModelOnly"
+         class="admin-approve-validation">
+    </div>
+
+
+    <!-- STUDENT DETAILS -->
+
+    <section class="admin-approve-card">
+
+        <div class="admin-approve-card-heading">
+
+            <div class="admin-approve-avatar">
+                @{
+                    var avatarLetter = !string.IsNullOrWhiteSpace(Model.FirstName)
+                        ? Model.FirstName.Trim().Substring(0, 1).ToUpper()
+                        : "?";
+                }
+
+                @avatarLetter
+            </div>
+
+            <div>
+                <h2>
+                    @Model.FirstName @Model.LastName
+                </h2>
+
+                <p>
+                    @Model.Email
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="admin-approve-divider"></div>
+
+            <form asp-area="Admin"
+                asp-controller="StudentRegistration"
+                asp-action="Approve"
+                method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="admin-form-field">
+                    <label asp-for="StudentId">
+                        Student ID <span class="required-star">*</span>
+                    </label>
+
+                    <input type="text"
+                        id="StudentId"
+                        name="StudentId"
+                        value="@Model.StudentId"
+                        class="admin-modern-input"
+                        placeholder="Enter Student ID"
+                        autocomplete="off" />
+
+                    <span asp-validation-for="StudentId"
+                        class="text-danger"></span>
+                </div>
+
+                <div class="admin-form-field">
+                    <label asp-for="TemporaryPassword">
+                        Temporary Password <span class="required-star">*</span>
+                    </label>
+
+                    <input type="password"
+                        id="TemporaryPassword"
+                        name="TemporaryPassword"
+                        value="@Model.TemporaryPassword"
+                        class="admin-modern-input"
+                        placeholder="Enter a temporary password"
+                        autocomplete="new-password" />
+
+                    <span asp-validation-for="TemporaryPassword"
+                        class="text-danger"></span>
+                </div>
+
+                <div class="admin-form-field">
+                    <label asp-for="ConfirmTemporaryPassword">
+                        Confirm Temporary Password <span class="required-star">*</span>
+                    </label>
+
+                    <input type="password"
+                        id="ConfirmTemporaryPassword"
+                        name="ConfirmTemporaryPassword"
+                        value="@Model.ConfirmTemporaryPassword"
+                        class="admin-modern-input"
+                        placeholder="Re-enter the temporary password"
+                        autocomplete="new-password" />
+
+                    <span asp-validation-for="ConfirmTemporaryPassword"
+                        class="text-danger"></span>
+                </div>
+
+                <div class="admin-approve-actions">
+                    <a href="/Admin/StudentRegistration/Index"
+                    class="admin-cancel-button">
+                        ← Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="admin-approve-button">
+                        Approve &amp; Create Account
+                    </button>
+                </div>
+
+            </form>
+
+    </section>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
