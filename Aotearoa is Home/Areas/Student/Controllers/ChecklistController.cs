@@ -61,17 +61,23 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(List<int> completedItems)
+        public async Task<IActionResult> Update(List<int>? completedItems)
         {
             var userId = _userManager.GetUserId(User);
+
             var checklistItems = await _context.ChecklistItems
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
+
+            completedItems ??= new List<int>();
+
             foreach (var item in checklistItems)
             {
                 item.IsCompleted = completedItems.Contains(item.Id);
             }
+
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }
