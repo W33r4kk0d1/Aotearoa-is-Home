@@ -9,6 +9,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<UniversityDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("UniversityConnection")));
+
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
     options =>
@@ -62,6 +66,9 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     await DbInitializer.InitializeAsync(services);
+
+    // Initialize the university/student database
+    await UniversityDbInitializer.InitializeAsync(services);
 }
 
 app.Run();

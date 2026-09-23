@@ -12,15 +12,18 @@ namespace Aotearoa_is_Home.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private readonly UniversityDbContext _universityContext;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            UniversityDbContext universityContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _universityContext = universityContext;
         }
 
         // LOGIN
@@ -141,6 +144,7 @@ namespace Aotearoa_is_Home.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             await LoadLanguages();
+            bool isPendingStudent = false;
 
             // VALID ACCOUNT TYPES
 
@@ -160,16 +164,51 @@ namespace Aotearoa_is_Home.Controllers
             }
 
             // ROLE-SPECIFIC VALIDATION
-
             switch (model.AccountType)
             {
                 case "Student":
-
-                    if (string.IsNullOrWhiteSpace(model.StudentId))
+                    if (model.HasStudentId == true)
                     {
-                        ModelState.AddModelError(
-                            "StudentId",
-                            "Student ID is required.");
+                        if (string.IsNullOrWhiteSpace(model.StudentId))
+                        {
+                            ModelState.AddModelError(
+                                "StudentId",
+                                "Student ID is required when you select Yes.");
+                            break;
+                        }
+
+                        var universityStudent =
+                            await _universityContext.UniversityStudents
+                                .FirstOrDefaultAsync(s =>
+                                    s.StudentId == model.StudentId);
+
+                        if (universityStudent == null)
+                        {
+                            ModelState.AddModelError(
+                                "StudentId",
+                                "The Student ID could not be verified.");
+                        }
+                        else if (!universityStudent.IsCurrentStudent)
+                        {
+                            if (string.IsNullOrWhiteSpace(universityStudent.ApplicationEmail) ||
+                                !string.Equals(
+                                    universityStudent.ApplicationEmail,
+                                    model.Email,
+                                    StringComparison.OrdinalIgnoreCase))
+                            {
+                                ModelState.AddModelError(
+                                    "StudentId",
+                                    "This Student ID is not currently active, or the registration email does not match the university record.");
+                            }
+                            else
+                            {
+                                isPendingStudent = true;
+                            }
+                        }
+                    }
+                    else if (model.HasStudentId == false)
+                    {
+                        isPendingStudent = true;
                     }
                     break;
 
@@ -250,6 +289,32 @@ namespace Aotearoa_is_Home.Controllers
                     "An account with this email already exists.");
 
                 return View(model);
+            }
+
+            // CREATE PENDING STUDENT REGISTRATION
+            if (isPendingStudent)
+            {
+                var pendingRegistration = new PendingStudentRegistration
+                {
+                    StudentId = model.StudentId,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    SubmittedAt = DateTime.UtcNow,
+                    Status = "Pending"
+                };
+
+                _context.PendingStudentRegistrations.Add(
+                    pendingRegistration);
+
+                await _context.SaveChangesAsync();
+
+                TempData["RegistrationSuccess"] =
+                    "Your registration request has been submitted for administrator approval.";
+
+                return RedirectToAction(
+                    "Login",
+                    "Account");
             }
 
 

@@ -33,6 +33,7 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<Event> Events { get; set; }
 
+        public DbSet<PendingStudentRegistration> PendingStudentRegistrations { get; set; }
         public DbSet<ChecklistItem> ChecklistItems { get; set; }
 
         protected override void OnModelCreating(

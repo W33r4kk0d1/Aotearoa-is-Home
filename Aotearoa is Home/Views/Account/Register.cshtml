@@ -199,10 +199,38 @@
 
 
             <!-- STUDENT -->
-            <div id="studentFields"
-                 class="role-fields">
+            <div id="studentFields" class="role-fields">
 
                 <div class="form-group">
+                    <label asp-for="HasStudentId">
+                        Do you have a Student ID?
+                        <span class="required-star">*</span>
+                    </label>
+
+                    <div class="student-id-choice">
+                        <label>
+                            <input type="radio"
+                                asp-for="HasStudentId"
+                                value="true"
+                                id="hasStudentIdYes" />
+                            Yes
+                        </label>
+
+                        <label>
+                            <input type="radio"
+                                asp-for="HasStudentId"
+                                value="false"
+                                id="hasStudentIdNo" />
+                            No, I don't have one yet
+                        </label>
+                    </div>
+
+                    <span asp-validation-for="HasStudentId"
+                        class="text-danger"></span>
+                </div>
+
+                <div class="form-group"
+                    id="studentIdField">
 
                     <label asp-for="StudentId">
                         Student ID
@@ -210,12 +238,27 @@
                     </label>
 
                     <input asp-for="StudentId"
-                           class="form-control"
-                           placeholder="Student ID" />
+                        class="form-control"
+                        id="studentIdInput"
+                        placeholder="Enter your Student ID" />
 
                     <span asp-validation-for="StudentId"
-                          class="text-danger">
-                    </span>
+                        class="text-danger"></span>
+                </div>
+
+                <div id="preArrivalMessage"
+                    class="pre-arrival-message"
+                    style="display:none;">
+
+                    <p>
+                        You can register as a pre-arrival student if you
+                        have not received your Student ID yet.
+                    </p>
+
+                    <p>
+                        Your registration will be reviewed by an administrator
+                        before your account is activated.
+                    </p>
 
                 </div>
 
@@ -621,5 +664,44 @@
 
         updateFields();
 
+        const studentIdYes = document.getElementById("hasStudentIdYes");
+        const studentIdNo = document.getElementById("hasStudentIdNo");
+        const studentIdField = document.getElementById("studentIdField");
+        const studentIdInput = document.getElementById("studentIdInput");
+        const preArrivalMessage = document.getElementById("preArrivalMessage");
+
+        function updateStudentIdFields() {
+            if (studentIdNo && studentIdNo.checked) {
+
+                studentIdField.style.display = "none";
+                preArrivalMessage.style.display = "block";
+
+                studentIdInput.value = "";
+                studentIdInput.removeAttribute("required");
+
+            } else {
+
+                studentIdField.style.display = "block";
+                preArrivalMessage.style.display = "none";
+
+                studentIdInput.setAttribute("required", "required");
+            }
+        }
+
+        if (studentIdYes) {
+            studentIdYes.addEventListener(
+                "change",
+                updateStudentIdFields
+            );
+        }
+
+        if (studentIdNo) {
+            studentIdNo.addEventListener(
+                "change",
+                updateStudentIdFields
+            );
+        }
+
+        updateStudentIdFields();
     </script>
 }
