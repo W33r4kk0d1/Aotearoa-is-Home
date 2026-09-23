@@ -138,18 +138,12 @@ namespace Aotearoa_is_Home.Controllers
         // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(
-            RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             await LoadLanguages();
 
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            // VALID ACCOUNT TYPES
 
-
-            // Check account type
             var validAccountTypes = new[]
             {
                 "Student",
@@ -163,11 +157,89 @@ namespace Aotearoa_is_Home.Controllers
                 ModelState.AddModelError(
                     "AccountType",
                     "Please select a valid account type.");
+            }
 
+            // ROLE-SPECIFIC VALIDATION
+
+            switch (model.AccountType)
+            {
+                case "Student":
+
+                    if (string.IsNullOrWhiteSpace(model.StudentId))
+                    {
+                        ModelState.AddModelError(
+                            "StudentId",
+                            "Student ID is required.");
+                    }
+                    break;
+
+                case "Admin":
+
+                    if (string.IsNullOrWhiteSpace(model.EmployeeId))
+                    {
+                        ModelState.AddModelError(
+                            "EmployeeId",
+                            "Employee ID is required.");
+                    }
+                    break;
+
+                case "Family Member":
+
+                    if (string.IsNullOrWhiteSpace(model.RelationshipToStudent))
+                    {
+                        ModelState.AddModelError(
+                            "RelationshipToStudent",
+                            "Relationship to student is required.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(model.StudentReference))
+                    {
+                        ModelState.AddModelError(
+                            "StudentReference",
+                            "Student ID or student email is required.");
+                    }
+                    break;
+
+                case "Service Provider":
+
+                    if (string.IsNullOrWhiteSpace(model.OrganisationName))
+                    {
+                        ModelState.AddModelError(
+                            "OrganisationName",
+                            "Organisation name is required.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(model.OrganisationType))
+                    {
+                        ModelState.AddModelError(
+                            "OrganisationType",
+                            "Organisation type is required.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(model.OrganisationPhone))
+                    {
+                        ModelState.AddModelError(
+                            "OrganisationPhone",
+                            "Organisation phone is required.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(model.OfficeAddress))
+                    {
+                        ModelState.AddModelError(
+                            "OfficeAddress",
+                            "Office address is required.");
+                    }
+                    break;
+            }
+
+            // STOP IF VALIDATION FAILED
+            if (!ModelState.IsValid)
+            {
                 return View(model);
             }
 
-            // Check existing email
+
+            // CHECK EXISTING EMAIL
             var existingUser =
                 await _userManager.FindByEmailAsync(model.Email);
 
@@ -181,7 +253,7 @@ namespace Aotearoa_is_Home.Controllers
             }
 
 
-            // Create Identity user
+            // CREATE IDENTITY USER
             var user = new ApplicationUser
             {
                 UserName = model.Email,
@@ -201,6 +273,7 @@ namespace Aotearoa_is_Home.Controllers
                 model.Password);
 
 
+            // CHECK USER CREATION
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -213,100 +286,77 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-
-            // Create role-specific profile
+            // SAVE ROLE-SPECIFIC PROFILE
             switch (model.AccountType)
             {
                 case "Student":
 
-                    _context.StudentProfiles.Add(
-                        new StudentProfile
-                        {
-                            UserId = user.Id,
-                            StudentId = model.StudentId!
-                        });
-
+                    _context.StudentProfiles.Add(new StudentProfile
+                    {
+                        UserId = user.Id,
+                        StudentId = model.StudentId!
+                    });
                     break;
-
-
-                case "Family Member":
-
-                    _context.FamilyProfiles.Add(
-                        new FamilyProfile
-                        {
-                            UserId = user.Id,
-
-                            RelationshipToStudent =
-                                model.RelationshipToStudent!,
-
-                            StudentReference =
-                                model.StudentReference!
-                        });
-
-                    break;
-
 
                 case "Admin":
 
-                    _context.AdminProfiles.Add(
-                        new AdminProfile
-                        {
-                            UserId = user.Id,
-
-                            EmployeeId =
-                                model.EmployeeId!,
-
-                            DepartmentOrganisation =
-                                model.DepartmentOrganisation
-                        });
-
+                    _context.AdminProfiles.Add(new AdminProfile
+                    {
+                        UserId = user.Id,
+                        EmployeeId = model.EmployeeId!,
+                        DepartmentOrganisation = model.DepartmentOrganisation
+                    });
                     break;
 
+                case "Family Member":
+
+                    _context.FamilyProfiles.Add(new FamilyProfile
+                    {
+                        UserId = user.Id,
+                        RelationshipToStudent = model.RelationshipToStudent!,
+                        StudentReference = model.StudentReference!
+                    });
+                    break;
 
                 case "Service Provider":
 
-                    _context.EventProviderProfiles.Add(
-                        new EventProviderProfile
-                        {
-                            UserId = user.Id,
+                    _context.EventProviderProfiles.Add(new EventProviderProfile
+                    {
+                        UserId = user.Id,
 
-                            OrganisationName =
-                                model.OrganisationName!,
+                        OrganisationName = model.OrganisationName!,
+                        OrganisationType = model.OrganisationType!,
 
-                            OrganisationType =
-                                model.OrganisationType!,
+                        OrganisationDescription =
+                            model.OrganisationDescription,
 
-                            OrganisationDescription =
-                                model.OrganisationDescription,
+                        OrganisationPhone =
+                            model.OrganisationPhone,
 
-                            OrganisationPhone =
-                                model.OrganisationPhone,
+                        Website =
+                            model.Website,
 
-                            Website =
-                                model.Website,
+                        OfficeAddress =
+                            model.OfficeAddress,
 
-                            OfficeAddress =
-                                model.OfficeAddress,
-
-                            SupportingInformation =
-                                model.SupportingInformation
-                        });
-
+                        SupportingInformation =
+                            model.SupportingInformation
+                    });
                     break;
             }
 
-
-            // Save profile
+            // SAVE DATABASE CHANGES
             await _context.SaveChangesAsync();
 
 
-            // Add Identity role
+            // ADD IDENTITY ROLE
             var roleResult =
                 await _userManager.AddToRoleAsync(
                     user,
                     model.AccountType);
 
 
+            // CHECK ROLE CREATION
             if (!roleResult.Succeeded)
             {
                 foreach (var error in roleResult.Errors)
@@ -315,11 +365,11 @@ namespace Aotearoa_is_Home.Controllers
                         string.Empty,
                         error.Description);
                 }
-
                 return View(model);
             }
 
-            // Registration successful → Login page
+
+            // REGISTRATION SUCCESSFUL
             TempData["RegistrationSuccess"] =
                 "Account created successfully!";
 

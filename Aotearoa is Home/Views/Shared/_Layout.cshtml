@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="~/Aotearoa_is_Home.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
-<body>
 
 @{
     var hideHeader = ViewData["HideHeader"] as bool? ?? false;
 }
+
+
+<body class="@(hideHeader ? "no-header-page" : "")">
 
 @if (ViewData["HideHeader"] as bool? != true)
 {
@@ -38,7 +40,7 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
-<ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1">
 
                         @if (User.Identity != null &&
                              User.Identity.IsAuthenticated)
@@ -79,6 +81,15 @@
                                        asp-controller="Home"
                                        asp-action="Privacy">
                                         Posts
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Student"
+                                       asp-controller="Event"
+                                       asp-action="Index">
+                                        Events
                                     </a>
                                 </li>
                             }
@@ -384,7 +395,7 @@
 }
 
 
-<main role="main" class="pb-3">
+<main role="main">
     @RenderBody()
 </main>
 

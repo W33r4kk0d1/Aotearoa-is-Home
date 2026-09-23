@@ -29,8 +29,8 @@ namespace Aotearoa_is_Home.Models
 
         public string? ImageContentType { get; set; }
 
-        public int ServiceProviderId { get; set; }
+        public int EventProviderProfileId { get; set; }
 
-        public ServiceProvider? ServiceProvider { get; set; }
+        public EventProviderProfile? EventProviderProfile { get; set; }
     }
 }

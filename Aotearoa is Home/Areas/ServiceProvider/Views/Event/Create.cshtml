@@ -20,74 +20,66 @@
         @Html.AntiForgeryToken()
 
         <div class="mb-3">
-            <label asp-for="Title" class="form-label">
+            <label for="Title" class="form-label">
                 Event Title
             </label>
 
-            <input asp-for="Title"
+            <input type="text"
+                   id="Title"
+                   name="Title"
                    class="form-control"
                    placeholder="Enter event title" />
-
-            <span asp-validation-for="Title"
-                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Description" class="form-label">
+            <label for="Description" class="form-label">
                 Description
             </label>
 
-            <textarea asp-for="Description"
+            <textarea id="Description"
+                      name="Description"
                       class="form-control"
                       rows="6"
                       placeholder="Describe the event"></textarea>
-
-            <span asp-validation-for="Description"
-                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Location" class="form-label">
+            <label for="Location" class="form-label">
                 Location
             </label>
 
-            <input asp-for="Location"
+            <input type="text"
+                   id="Location"
+                   name="Location"
                    class="form-control"
                    placeholder="Enter event location" />
-
-            <span asp-validation-for="Location"
-                  class="text-danger"></span>
         </div>
 
         <div class="row">
 
             <div class="col-md-6 mb-3">
 
-                <label asp-for="StartDate" class="form-label">
+                <label for="StartDate" class="form-label">
                     Start Date & Time
                 </label>
 
-                <input asp-for="StartDate"
-                       type="datetime-local"
+                <input type="datetime-local"
+                       id="StartDate"
+                       name="StartDate"
                        class="form-control" />
-
-                <span asp-validation-for="StartDate"
-                      class="text-danger"></span>
 
             </div>
 
             <div class="col-md-6 mb-3">
 
-                <label asp-for="EndDate" class="form-label">
+                <label for="EndDate" class="form-label">
                     End Date & Time
                 </label>
 
-                <input asp-for="EndDate"
-                       type="datetime-local"
+                <input type="datetime-local"
+                       id="EndDate"
+                       name="EndDate"
                        class="form-control" />
-
-                <span asp-validation-for="EndDate"
-                      class="text-danger"></span>
 
             </div>
 
@@ -95,11 +87,12 @@
 
         <div class="mb-3">
 
-            <label asp-for="Category" class="form-label">
+            <label for="Category" class="form-label">
                 Event Category
             </label>
 
-            <select asp-for="Category"
+            <select id="Category"
+                    name="Category"
                     class="form-select">
 
                 <option value="">Select a category</option>
@@ -117,11 +110,12 @@
 
         <div class="mb-4">
 
-            <label class="form-label">
+            <label for="eventImage" class="form-label">
                 Event Image
             </label>
 
             <input type="file"
+                   id="eventImage"
                    name="eventImage"
                    class="form-control"
                    accept="image/*" />
