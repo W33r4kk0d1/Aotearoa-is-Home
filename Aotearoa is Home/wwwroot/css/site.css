@@ -4,23 +4,28 @@ html {
     min-height: 100%;
 }
 
-body {
-    padding: 74px 0 0 0;
-    background-color: #ffffff;
-    color: #222222;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-html,
-body {
+html {
     margin: 0;
     padding: 0;
     min-height: 100%;
 }
 
+body {
+    margin: 0;
+    padding: 74px 0 0 0;
+    min-height: 100%;
+    background-color: #ffffff;
+    color: #222222;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 main {
     margin: 0;
     padding: 0;
+}
+
+.no-header-page {
+    padding-top: 0;
 }
 
 /* =========================================================
@@ -80,6 +85,11 @@ NAVBAR
     padding: 40px 20px;
 }
 
+.required-star {
+    color: #c0392b;
+    font-weight: 700;
+    margin-left: 3px;
+}
 
 /* =========================
    REGISTER
@@ -88,10 +98,11 @@ NAVBAR
 .account-card {
     width: 100%;
     max-width: 1000px;
-    background: white;
+    background: #ffffff;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 }
 
 .account-card h1 {
@@ -117,11 +128,21 @@ NAVBAR
 
 .form-control {
     width: 100%;
-    padding: 11px 13px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 13px 14px;
+    border: 1px solid #d7dfdc;
+    border-radius: 10px;
+    background: #ffffff;
     font-size: 15px;
     box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2f6f5e;
+    box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.10);
 }
 
 textarea.form-control {
@@ -163,6 +184,11 @@ textarea.form-control {
     font-size: 13px;
 }
 
+select.form-control {
+    height: 48px;
+    cursor: pointer;
+}
+
 .login-link,
 .register-link {
     text-align: center;
@@ -175,6 +201,7 @@ textarea.form-control {
     height: 280px;
     overflow: hidden;
     margin-bottom: 30px;
+    border-radius: 14px;
 }
 
 .register-banner-image {
@@ -182,6 +209,7 @@ textarea.form-control {
     height: 100%;
     object-fit: cover;
     display: block;
+    object-position: center;
 }
 
 /* Dark transparent layer over the image */
@@ -330,10 +358,10 @@ textarea.form-control {
 }
 
 .login-card {
-    width: min(1200px, 100%);
+    width: min(1400px, 100%);
     height: 680px;
     display: grid;
-    grid-template-columns: 55% 45%;
+    grid-template-columns: 65% 35%;
     background: white;
     border-radius: 22px;
     overflow: hidden;
@@ -449,9 +477,9 @@ textarea.form-control {
 .login-input-group label {
     display: block;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: #333333;
 }
 
 .login-input-wrapper {
@@ -467,7 +495,7 @@ textarea.form-control {
     border: 1.5px solid #ddd;
     border-radius: 11px;
     background: #fff;
-    font-size: 15px;
+    font-size: 16px;
     outline: none;
     transition:
         border-color 0.25s ease,
