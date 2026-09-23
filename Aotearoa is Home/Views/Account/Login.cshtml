@@ -8,7 +8,7 @@
 <div class="login-page">
 
     <!-- Home Button -->
-    <a asp-area="Student"
+    <a asp-area="Public"
        asp-controller="Home"
        asp-action="Index"
        class="login-home-button"
@@ -22,7 +22,7 @@
         <!-- Left Image Section -->
         <div class="login-image">
 
-            <img src="~/images/Login.jpeg"
+            <img src="~/images/Login2.jpeg"
                  alt="Aotearoa is Home"
                  asp-append-version="true" />
 
@@ -78,7 +78,8 @@
                 <div class="login-input-group">
 
                     <label asp-for="UserNameOrEmail">
-                        User Name or Email
+                        Email Address
+                        <span class="required-star">*</span>
                     </label>
 
                     <div class="login-input-wrapper">
@@ -105,6 +106,7 @@
 
                     <label asp-for="Password">
                         Password
+                        <span class="required-star">*</span>
                     </label>
 
                     <div class="login-input-wrapper">

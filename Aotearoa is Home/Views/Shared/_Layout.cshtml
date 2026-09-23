@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="~/Aotearoa_is_Home.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
-<body>
 
 @{
     var hideHeader = ViewData["HideHeader"] as bool? ?? false;
 }
+
+
+<body class="@(hideHeader ? "no-header-page" : "")">
 
 @if (ViewData["HideHeader"] as bool? != true)
 {

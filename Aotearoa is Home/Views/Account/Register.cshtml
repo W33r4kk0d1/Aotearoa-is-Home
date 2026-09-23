@@ -50,6 +50,7 @@
 
                 <label asp-for="AccountType">
                     Account type
+                    <span class="required-star">*</span>
                 </label>
 
                 <select asp-for="AccountType"
@@ -92,6 +93,7 @@
 
                     <label asp-for="FirstName">
                         First name
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="FirstName"
@@ -109,6 +111,7 @@
 
                     <label asp-for="LastName">
                         Last name
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="LastName"
@@ -125,12 +128,13 @@
                 <div class="form-group">
 
                     <label asp-for="Email">
-                        Email
+                        Email Address
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="Email"
                            class="form-control"
-                           placeholder="Email" />
+                           placeholder="Email Address" />
 
                     <span asp-validation-for="Email"
                           class="text-danger">
@@ -160,6 +164,7 @@
 
                     <label asp-for="Password">
                         Password
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="Password"
@@ -177,6 +182,7 @@
 
                     <label asp-for="ConfirmPassword">
                         Confirm password
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="ConfirmPassword"
@@ -200,6 +206,7 @@
 
                     <label asp-for="StudentId">
                         Student ID
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="StudentId"
@@ -256,6 +263,7 @@
 
                         <label asp-for="EmployeeId">
                             Employee ID
+                            <span class="required-star">*</span>
                         </label>
 
                         <input asp-for="EmployeeId"
@@ -273,6 +281,7 @@
 
                         <label asp-for="DepartmentOrganisation">
                             Department / Organisation
+                            <span class="required-star">*</span>
                         </label>
 
                         <input asp-for="DepartmentOrganisation"
@@ -300,6 +309,7 @@
 
                     <label asp-for="RelationshipToStudent">
                         Relationship to student
+                        <span class="required-star">*</span>
                     </label>
 
                     <select asp-for="RelationshipToStudent"
@@ -342,6 +352,7 @@
 
                     <label asp-for="StudentReference">
                         Student ID / Student email
+                        <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="StudentReference"
@@ -394,6 +405,7 @@
 
                         <label asp-for="OrganisationName">
                             Organisation name
+                            <span class="required-star">*</span>
                         </label>
 
                         <input asp-for="OrganisationName"
@@ -411,6 +423,7 @@
 
                         <label asp-for="OrganisationType">
                             Organisation type
+                            <span class="required-star">*</span>
                         </label>
 
                         <input asp-for="OrganisationType"
@@ -449,6 +462,7 @@
 
                         <label asp-for="OrganisationPhone">
                             Organisation phone
+                            <span class="required-star">*</span>
                         </label>
 
                         <input asp-for="OrganisationPhone"
@@ -485,6 +499,7 @@
 
                     <label asp-for="OfficeAddress">
                         Office address
+                        <span class="required-star">*</span>
                     </label>
 
                     <textarea asp-for="OfficeAddress"
