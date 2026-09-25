@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Aotearoa_is_Home.Models
 {
@@ -12,6 +13,8 @@ namespace Aotearoa_is_Home.Models
 
         public int? LanguageId { get; set; }
 
+        [StringLength(500)]
+        public string? LinkedInProfile { get; set; }
         public Language? Language { get; set; }
     }
 }

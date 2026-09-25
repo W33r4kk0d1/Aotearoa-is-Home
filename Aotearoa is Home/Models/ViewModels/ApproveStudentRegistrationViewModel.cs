@@ -12,9 +12,8 @@ namespace Aotearoa_is_Home.Models.ViewModels
 
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Student ID is required before approval.")]
         [Display(Name = "Student ID")]
-        public string StudentId { get; set; } = string.Empty;
+        public string? StudentId { get; set; }
 
         [Required(ErrorMessage = "A temporary password is required.")]
         [DataType(DataType.Password)]

@@ -39,6 +39,10 @@ namespace Aotearoa_is_Home.Models.ViewModels
 
         [Display(Name = "Preferred language")]
         public int? LanguageId { get; set; }
+        
+        [Display(Name = "LinkedIn Profile (Optional)")]
+        [Url(ErrorMessage = "Please enter a valid LinkedIn profile URL.")]
+        public string? LinkedInProfile { get; set; }
 
         // STUDENT
         [Required(ErrorMessage = "Please select whether you have a Student ID.")]

@@ -3,10 +3,16 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Pending Student Registrations";
+
+    var currentSearch = ViewBag.Search as string ?? "";
+    var currentFilter = ViewBag.Filter as string ?? "";
+    var currentFromDate = ViewBag.FromDate as string ?? "";
+    var currentToDate = ViewBag.ToDate as string ?? "";
 }
 
 <div class="admin-registration-page">
 
+    <!-- HEADER -->
     <div class="admin-registration-header">
 
         <div>
@@ -14,7 +20,7 @@
                 STUDENT MANAGEMENT
             </span>
 
-            <h1>Pending Student Registrations</h1>
+            <h1>Student Request</h1>
 
             <p>
                 Review student registration requests submitted for administrator approval.
@@ -30,6 +36,126 @@
 
     <div class="admin-registration-content">
 
+        <!-- FILTER PANEL -->
+        <div class="admin-registration-filter-panel">
+
+            <div class="admin-filter-heading">
+
+                <div>
+                    <span class="admin-registration-eyebrow">
+                        FILTER REQUESTS
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <form method="get"
+                  action="/Admin/StudentRegistration/Index"
+                  class="admin-registration-filter-form">
+
+                <!-- SEARCH -->
+                <div class="admin-filter-group admin-filter-search">
+
+                    <label for="search">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           id="search"
+                           name="search"
+                           value="@currentSearch"
+                           class="admin-modern-input"
+                           placeholder="Name, email or Student ID..." />
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="admin-filter-group">
+
+                    <label for="filter">
+                        Request Type
+                    </label>
+
+                    <select id="filter"
+                            name="filter"
+                            class="admin-modern-input">
+
+                        <option value=""
+                                selected="@(string.IsNullOrEmpty(currentFilter))">
+                            All Requests
+                        </option>
+
+                        <option value="new"
+                                selected="@(currentFilter == "new")">
+                            New Users
+                        </option>
+
+                        <option value="inactive"
+                                selected="@(currentFilter == "inactive")">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FROM DATE -->
+                <div class="admin-filter-group">
+
+                    <label for="fromDate">
+                        From Date
+                    </label>
+
+                    <input type="date"
+                           id="fromDate"
+                           name="fromDate"
+                           value="@currentFromDate"
+                           class="admin-modern-input" />
+
+                </div>
+
+
+                <!-- TO DATE -->
+                <div class="admin-filter-group">
+
+                    <label for="toDate">
+                        To Date
+                    </label>
+
+                    <input type="date"
+                           id="toDate"
+                           name="toDate"
+                           value="@currentToDate"
+                           class="admin-modern-input" />
+
+                </div>
+
+
+                <!-- BUTTONS -->
+                <div class="admin-filter-actions">
+
+                    <button type="submit"
+                            class="admin-filter-button">
+                        Apply Filters
+                    </button>
+
+                    <a href="/Admin/StudentRegistration/Index"
+                       class="admin-clear-filter-button">
+                        Clear
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULTS -->
         @if (!Model.Any())
         {
             <div class="admin-registration-empty">
@@ -38,26 +164,35 @@
                     ✓
                 </div>
 
-                <h2>No Pending Registrations</h2>
+                <h2>No Registrations Found</h2>
 
                 <p>
-                    There are currently no student registration requests waiting for approval.
+                    No student registration requests match the current filters.
                 </p>
+
+                <a href="/Admin/StudentRegistration/Index"
+                   class="admin-review-button"
+                   style="display:inline-block; margin-top:20px;">
+                    Clear Filters
+                </a>
 
             </div>
         }
         else
         {
+            <!-- SUMMARY -->
             <div class="admin-registration-summary">
 
                 <div>
+
                     <span class="admin-summary-label">
-                        PENDING REQUESTS
+                        MATCHING REQUESTS
                     </span>
 
                     <strong>
                         @Model.Count
                     </strong>
+
                 </div>
 
                 <div class="admin-summary-description">
@@ -67,6 +202,7 @@
             </div>
 
 
+            <!-- REGISTRATION LIST -->
             <div class="admin-registration-list">
 
                 @foreach (var registration in Model)
@@ -75,11 +211,25 @@
 
                         <div class="admin-registration-card-main">
 
+                            <!-- AVATAR -->
                             <div class="admin-registration-avatar">
-                                @registration.FirstName.Substring(0, 1).ToUpper()
+
+                                @{
+                                    var avatarLetter =
+                                        !string.IsNullOrWhiteSpace(registration.FirstName)
+                                            ? registration.FirstName
+                                                .Trim()
+                                                .Substring(0, 1)
+                                                .ToUpper()
+                                            : "?";
+                                }
+
+                                @avatarLetter
+
                             </div>
 
 
+                            <!-- DETAILS -->
                             <div class="admin-registration-details">
 
                                 <div class="admin-registration-name-row">
@@ -89,15 +239,25 @@
                                         @registration.LastName
                                     </h2>
 
-                                    <span class="admin-pending-badge">
-                                        Pending
-                                    </span>
+                                    @if (string.IsNullOrWhiteSpace(registration.StudentId))
+                                    {
+                                        <span class="admin-pending-badge">
+                                            New User
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="admin-pending-badge">
+                                            Pending
+                                        </span>
+                                    }
 
                                 </div>
 
 
                                 <div class="admin-registration-info">
 
+                                    <!-- EMAIL -->
                                     <div class="admin-registration-info-item">
 
                                         <span class="info-label">
@@ -111,6 +271,7 @@
                                     </div>
 
 
+                                    <!-- STUDENT ID -->
                                     <div class="admin-registration-info-item">
 
                                         <span class="info-label">
@@ -135,6 +296,7 @@
                                     </div>
 
 
+                                    <!-- SUBMITTED -->
                                     <div class="admin-registration-info-item">
 
                                         <span class="info-label">
@@ -142,7 +304,9 @@
                                         </span>
 
                                         <span class="info-value">
-                                            @registration.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")
+                                            @registration.SubmittedAt
+                                                .ToLocalTime()
+                                                .ToString("dd MMM yyyy, h:mm tt")
                                         </span>
 
                                     </div>
@@ -154,11 +318,14 @@
                         </div>
 
 
+                        <!-- ACTION -->
                         <div class="admin-registration-actions">
 
                             <a href="/Admin/StudentRegistration/Review/@registration.Id"
-                            class="admin-review-button">
+                               class="admin-review-button">
+
                                 Review
+
                             </a>
 
                         </div>

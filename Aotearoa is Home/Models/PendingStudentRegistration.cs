@@ -22,6 +22,8 @@ namespace Aotearoa_is_Home.Models
         [StringLength(200)]
         public string Email { get; set; } = string.Empty;
 
+        [StringLength(500)]
+        public string? LinkedInProfile { get; set; }
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 
         [Required]

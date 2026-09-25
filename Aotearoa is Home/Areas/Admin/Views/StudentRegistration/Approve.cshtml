@@ -79,16 +79,19 @@
                 <input type="hidden" asp-for="Id" />
 
                 <div class="admin-form-field">
-                    <label asp-for="StudentId">
-                        Student ID <span class="required-star">*</span>
-                    </label>
+                    <label for="StudentId">
+                    Student ID
+                    <span style="font-weight:400; color:#7a887f;">
+                        (optional)
+                    </span>
+                </label>
 
                     <input type="text"
                         id="StudentId"
                         name="StudentId"
                         value="@Model.StudentId"
                         class="admin-modern-input"
-                        placeholder="Enter Student ID"
+                        placeholder="Enter Student ID if available"
                         autocomplete="off" />
 
                     <span asp-validation-for="StudentId"
