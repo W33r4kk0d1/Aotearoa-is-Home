@@ -175,14 +175,34 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         public async Task<IActionResult> Approve(
             ApproveStudentRegistrationViewModel model)
         {
-            // -------------------------------------------------
-            // VALIDATE FORM
-            // -------------------------------------------------
 
-            if (!ModelState.IsValid)
-            {
-                return View("Approve", model);
-            }
+            if (!string.Equals(
+                        model.TemporaryPassword,
+                        model.ConfirmTemporaryPassword,
+                        StringComparison.Ordinal))
+                {
+                    ModelState.AddModelError(
+                        "ConfirmTemporaryPassword",
+                        "The passwords do not match.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    var invalidRegistration =
+                        await _context.PendingStudentRegistrations
+                            .FirstOrDefaultAsync(r => r.Id == model.Id);
+
+                    if (invalidRegistration == null)
+                    {
+                        return NotFound();
+                    }
+
+                    model.FirstName = invalidRegistration.FirstName;
+                    model.LastName = invalidRegistration.LastName;
+                    model.Email = invalidRegistration.Email;
+
+                    return View("Approve", model);
+                }
 
 
             // -------------------------------------------------
@@ -222,7 +242,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
 
             // -------------------------------------------------
-            // VERIFY STUDENT ID IF ONE WAS PROVIDED
+            // VERIFY STUDENT ID AND EMAIL
             // -------------------------------------------------
 
             UniversityStudent? universityStudent = null;
@@ -231,64 +251,60 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             {
                 universityStudent =
                     await _universityContext.UniversityStudents
-                        .FirstOrDefaultAsync(s =>
-                            s.StudentId == studentId);
+                        .FirstOrDefaultAsync(s => s.StudentId == studentId);
 
-                // Student ID does not exist.
+                // Student ID does not exist
                 if (universityStudent == null)
                 {
                     ModelState.AddModelError(
                         "StudentId",
-                        "The Student ID could not be found in the university records.");
+                        "Invalid Student ID. The Student ID could not be found in the university records.");
+
+                    // Keep the original registration details visible
+                    model.FirstName = registration.FirstName;
+                    model.LastName = registration.LastName;
+                    model.Email = registration.Email;
+                    model.StudentId = studentId;
 
                     return View("Approve", model);
                 }
 
-                // If the Student ID exists but the student is inactive,
-                // Admin approval is allowed.
+                // Compare the registration email with BOTH
+                // possible university email fields.
+                bool emailMatches =
+                    string.Equals(
+                        registration.Email?.Trim(),
+                        universityStudent.StudentEmail?.Trim(),
+                        StringComparison.OrdinalIgnoreCase)
+                    ||
+                    string.Equals(
+                        registration.Email?.Trim(),
+                        universityStudent.ApplicationEmail?.Trim(),
+                        StringComparison.OrdinalIgnoreCase);
+
+                if (!emailMatches)
+                {
+                    ModelState.AddModelError(
+                        "StudentId",
+                        "The Student ID is valid, but the email address does not match the university record.");
+
+                    // Keep the original registration details visible
+                    model.FirstName = registration.FirstName;
+                    model.LastName = registration.LastName;
+                    model.Email = registration.Email;
+                    model.StudentId = studentId;
+
+                    return View("Approve", model);
+                }
+
+                // Student ID and email match.
+                // If the student is inactive, show the warning,
+                // but allow the administrator to continue.
                 if (!universityStudent.IsCurrentStudent)
                 {
                     ViewBag.InactiveStudentWarning =
                         $"Student ID {universityStudent.StudentId} is not currently active. " +
                         "Administrator approval is required before this account can be created.";
-                }
-            }
-
-
-            // -------------------------------------------------
-            // CHECK EMAIL
-            // -------------------------------------------------
-
-            var existingUser =
-                await _userManager.FindByEmailAsync(registration.Email);
-
-            if (existingUser != null)
-            {
-                ModelState.AddModelError(
-                    string.Empty,
-                    "An account with this email address already exists.");
-
-                return View("Approve", model);
-            }
-
-
-            // -------------------------------------------------
-            // CHECK STUDENT ID IS NOT ALREADY USED
-            // -------------------------------------------------
-
-            if (!string.IsNullOrWhiteSpace(studentId))
-            {
-                var existingStudentProfile =
-                    await _context.StudentProfiles
-                        .AnyAsync(s => s.StudentId == studentId);
-
-                if (existingStudentProfile)
-                {
-                    ModelState.AddModelError(
-                        "StudentId",
-                        "This Student ID is already linked to another student account.");
-
-                    return View("Approve", model);
                 }
             }
 

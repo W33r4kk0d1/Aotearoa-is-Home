@@ -1,0 +1,178 @@
+@model Aotearoa_is_Home.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="profile-page">
+
+    <div class="profile-page-header">
+
+        <div>
+            <span class="page-eyebrow">MY ACCOUNT</span>
+
+            <h1>My Profile</h1>
+
+            <p>
+                View your account information and manage your personal details.
+            </p>
+        </div>
+
+        <a asp-controller="Profile"
+           asp-action="Edit"
+           class="profile-edit-button">
+            Edit Profile
+        </a>
+
+    </div>
+
+    @if (TempData["ProfileSuccess"] != null)
+    {
+        <div class="profile-success-message">
+            @TempData["ProfileSuccess"]
+        </div>
+    }
+
+    <div class="profile-card">
+
+        <div class="profile-card-header">
+
+            <div>
+                <h2>
+                    @Model.FirstName @Model.LastName
+                </h2>
+
+                <p>
+                    @Model.Email
+                </p>
+            </div>
+
+            <span class="profile-role-badge">
+                @ViewBag.UserRoles
+            </span>
+
+        </div>
+
+        <div class="profile-section">
+
+            <h3>Personal Information</h3>
+
+            <div class="profile-grid">
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        First Name
+                    </span>
+
+                    <span class="profile-value">
+                        @Model.FirstName
+                    </span>
+
+                </div>
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        Last Name
+                    </span>
+
+                    <span class="profile-value">
+                        @Model.LastName
+                    </span>
+
+                </div>
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        Email Address
+                    </span>
+
+                    <span class="profile-value">
+                        @Model.Email
+                    </span>
+
+                </div>
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        Contact Number
+                    </span>
+
+                    <span class="profile-value">
+                        @(string.IsNullOrWhiteSpace(Model.ContactNumber)
+                            ? "Not provided"
+                            : Model.ContactNumber)
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-section">
+
+            <h3>Additional Information</h3>
+
+            <div class="profile-grid">
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        Language
+                    </span>
+
+                    <span class="profile-value">
+                        @(Model.Language?.Name ?? "Not provided")
+                    </span>
+
+                </div>
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        Role
+                    </span>
+
+                    <span class="profile-value">
+                        @ViewBag.UserRoles
+                    </span>
+
+                </div>
+
+                <div class="profile-field">
+
+                    <span class="profile-label">
+                        LinkedIn Profile
+                    </span>
+
+                    <span class="profile-value">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.LinkedInProfile))
+                        {
+                            <a href="@Model.LinkedInProfile"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                View LinkedIn Profile
+                            </a>
+                        }
+                        else
+                        {
+                            <span>Not provided</span>
+                        }
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -26,9 +26,6 @@ namespace Aotearoa_is_Home.Models.ViewModels
 
         [Required(ErrorMessage = "Please confirm the temporary password.")]
         [DataType(DataType.Password)]
-        [Compare(
-            "TemporaryPassword",
-            ErrorMessage = "The passwords do not match.")]
         [Display(Name = "Confirm Temporary Password")]
         public string ConfirmTemporaryPassword { get; set; } = string.Empty;
     }
