@@ -1,6 +1,7 @@
 using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
+using Aotearoa_is_Home.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,24 +16,104 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UniversityDbContext _universityContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailService _emailService;
 
         public StudentRegistrationController(
             ApplicationDbContext context,
             UniversityDbContext universityContext,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IEmailService emailService)
         {
             _context = context;
             _universityContext = universityContext;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         // GET: /Admin/StudentRegistration
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? search,
+            string? filter,
+            DateTime? fromDate,
+            DateTime? toDate)
         {
-            var registrations = await _context.PendingStudentRegistrations
+            // Get all pending registrations
+            var query = _context.PendingStudentRegistrations
                 .Where(r => r.Status == "Pending")
+                .AsQueryable();
+
+            // SEARCH
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(r =>
+                    r.FirstName.Contains(search) ||
+                    r.LastName.Contains(search) ||
+                    r.Email.Contains(search) ||
+                    (r.StudentId != null && r.StudentId.Contains(search)));
+            }
+
+            // DATE FILTER
+            if (fromDate.HasValue)
+            {
+                var from = fromDate.Value.Date;
+
+                query = query.Where(r =>
+                    r.SubmittedAt >= from);
+            }
+
+            if (toDate.HasValue)
+            {
+                // Include the entire selected "To" date.
+                var to = toDate.Value.Date.AddDays(1);
+
+                query = query.Where(r =>
+                    r.SubmittedAt < to);
+            }
+
+            // LOAD RESULTS
+            var registrations = await query
                 .OrderByDescending(r => r.SubmittedAt)
                 .ToListAsync();
+
+            // INACTIVE STUDENTS
+            var studentIds = registrations
+                .Where(r => !string.IsNullOrWhiteSpace(r.StudentId))
+                .Select(r => r.StudentId!)
+                .Distinct()
+                .ToList();
+
+            var inactiveStudentIds = await _universityContext.UniversityStudents
+                .Where(s =>
+                    studentIds.Contains(s.StudentId) &&
+                    !s.IsCurrentStudent)
+                .Select(s => s.StudentId)
+                .ToListAsync();
+
+            // STATUS FILTER
+            if (string.Equals(filter, "new", StringComparison.OrdinalIgnoreCase))
+            {
+                // New users = pre-arrival registrations
+                // where no Student ID was provided.
+                registrations = registrations
+                    .Where(r => string.IsNullOrWhiteSpace(r.StudentId))
+                    .ToList();
+            }
+            else if (string.Equals(filter, "inactive", StringComparison.OrdinalIgnoreCase))
+            {
+                registrations = registrations
+                    .Where(r =>
+                        !string.IsNullOrWhiteSpace(r.StudentId) &&
+                        inactiveStudentIds.Contains(r.StudentId))
+                    .ToList();
+            }
+
+            // SEND FILTER VALUES BACK TO VIEW
+            ViewBag.Search = search;
+            ViewBag.Filter = filter;
+            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
 
             return View(registrations);
         }
@@ -88,34 +169,25 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View(model);
         }
 
-        // POST: /Admin/StudentRegistration/Approve
+       // POST: /Admin/StudentRegistration/Approve
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(
             ApproveStudentRegistrationViewModel model)
         {
-            Console.WriteLine("========================================");
-            Console.WriteLine("APPROVE POST WAS REACHED");
-            Console.WriteLine($"Registration ID: {model.Id}");
-            Console.WriteLine($"Student ID: {model.StudentId}");
-            Console.WriteLine($"Temporary Password supplied: {!string.IsNullOrWhiteSpace(model.TemporaryPassword)}");
-            Console.WriteLine($"Confirm Password supplied: {!string.IsNullOrWhiteSpace(model.ConfirmTemporaryPassword)}");
-            Console.WriteLine($"ModelState Valid: {ModelState.IsValid}");
-                        if (!ModelState.IsValid)
+            // -------------------------------------------------
+            // VALIDATE FORM
+            // -------------------------------------------------
+
+            if (!ModelState.IsValid)
             {
-                Console.WriteLine("APPROVE STOPPED: MODELSTATE INVALID");
-
-                foreach (var entry in ModelState)
-                {
-                    foreach (var error in entry.Value.Errors)
-                    {
-                        Console.WriteLine(
-                            $"VALIDATION ERROR - {entry.Key}: {error.ErrorMessage}");
-                    }
-                }
-
                 return View("Approve", model);
-}
+            }
+
+
+            // -------------------------------------------------
+            // GET REGISTRATION
+            // -------------------------------------------------
 
             var registration =
                 await _context.PendingStudentRegistrations
@@ -126,7 +198,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            Console.WriteLine($"Registration status: {registration.Status}");
+
+            // -------------------------------------------------
+            // CHECK REGISTRATION STATUS
+            // -------------------------------------------------
 
             if (registration.Status != "Pending")
             {
@@ -136,50 +211,52 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+
             // -------------------------------------------------
-            // VERIFY STUDENT ID AGAINST UNIVERSITY DATABASE
+            // NORMALISE STUDENT ID
             // -------------------------------------------------
 
-            Console.WriteLine("APPROVE REACHED UNIVERSITY STUDENT CHECK");
+            var studentId = string.IsNullOrWhiteSpace(model.StudentId)
+                ? null
+                : model.StudentId.Trim();
 
-            var universityStudent =
-                await _universityContext.UniversityStudents
-                    .FirstOrDefaultAsync(s =>
-                        s.StudentId == model.StudentId);
 
-            if (universityStudent == null)
+            // -------------------------------------------------
+            // VERIFY STUDENT ID IF ONE WAS PROVIDED
+            // -------------------------------------------------
+
+            UniversityStudent? universityStudent = null;
+
+            if (!string.IsNullOrWhiteSpace(studentId))
             {
-                Console.WriteLine("UNIVERSITY CHECK: STUDENT NOT FOUND");
+                universityStudent =
+                    await _universityContext.UniversityStudents
+                        .FirstOrDefaultAsync(s =>
+                            s.StudentId == studentId);
 
-                ModelState.AddModelError(
-                    "StudentId",
-                    "The Student ID could not be found in the university records.");
+                // Student ID does not exist.
+                if (universityStudent == null)
+                {
+                    ModelState.AddModelError(
+                        "StudentId",
+                        "The Student ID could not be found in the university records.");
 
-                return View("Approve", model);
+                    return View("Approve", model);
+                }
+
+                // If the Student ID exists but the student is inactive,
+                // Admin approval is allowed.
+                if (!universityStudent.IsCurrentStudent)
+                {
+                    ViewBag.InactiveStudentWarning =
+                        $"Student ID {universityStudent.StudentId} is not currently active. " +
+                        "Administrator approval is required before this account can be created.";
+                }
             }
 
-            Console.WriteLine(
-                $"UNIVERSITY CHECK: Found {universityStudent.StudentId}, " +
-                $"IsCurrentStudent = {universityStudent.IsCurrentStudent}");
-
-            if (!universityStudent.IsCurrentStudent)
-            {
-                Console.WriteLine(
-                    "APPROVE STOPPED: STUDENT IS NOT CURRENTLY ACTIVE");
-
-                ModelState.AddModelError(
-                    "StudentId",
-                    $"Student ID {universityStudent.StudentId} is not currently active in the university records. " +
-                    "This registration cannot be approved as a current student.");
-
-                return View("Approve", model);
-            }
-
-            Console.WriteLine(
-                "UNIVERSITY CHECK PASSED: STUDENT IS CURRENTLY ACTIVE");
 
             // -------------------------------------------------
-            // CHECK WHETHER EMAIL ALREADY EXISTS
+            // CHECK EMAIL
             // -------------------------------------------------
 
             var existingUser =
@@ -196,20 +273,23 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
 
             // -------------------------------------------------
-            // CHECK WHETHER STUDENT ID IS ALREADY USED
+            // CHECK STUDENT ID IS NOT ALREADY USED
             // -------------------------------------------------
 
-            var existingStudentProfile =
-                await _context.StudentProfiles
-                    .AnyAsync(s => s.StudentId == model.StudentId);
-
-            if (existingStudentProfile)
+            if (!string.IsNullOrWhiteSpace(studentId))
             {
-                ModelState.AddModelError(
-                    "StudentId",
-                    "This Student ID is already linked to another student account.");
+                var existingStudentProfile =
+                    await _context.StudentProfiles
+                        .AnyAsync(s => s.StudentId == studentId);
 
-                return View("Approve", model);
+                if (existingStudentProfile)
+                {
+                    ModelState.AddModelError(
+                        "StudentId",
+                        "This Student ID is already linked to another student account.");
+
+                    return View("Approve", model);
+                }
             }
 
 
@@ -229,7 +309,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 await _userManager.CreateAsync(
                     user,
                     model.TemporaryPassword);
-
 
             if (!userResult.Succeeded)
             {
@@ -253,7 +332,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     user,
                     "Student");
 
-
             if (!roleResult.Succeeded)
             {
                 foreach (var error in roleResult.Errors)
@@ -263,7 +341,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         error.Description);
                 }
 
-                // Remove the newly created user if role creation fails.
                 await _userManager.DeleteAsync(user);
 
                 return View("Approve", model);
@@ -273,14 +350,24 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             // -------------------------------------------------
             // CREATE STUDENT PROFILE
             // -------------------------------------------------
+            //
+            // Only create a StudentProfile when a Student ID
+            // is available.
+            //
+            // A pre-arrival student may be approved without
+            // having a Student ID yet.
+            //
 
-            var studentProfile = new StudentProfile
+            if (!string.IsNullOrWhiteSpace(studentId))
             {
-                UserId = user.Id,
-                StudentId = model.StudentId
-            };
+                var studentProfile = new StudentProfile
+                {
+                    UserId = user.Id,
+                    StudentId = studentId
+                };
 
-            _context.StudentProfiles.Add(studentProfile);
+                _context.StudentProfiles.Add(studentProfile);
+            }
 
 
             // -------------------------------------------------
@@ -293,13 +380,39 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
 
             // -------------------------------------------------
+            // SEND APPROVAL EMAIL
+            // -------------------------------------------------
+
+            try
+            {
+                await _emailService.SendStudentApprovalEmailAsync(
+                    registration.Email,
+                    registration.FirstName,
+                    model.TemporaryPassword);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("========================================");
+                Console.WriteLine("APPROVAL EMAIL FAILED");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("========================================");
+
+                TempData["RegistrationWarning"] =
+                    $"The student account was approved successfully, but the email could not be sent. Error: {ex.Message}";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+
+            // -------------------------------------------------
             // SUCCESS
             // -------------------------------------------------
 
             TempData["RegistrationSuccess"] =
-                $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully.";
+                $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully, and the login details were emailed to {registration.Email}.";
 
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }

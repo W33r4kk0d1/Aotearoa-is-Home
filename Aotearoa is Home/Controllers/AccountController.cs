@@ -1,6 +1,7 @@
 using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
+using Aotearoa_is_Home.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +14,20 @@ namespace Aotearoa_is_Home.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly UniversityDbContext _universityContext;
+        private readonly IEmailService _emailService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext context,
-            UniversityDbContext universityContext)
+            UniversityDbContext universityContext,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
             _universityContext = universityContext;
+            _emailService = emailService;
         }
 
         // LOGIN
@@ -300,6 +304,7 @@ namespace Aotearoa_is_Home.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
+                    LinkedInProfile = model.LinkedInProfile,
                     SubmittedAt = DateTime.UtcNow,
                     Status = "Pending"
                 };
@@ -328,6 +333,8 @@ namespace Aotearoa_is_Home.Controllers
                 LastName = model.LastName,
 
                 PhoneNumber = model.ContactNumber,
+
+                LinkedInProfile = model.LinkedInProfile,
 
                 LanguageId = model.LanguageId
             };
@@ -433,10 +440,34 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+            // SEND ACCOUNT CREATION EMAIL
+            if (model.AccountType == "Student")
+            {
+                try
+                {
+                    await _emailService.SendStudentAccountCreatedEmailAsync(
+                        user.Email!,
+                        user.FirstName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("========================================");
+                    Console.WriteLine("ACCOUNT CREATION EMAIL FAILED");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("========================================");
+
+                    TempData["RegistrationWarning"] =
+                        "Your account was created successfully, but the confirmation email could not be sent.";
+                }
+            }
 
             // REGISTRATION SUCCESSFUL
-            TempData["RegistrationSuccess"] =
-                "Account created successfully!";
+
+            if (TempData["RegistrationWarning"] == null)
+            {
+                TempData["RegistrationSuccess"] =
+                    "Account created successfully! A confirmation email has been sent.";
+            }
 
             return RedirectToAction(
                 "Login",

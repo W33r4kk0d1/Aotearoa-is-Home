@@ -39,7 +39,7 @@ namespace Aotearoa_is_Home.Data
                     FirstName = "Sarah",
                     LastName = "Brown",
                     StudentEmail = "sarah.brown@student.ac.nz",
-                    ApplicationEmail = "sarah.brown@gmail.com",
+                    ApplicationEmail = null,
                     IsCurrentStudent = true
                 },
 

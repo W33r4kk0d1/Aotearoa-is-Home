@@ -167,30 +167,20 @@
     <!-- APPROVAL INFORMATION -->
     <section class="admin-review-information">
 
-        <div class="admin-review-information-icon">
-            i
-        </div>
+        <div class="admin-registration-info-box">
 
-        <div>
+            <div class="admin-registration-info-icon">
+                i
+            </div>
 
-            <h3>Before approving</h3>
+            <div>
+                <strong>Administrator approval</strong>
 
-            @if (string.IsNullOrWhiteSpace(Model.StudentId))
-            {
                 <p>
-                    This student has not provided a Student ID.
-                    A valid Student ID will be required before the student
-                    account can be approved.
+                    This student does not currently have a Student ID.
+                    You can approve the registration and create the student account without a Student ID.
                 </p>
-            }
-            else
-            {
-                <p>
-                    This registration includes Student ID
-                    <strong>@Model.StudentId</strong>.
-                    You can review the details before approving the account.
-                </p>
-            }
+            </div>
 
         </div>
 

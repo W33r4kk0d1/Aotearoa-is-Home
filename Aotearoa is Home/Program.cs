@@ -1,6 +1,7 @@
 using Aotearoa_is_Home;
 using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
+using Aotearoa_is_Home.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDbContext<UniversityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("UniversityConnection")));
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
