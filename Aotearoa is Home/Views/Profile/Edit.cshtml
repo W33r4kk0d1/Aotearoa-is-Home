@@ -1,0 +1,213 @@
+@model Aotearoa_is_Home.Models.ViewModels.EditProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var languages =
+        ViewBag.Languages as IEnumerable<Aotearoa_is_Home.Models.Language>;
+}
+
+<div class="profile-edit-page">
+
+    <div class="profile-edit-header">
+
+        <div>
+            <span class="page-eyebrow">MY ACCOUNT</span>
+
+            <h1>Edit Profile</h1>
+
+            <p>
+                Update your personal account information.
+            </p>
+        </div>
+
+        <a href="/Profile"
+           class="profile-back-button">
+            Back to Profile
+        </a>
+
+    </div>
+
+    <div class="profile-edit-card">
+
+        <form action="/Profile/Edit"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="profile-validation-summary">
+            </div>
+
+            <div class="profile-edit-section">
+
+                <h2>Personal Information</h2>
+
+                <div class="profile-edit-grid">
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="FirstName">
+                            First Name
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="FirstName"
+                               name="FirstName"
+                               value="@Model.FirstName"
+                               class="form-control" />
+
+                        <span asp-validation-for="FirstName"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="LastName">
+                            Last Name
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="LastName"
+                               name="LastName"
+                               value="@Model.LastName"
+                               class="form-control" />
+
+                        <span asp-validation-for="LastName"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="Email">
+                            Email Address
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input type="email"
+                               id="Email"
+                               name="Email"
+                               value="@Model.Email"
+                               class="form-control" />
+
+                        <span asp-validation-for="Email"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="ContactNumber">
+                            Contact Number
+                        </label>
+
+                        <input type="text"
+                               id="ContactNumber"
+                               name="ContactNumber"
+                               value="@Model.ContactNumber"
+                               class="form-control"
+                               placeholder="Enter contact number" />
+
+                        <span asp-validation-for="ContactNumber"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="profile-edit-section">
+
+                <h2>Additional Information</h2>
+
+                <div class="profile-edit-grid">
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="LanguageId">
+                            Language
+                        </label>
+
+                        <select id="LanguageId"
+                                name="LanguageId"
+                                class="form-control">
+
+                            <option value="">
+                                Select Language
+                            </option>
+
+                            @if (languages != null)
+                            {
+                                foreach (var language in languages)
+                                {
+                                    <option value="@language.Id"
+                                            selected="@(Model.LanguageId == language.Id)">
+                                        @language.Name
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="LanguageId"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                    <div class="profile-edit-field">
+
+                        <label asp-for="LinkedInProfile">
+                            LinkedIn Profile
+                        </label>
+
+                        <input type="url"
+                               id="LinkedInProfile"
+                               name="LinkedInProfile"
+                               value="@Model.LinkedInProfile"
+                               class="form-control"
+                               placeholder="https://www.linkedin.com/in/username" />
+
+                        <span asp-validation-for="LinkedInProfile"
+                              class="profile-validation-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="profile-edit-actions">
+
+                <a href="/Profile"
+                   class="profile-cancel-button">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="profile-save-button">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

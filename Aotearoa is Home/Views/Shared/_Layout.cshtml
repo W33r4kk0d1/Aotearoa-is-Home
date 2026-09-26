@@ -152,8 +152,8 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="Home"
+                                       asp-area="Users"
+                                       asp-controller="Users"
                                        asp-action="Index">
                                         Users
                                     </a>
@@ -170,8 +170,8 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="Home"
+                                       asp-area="Student"
+                                       asp-controller="Event"
                                        asp-action="Index">
                                         Events
                                     </a>
@@ -182,7 +182,7 @@
                                        asp-area="Admin"
                                        asp-controller="StudentRegistration"
                                        asp-action="Index">
-                                        Request
+                                        Student Request
                                     </a>
                                 </li>
                             }
@@ -266,8 +266,8 @@
                                         else if (User.IsInRole("Admin"))
                                         {
                                             <a class="dropdown-item"
-                                               asp-area="Admin"
-                                               asp-controller="Home"
+                                               asp-area="Views"
+                                               asp-controller="Profile"
                                                asp-action="Index">
                                                 Profile
                                             </a>

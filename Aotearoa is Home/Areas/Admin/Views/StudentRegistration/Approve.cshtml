@@ -5,16 +5,14 @@
     ViewData["Title"] = "Approve Student Registration";
 }
 
-<div class="admin-approve-page">
+<div class="student-approval-page">
 
-    <!-- HEADER -->
-
-    <div class="admin-approve-header">
+    <div class="student-approval-header">
 
         <div>
-            <span class="admin-approve-eyebrow">
+            <div class="student-management-label">
                 STUDENT MANAGEMENT
-            </span>
+            </div>
 
             <h1>Approve Student Registration</h1>
 
@@ -23,35 +21,21 @@
             </p>
         </div>
 
-        <a href="/Admin/StudentRegistration/Review/@Model.Id"
-           class="admin-back-button">
+        <a href="/Admin/StudentRegistration/Review/@Model.Id" class="back-dashboard-button">
             ← Back to Review
         </a>
 
     </div>
 
 
-    <!-- VALIDATION -->
+    <div class="approval-form-card">
 
-    <div asp-validation-summary="ModelOnly"
-         class="admin-approve-validation">
-    </div>
+        <div class="approval-student-header">
 
-
-    <!-- STUDENT DETAILS -->
-
-    <section class="admin-approve-card">
-
-        <div class="admin-approve-card-heading">
-
-            <div class="admin-approve-avatar">
-                @{
-                    var avatarLetter = !string.IsNullOrWhiteSpace(Model.FirstName)
-                        ? Model.FirstName.Trim().Substring(0, 1).ToUpper()
-                        : "?";
-                }
-
-                @avatarLetter
+            <div class="approval-avatar">
+                @(string.IsNullOrWhiteSpace(Model.FirstName)
+                    ? "?"
+                    : Model.FirstName.Substring(0, 1).ToUpper())
             </div>
 
             <div>
@@ -67,91 +51,160 @@
         </div>
 
 
-        <div class="admin-approve-divider"></div>
+        <div class="approval-divider"></div>
 
-            <form asp-area="Admin"
-                asp-controller="StudentRegistration"
-                asp-action="Approve"
-                method="post">
 
-                @Html.AntiForgeryToken()
+        <form asp-action="Approve"
+              asp-controller="StudentRegistration"
+              asp-area="Admin"
+              method="post">
 
-                <input type="hidden" asp-for="Id" />
+            @Html.AntiForgeryToken()
 
-                <div class="admin-form-field">
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="FirstName" type="hidden" />
+            <input asp-for="LastName" type="hidden" />
+            <input asp-for="Email" type="hidden" />
+
+
+            <div class="approval-form-grid">
+
+                <div class="approval-field">
                     <label for="StudentId">
-                    Student ID
-                    <span style="font-weight:400; color:#7a887f;">
-                        (optional)
-                    </span>
-                </label>
+                        Student ID
+                        <span class="optional-label">(optional)</span>
+                    </label>
 
                     <input type="text"
                         id="StudentId"
                         name="StudentId"
                         value="@Model.StudentId"
-                        class="admin-modern-input"
-                        placeholder="Enter Student ID if available"
-                        autocomplete="off" />
+                        class="form-control"
+                        placeholder="Enter Student ID if available" />
 
-                    <span asp-validation-for="StudentId"
-                        class="text-danger"></span>
+                    @if (ViewData.ModelState["StudentId"]?.Errors.Count > 0)
+                    {
+                        <div class="approval-validation-error">
+                            @foreach (var error in ViewData.ModelState["StudentId"].Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
                 </div>
 
-                <div class="admin-form-field">
-                    <label asp-for="TemporaryPassword">
-                        Temporary Password <span class="required-star">*</span>
+                <div class="approval-field">
+                    <label for="TemporaryPassword">
+                        Temporary Password
+                        <span class="required-star">*</span>
                     </label>
 
                     <input type="password"
                         id="TemporaryPassword"
                         name="TemporaryPassword"
-                        value="@Model.TemporaryPassword"
-                        class="admin-modern-input"
-                        placeholder="Enter a temporary password"
-                        autocomplete="new-password" />
+                        class="form-control"
+                        placeholder="Enter a temporary password" />
 
-                    <span asp-validation-for="TemporaryPassword"
-                        class="text-danger"></span>
+                    @if (ViewData.ModelState["TemporaryPassword"]?.Errors.Count > 0)
+                    {
+                        <div class="approval-validation-error">
+                            @foreach (var error in ViewData.ModelState["TemporaryPassword"].Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
                 </div>
 
-                <div class="admin-form-field">
-                    <label asp-for="ConfirmTemporaryPassword">
-                        Confirm Temporary Password <span class="required-star">*</span>
+                <div class="approval-field">
+                    <label for="ConfirmTemporaryPassword">
+                        Confirm Temporary Password
+                        <span class="required-star">*</span>
                     </label>
 
                     <input type="password"
                         id="ConfirmTemporaryPassword"
                         name="ConfirmTemporaryPassword"
-                        value="@Model.ConfirmTemporaryPassword"
-                        class="admin-modern-input"
+                        value=""
+                        class="form-control"
                         placeholder="Re-enter the temporary password"
                         autocomplete="new-password" />
 
-                    <span asp-validation-for="ConfirmTemporaryPassword"
-                        class="text-danger"></span>
+                    <div class="approval-validation-error">
+                        @if (ViewData.ModelState["ConfirmTemporaryPassword"]?.Errors.Count > 0)
+                        {
+                            foreach (var error in ViewData.ModelState["ConfirmTemporaryPassword"].Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        }
+                    </div>
                 </div>
+            </div>
 
-                <div class="admin-approve-actions">
-                    <a href="/Admin/StudentRegistration/Index"
-                    class="admin-cancel-button">
-                        ← Cancel
-                    </a>
+            @if (ViewBag.InactiveStudentWarning != null)
+            {
+                <div class="admin-approval-warningA">
 
-                    <button type="submit"
-                            class="admin-approve-button">
-                        Approve &amp; Create Account
-                    </button>
+                    <div class="admin-approval-icon">
+                        !
+                    </div>
+
+                    <div class="admin-approval-content">
+                        <h3>Administrator approval</h3>
+
+                        <p>
+                            @ViewBag.InactiveStudentWarning
+                        </p>
+                    </div>
+
                 </div>
+            }
 
-            </form>
 
-    </section>
+            @if (string.IsNullOrWhiteSpace(Model.StudentId))
+            {
+                <div class="admin-approval-warning">
+
+                    <div class="admin-approval-icon">
+                        !
+                    </div>
+
+                    <div class="admin-approval-content">
+                        <h3>Administrator approval</h3>
+
+                        <p>
+                            This student does not currently have a Student ID.
+                            You can approve the registration and create the student account without a Student ID.
+                        </p>
+                    </div>
+
+                </div>
+            }
+
+
+            <div class="approval-actions">
+
+                <a href="/Admin/StudentRegistration/Review/@Model.Id" class="approval-cancel-button">
+                    ← Cancel
+                </a>
+
+                <button type="submit"   class="approve-account-button">
+                    Approve &amp; Create Account
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
+
+
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <partial name="_ValidationScriptsPartial" />
     }
 }

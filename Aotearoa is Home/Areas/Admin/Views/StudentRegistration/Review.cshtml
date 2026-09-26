@@ -136,9 +136,7 @@
                 </span>
 
                 <span class="admin-review-value">
-                    @Model.SubmittedAt
-                        .ToLocalTime()
-                        .ToString("dd MMMM yyyy, h:mm tt")
+                    @Model.SubmittedAt.ToLocalTime().ToString("dd MMMM yyyy, h:mm tt")
                 </span>
 
             </div>
@@ -167,14 +165,14 @@
     <!-- APPROVAL INFORMATION -->
     <section class="admin-review-information">
 
-        <div class="admin-registration-info-box">
+        <div class="admin-approval-warning">
 
-            <div class="admin-registration-info-icon">
-                i
+            <div class="admin-approval-icon">
+                !
             </div>
 
-            <div>
-                <strong>Administrator approval</strong>
+            <div class="admin-approval-content">
+                <h3>Administrator approval</h3>
 
                 <p>
                     This student does not currently have a Student ID.
@@ -190,13 +188,11 @@
     <!-- ACTIONS -->
     <div class="admin-review-actions">
 
-        <a href="/Admin/StudentRegistration"
-        class="admin-review-cancel">
+        <a href="/Admin/StudentRegistration"  class="admin-review-cancel">
             ← Back
         </a>
 
-        <a href="/Admin/StudentRegistration/Approve/@Model.Id"
-        class="admin-review-approve">
+        <a href="/Admin/StudentRegistration/Approve/@Model.Id" class="btn-approve-registration">
             Approve Registration
         </a>
 

@@ -1,0 +1,294 @@
+@model List<Aotearoa_is_Home.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var search = ViewBag.Search as string;
+    var selectedRole = ViewBag.Role as string;
+
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 0;
+    int totalUsers = ViewBag.TotalUsers ?? 0;
+
+    var userRoles =
+        ViewBag.UserRoles as Dictionary<string, string>
+        ?? new Dictionary<string, string>();
+}
+
+<div class="users-page">
+
+    <!-- HEADER -->
+    <div class="users-header">
+
+        <div>
+            <div class="users-management-label">
+                USER MANAGEMENT
+            </div>
+
+            <h1>Users</h1>
+
+            <p>
+                Manage registered users and their accounts.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- FILTER AREA -->
+    <div class="users-filter-card">
+
+        <form method="get"
+              asp-area="Users"
+              asp-controller="Users"
+              asp-action="Index">
+
+            <div class="users-filter-row">
+
+                <!-- SEARCH -->
+                <div class="users-search-box">
+
+                    <label for="search">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           id="search"
+                           name="search"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Search by name or email..." />
+
+                </div>
+
+
+                <!-- ROLE -->
+                <div class="users-role-box">
+
+                    <label for="role">
+                        Category
+                    </label>
+
+                    <select id="role"
+                            name="role"
+                            class="form-control">
+
+                        <option value="">
+                            All Users
+                        </option>
+
+                        <option value="Student"
+                                selected="@(selectedRole == "Student")">
+                            Students
+                        </option>
+
+                        <option value="Admin"
+                                selected="@(selectedRole == "Admin")">
+                            Administrators
+                        </option>
+
+                        <option value="Service Provider"
+                                selected="@(selectedRole == "Service Provider")">
+                            Service Providers
+                        </option>
+
+                        <option value="Family Member"
+                                selected="@(selectedRole == "Family Member")">
+                            Family Members
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BUTTON -->
+                <div class="users-filter-button">
+
+                    <button type="submit"
+                            class="users-search-button">
+                        Search
+                    </button>
+
+                </div>
+
+
+                <!-- CLEAR -->
+                <div class="users-clear-button">
+
+                    <a href="/Users/Users"
+                    class="users-clear-link">
+                        Clear
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- USER COUNT -->
+    <div class="users-results-header">
+
+        <div>
+            <strong>@totalUsers</strong>
+            user@(totalUsers == 1 ? "" : "s") found
+        </div>
+
+        @if (totalUsers > 0)
+        {
+            int startNumber = ((currentPage - 1) * 10) + 1;
+            int endNumber = Math.Min(currentPage * 10, totalUsers);
+
+            <div>
+                Showing @startNumber–@endNumber
+            </div>
+        }
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="users-table-card">
+
+        <div class="table-responsive">
+
+            <table class="users-table">
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+
+                <tbody> 
+                    @foreach (var user in Model)
+                    {
+                        var roles = ViewBag.UserRoles as Dictionary<string, string>;
+
+                        <tr>
+
+                            <td>
+                                <strong>@user.FirstName @user.LastName</strong>
+                            </td>
+
+                            <td>
+                                @user.Email
+                            </td>
+
+                            <td>
+                                <span class="role-badge">
+                                    @(roles != null && roles.ContainsKey(user.Id)
+                                        ? roles[user.Id]
+                                        : "No Role")
+                                </span>
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(user.ContactNumber)
+                                    ? "—"
+                                    : user.ContactNumber)
+                            </td>
+
+                            <td>
+                                <div class="user-actions">
+                                    <a href="/Users/Users/Details/@user.Id"
+                                    class="action-view">
+                                        View
+                                    </a>
+
+                                    <a href="/Users/Users/Edit/@user.Id"
+                                    class="action-edit">
+                                        Edit
+                                    </a>
+
+                                    <a href="/Users/Users/Delete/@user.Id"
+                                    class="action-delete">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- PAGINATION -->
+    @if (totalPages > 1)
+    {
+        <div class="users-pagination">
+
+            <!-- PREVIOUS -->
+            @if (currentPage > 1)
+            {
+                <a href="/Users/Users?page=@(currentPage - 1)&search=@Uri.EscapeDataString(search ?? "")&role=@Uri.EscapeDataString(selectedRole ?? "")"
+                class="pagination-button">
+                    ← Previous
+                </a>
+            }
+            else
+            {
+                <span class="pagination-button disabled">
+                    ← Previous
+                </span>
+            }
+
+
+            <!-- PAGE NUMBERS -->
+            <div class="pagination-numbers">
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    if (i == currentPage)
+                    {
+                        <span class="pagination-number active">
+                            @i
+                        </span>
+                    }
+                    else
+                    {
+                        <a href="/Users/Users?page=@i&search=@Uri.EscapeDataString(search ?? "")&role=@Uri.EscapeDataString(selectedRole ?? "")"
+                        class="pagination-number">
+                            @i
+                        </a>
+                    }
+                }
+
+            </div>
+
+
+            <!-- NEXT -->
+            @if (currentPage < totalPages)
+            {
+                <a href="/Users/Users?page=@(currentPage + 1)&search=@Uri.EscapeDataString(search ?? "")&role=@Uri.EscapeDataString(selectedRole ?? "")"
+                class="pagination-button">
+                    Next →
+                </a>
+            }
+            else
+            {
+                <span class="pagination-button disabled">
+                    Next →
+                </span>
+            }
+
+        </div>
+    }
+
+</div>

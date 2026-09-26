@@ -45,7 +45,6 @@ namespace Aotearoa_is_Home.Models.ViewModels
         public string? LinkedInProfile { get; set; }
 
         // STUDENT
-        [Required(ErrorMessage = "Please select whether you have a Student ID.")]
         public bool? HasStudentId { get; set; }
         public string? StudentId { get; set; }
 

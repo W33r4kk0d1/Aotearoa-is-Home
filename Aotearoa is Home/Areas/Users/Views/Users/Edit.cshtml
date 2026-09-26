@@ -1,0 +1,228 @@
+@model Aotearoa_is_Home.Models.ViewModels.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var languages = ViewBag.Languages as IEnumerable<Aotearoa_is_Home.Models.Language>;
+}
+
+<div class="user-edit-page">
+
+    <div class="user-edit-header">
+        <div>
+            <span class="page-eyebrow">USER MANAGEMENT</span>
+            <h1>Edit User</h1>
+            <p>Update the user's account information.</p>
+        </div>
+
+        <a asp-action="Index"
+           class="btn-back-users">
+            Back to Users
+        </a>
+    </div>
+
+    <div class="user-edit-card">
+
+        <form action="/Users/Users/Edit"
+            method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                name="Id"
+                value="@Model.Id" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="edit-validation-summary">
+            </div>
+
+            <div class="edit-section">
+
+                <h2>Personal Information</h2>
+
+                <div class="edit-grid">
+
+                    <div class="edit-field">
+                        <label asp-for="FirstName">First Name
+                             <span class="required-star">*</span>
+                        </label>
+
+                        <input type="text"
+                                id="FirstName"
+                                name="FirstName"
+                                value="@Model.FirstName"
+                                class="form-control" />
+
+                        <span asp-validation-for="FirstName"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                    <div class="edit-field">
+                        <label asp-for="LastName">Last Name
+                            <span class="required-star">*</span>
+                        </label>
+                        
+
+                        <input type="text"
+                            id="LastName"
+                            name="LastName"
+                            value="@Model.LastName"
+                            class="form-control" />
+
+                        <span asp-validation-for="LastName"
+                              class="edit-validation-error"> 
+                        </span>
+                    </div>
+
+                    <div class="edit-field">
+                        <label asp-for="Email"> Email Address
+                            <span class="required-star">*</span>
+                        </label>
+                        
+
+                        <input type="email"
+                                id="Email"
+                                name="Email"
+                                value="@Model.Email"
+                                class="form-control" />
+
+                        <span asp-validation-for="Email"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                    <div class="edit-field">
+                        <label asp-for="ContactNumber">Contact Number</label>
+
+                        <input type="text"
+                                id="ContactNumber"
+                                name="ContactNumber"
+                                value="@Model.ContactNumber"
+                                class="form-control"
+                                placeholder="Enter contact number" />
+
+                        <span asp-validation-for="ContactNumber"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="edit-section">
+
+                <h2>Additional Information</h2>
+
+                <div class="edit-grid">
+
+                    <div class="edit-field">
+                        <label asp-for="Language">Selected Language</label>
+
+                        <select id="LanguageId"
+                            name="LanguageId"
+                            class="form-control">
+
+                        <option value="">Select Language</option>
+
+                        @if (languages != null)
+                        {
+                            foreach (var language in languages)
+                            {
+                                <option value="@language.Id"
+                                        selected="@(Model.LanguageId == language.Id)">
+                                    @language.Name
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                        <span asp-validation-for="LanguageId"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                    <div class="edit-field">
+                        <label asp-for="Role">Role
+                            <span class="required-star">*</span>
+                        </label>
+                        
+
+                        <select id="Role"
+                            name="Role"
+                            class="form-control">
+
+                        <option value="">Select Role</option>
+
+                        <option value="Student"
+                                selected="@(Model.Role == "Student")">
+                            Student
+                        </option>
+
+                        <option value="Admin"
+                                selected="@(Model.Role == "Admin")">
+                            Admin
+                        </option>
+
+                        <option value="Service Provider"
+                                selected="@(Model.Role == "Service Provider")">
+                            Service Provider
+                        </option>
+
+                        <option value="Family Member"
+                                selected="@(Model.Role == "Family Member")">
+                            Family Member
+                        </option>
+
+                    </select>
+
+                        <span asp-validation-for="Role"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                    <div class="edit-field edit-full-width">
+                        <label asp-for="LinkedInProfile">LinkedIn Profile</label>
+
+                        <input type="url"
+                                id="LinkedInProfile"
+                                name="LinkedInProfile"
+                                value="@Model.LinkedInProfile"
+                                class="form-control"
+                                placeholder="https://www.linkedin.com/in/username" />
+
+                        <span asp-validation-for="LinkedInProfile"
+                              class="edit-validation-error">
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="edit-actions">
+
+                <a href="/Users/Users/Index" 
+                   class="btn-cancel-edit">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn-save-user">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

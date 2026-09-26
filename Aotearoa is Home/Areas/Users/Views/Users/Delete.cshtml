@@ -1,0 +1,134 @@
+@model Aotearoa_is_Home.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Delete User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="user-delete-page">
+
+    <div class="user-delete-header">
+
+        <div>
+            <span class="page-eyebrow">USER MANAGEMENT</span>
+
+            <h1>Delete User</h1>
+
+            <p>
+                Confirm that you want to delete this user account.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="delete-card">
+
+        <div class="delete-warning">
+
+            <div class="delete-warning-title">
+                Are you sure you want to delete this user?
+            </div>
+
+            <p>
+                This action will permanently remove the user's account.
+                This action cannot be undone.
+            </p>
+
+        </div>
+
+        <div class="delete-user-details">
+
+            <div class="delete-detail">
+
+                <span class="delete-label">
+                    Name
+                </span>
+
+                <span class="delete-value">
+                    @Model.FirstName @Model.LastName
+                </span>
+
+            </div>
+
+            <div class="delete-detail">
+
+                <span class="delete-label">
+                    Email
+                </span>
+
+                <span class="delete-value">
+                    @Model.Email
+                </span>
+
+            </div>
+
+            <div class="delete-detail">
+
+                <span class="delete-label">
+                    Role
+                </span>
+
+                <span class="delete-value">
+                    @ViewBag.UserRoles
+                </span>
+
+            </div>
+
+            <div class="delete-detail">
+
+                <span class="delete-label">
+                    Contact Number
+                </span>
+
+                <span class="delete-value">
+                    @(string.IsNullOrWhiteSpace(Model.ContactNumber)
+                        ? "Not provided"
+                        : Model.ContactNumber)
+                </span>
+
+            </div>
+
+        </div>
+
+        @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+        {
+            <div class="delete-error">
+
+                @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                {
+                    <div>
+                        @error.ErrorMessage
+                    </div>
+                }
+
+            </div>
+        }
+
+        <form action="/Users/Users/Delete"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.Id" />
+
+            <div class="delete-actions">
+
+                <a href="/Users/Users"
+                   class="btn-cancel-delete">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn-confirm-delete">
+                    Delete User
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

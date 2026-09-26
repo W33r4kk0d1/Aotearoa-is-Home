@@ -154,7 +154,30 @@
 
         </div>
 
+        @if (TempData["RegistrationSuccess"] != null)
+        {
+            <div class="registration-success-alert">
+                <span class="registration-alert-icon">✓</span>
 
+                <div>
+                    <strong>Registration approved</strong>
+                    <p>@TempData["RegistrationSuccess"]</p>
+                </div>
+            </div>
+        }
+
+        @if (TempData["RegistrationError"] != null)
+        {
+            <div class="registration-error-alert">
+                <span class="registration-alert-icon">!</span>
+
+                <div>
+                    <strong>Registration error</strong>
+                    <p>@TempData["RegistrationError"]</p>
+                </div>
+            </div>
+        }
+        
         <!-- RESULTS -->
         @if (!Model.Any())
         {
@@ -304,9 +327,7 @@
                                         </span>
 
                                         <span class="info-value">
-                                            @registration.SubmittedAt
-                                                .ToLocalTime()
-                                                .ToString("dd MMM yyyy, h:mm tt")
+                                            @registration.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")
                                         </span>
 
                                     </div>
