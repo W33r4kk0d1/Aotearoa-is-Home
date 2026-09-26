@@ -15,6 +15,8 @@ namespace Aotearoa_is_Home.Models
 
         [StringLength(500)]
         public string? LinkedInProfile { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
         public Language? Language { get; set; }
     }
 }

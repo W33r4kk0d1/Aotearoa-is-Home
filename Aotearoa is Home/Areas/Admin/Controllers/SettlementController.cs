@@ -14,6 +14,17 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             _context = context;
         }
 
+        // INDEX - SETTLEMENT MANAGEMENT
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var pages = await _context.SettlementPages
+                .OrderBy(p => p.CategoryName)
+                .ToListAsync();
+
+            return View(pages);
+        }
+
         // CREATE - GET
         [HttpGet]
         public IActionResult Create()
@@ -21,7 +32,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View();
         }
 
-        // ASYNC API CHECK FOR DUPLICATE CATEGORIES
+        // CHECK FOR DUPLICATE CATEGORIES
         [HttpGet]
         public async Task<IActionResult> IsCategoryUnique(string categoryName)
         {
@@ -54,8 +65,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return View(page);
             }
 
-            page.CategoryName =
-                page.CategoryName.Trim();
+            page.CategoryName = page.CategoryName.Trim();
 
             // Check duplicate category
             bool categoryExists =
@@ -108,13 +118,24 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     }
                 }
             }
-            // Save
+            // Save category background image
+            if (backgroundImage != null && backgroundImage.Length > 0)
+            {
+                using var memoryStream = new MemoryStream();
+
+                await backgroundImage.CopyToAsync(memoryStream);
+
+                page.BackgroundImage = memoryStream.ToArray();
+                page.BackgroundImageContentType = backgroundImage.ContentType;
+            }
+
+
+            // Save settlement page
             _context.SettlementPages.Add(page);
 
             await _context.SaveChangesAsync();
 
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Settlement");
         }
 
         // VIEW
@@ -133,7 +154,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
 
             page.ContentBlocks =
                 page.ContentBlocks
@@ -165,7 +185,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     .OrderBy(b => b.DisplayOrder)
                     .ToList();
 
-
             return View(page);
         }
 
@@ -193,10 +212,8 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return View(page);
             }
 
-
             page.CategoryName =
                 page.CategoryName.Trim();
-
 
             // Check duplicate category except current page
             bool duplicate =
@@ -241,6 +258,20 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             existingPage.CategoryName =
                 page.CategoryName;
 
+            // Update category background image if a new image was selected
+            if (backgroundImage != null && backgroundImage.Length > 0)
+            {
+                using var memoryStream = new MemoryStream();
+
+                await backgroundImage.CopyToAsync(memoryStream);
+
+                existingPage.BackgroundImage =
+                    memoryStream.ToArray();
+
+                existingPage.BackgroundImageContentType =
+                    backgroundImage.ContentType;
+            }
+
             // Delete old blocks
             _context.ContentBlocks.RemoveRange(
                 existingPage.ContentBlocks
@@ -264,7 +295,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             return RedirectToAction(
                 "Index",
-                "Home",
+                "Settlement",
                 new { area = "Admin" }
             );
         }
@@ -295,7 +326,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             return RedirectToAction(
                 "Index",
-                "Home"
+                "Settlement"
             );
         }
     }

@@ -8,22 +8,25 @@
 <div class="admin-view-page">
 
     <div class="admin-view-header">
-        <div class="admin-view-header-content">
-            <span class="admin-eyebrow">
-                SETTLEMENT HUB
-            </span>
 
-            <h1>
-                @Model.CategoryName
-            </h1>
+    <!-- LEFT SIDE -->
+    <div class="admin-view-header-content">
 
-            <p>
-                View the information and resources available in this settlement category.
-            </p>
-        </div>
+        <span class="admin-eyebrow">
+            SETTLEMENT HUB
+        </span>
 
-        <div class="admin-view-header-actions">
-            <a href="/Admin/Home"
+        <h1>
+            @Model.CategoryName
+        </h1>
+
+        <p>
+            View the information and resources available in this settlement category.
+        </p>
+
+                <div class="admin-view-header-actions">
+
+            <a href="/Admin/Settlement"
                class="admin-back-button">
                 ← Back to Dashboard
             </a>
@@ -32,9 +35,25 @@
                class="admin-view-edit-button">
                 ✏️ Edit Page
             </a>
+
         </div>
+
     </div>
 
+    <!-- RIGHT SIDE - CATEGORY IMAGE -->
+    @if (Model.BackgroundImage != null &&
+         Model.BackgroundImage.Length > 0)
+    {
+        <div class="admin-view-category-image">
+
+            <img src="data:@Model.BackgroundImageContentType;base64,@Convert.ToBase64String(Model.BackgroundImage)"
+                 alt="@Model.CategoryName"
+                 class="admin-view-category-image-img" />
+
+        </div>
+    }
+
+    </div>
     <!-- ============== SEARCH ===================== -->
 
     <div class="admin-view-search">
@@ -244,5 +263,51 @@
         .hover-scale:hover { transform: scale(1.01); }
         .transition-all { transition: all 0.2s ease-in-out; }
         .bg-light-groove { background-color: #f9fbfd; }
+
+        .admin-view-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 420px;
+    gap: 50px;
+    align-items: center;
+    padding: 35px 0 40px;
+}
+
+.admin-view-header-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.admin-view-header-content h1 {
+    margin: 8px 0 15px;
+}
+
+.admin-view-header-content p {
+    max-width: 620px;
+    margin: 0;
+    line-height: 1.7;
+}
+
+.admin-view-category-image {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.admin-view-category-image-img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+}
+
+.admin-view-header-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    align-items: center;
+}
     </style>
 }

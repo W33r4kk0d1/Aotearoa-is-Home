@@ -24,8 +24,7 @@
 
     <div class="user-edit-card">
 
-        <form action="/Users/Users/Edit"
-            method="post">
+        <form action="/Users/Users/Edit" method="post">
 
             @Html.AntiForgeryToken()
 
@@ -33,9 +32,7 @@
                 name="Id"
                 value="@Model.Id" />
 
-            <div asp-validation-summary="ModelOnly"
-                 class="edit-validation-summary">
-            </div>
+            <div asp-validation-summary="ModelOnly" class="edit-validation-summary"></div>
 
             <div class="edit-section">
 
@@ -54,9 +51,7 @@
                                 value="@Model.FirstName"
                                 class="form-control" />
 
-                        <span asp-validation-for="FirstName"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="FirstName" class="edit-validation-error"></span>
                     </div>
 
                     <div class="edit-field">
@@ -71,9 +66,7 @@
                             value="@Model.LastName"
                             class="form-control" />
 
-                        <span asp-validation-for="LastName"
-                              class="edit-validation-error"> 
-                        </span>
+                        <span asp-validation-for="LastName" class="edit-validation-error"> </span>
                     </div>
 
                     <div class="edit-field">
@@ -88,9 +81,7 @@
                                 value="@Model.Email"
                                 class="form-control" />
 
-                        <span asp-validation-for="Email"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="Email" class="edit-validation-error"></span>
                     </div>
 
                     <div class="edit-field">
@@ -103,9 +94,7 @@
                                 class="form-control"
                                 placeholder="Enter contact number" />
 
-                        <span asp-validation-for="ContactNumber"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="ContactNumber" class="edit-validation-error"> </span>
                     </div>
 
                 </div>
@@ -125,63 +114,56 @@
                             name="LanguageId"
                             class="form-control">
 
-                        <option value="">Select Language</option>
+                            <option value="">Select Language</option>
 
-                        @if (languages != null)
-                        {
-                            foreach (var language in languages)
+                            @if (languages != null)
                             {
-                                <option value="@language.Id"
-                                        selected="@(Model.LanguageId == language.Id)">
-                                    @language.Name
-                                </option>
+                                foreach (var language in languages)
+                                {
+                                    <option value="@language.Id"
+                                            selected="@(Model.LanguageId == language.Id)">
+                                        @language.Name
+                                    </option>
+                                }
                             }
-                        }
 
-                    </select>
+                        </select>
 
-                        <span asp-validation-for="LanguageId"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="LanguageId"  class="edit-validation-error"></span>
                     </div>
 
                     <div class="edit-field">
                         <label asp-for="Role">Role
                             <span class="required-star">*</span>
                         </label>
-                        
 
-                        <select id="Role"
-                            name="Role"
-                            class="form-control">
+                        <select id="Role" name="Role" class="form-control">
 
-                        <option value="">Select Role</option>
+                            <option value="">Select Role</option>
 
-                        <option value="Student"
-                                selected="@(Model.Role == "Student")">
-                            Student
-                        </option>
+                            <option value="Student"
+                                    selected="@(Model.Role == "Student")">
+                                Student
+                            </option>
 
-                        <option value="Admin"
-                                selected="@(Model.Role == "Admin")">
-                            Admin
-                        </option>
+                            <option value="Admin"
+                                    selected="@(Model.Role == "Admin")">
+                                Admin
+                            </option>
 
-                        <option value="Service Provider"
-                                selected="@(Model.Role == "Service Provider")">
-                            Service Provider
-                        </option>
+                            <option value="Service Provider"
+                                    selected="@(Model.Role == "Service Provider")">
+                                Service Provider
+                            </option>
 
-                        <option value="Family Member"
-                                selected="@(Model.Role == "Family Member")">
-                            Family Member
-                        </option>
+                            <option value="Family Member"
+                                    selected="@(Model.Role == "Family Member")">
+                                Family Member
+                            </option>
 
-                    </select>
+                        </select>
 
-                        <span asp-validation-for="Role"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="Role" class="edit-validation-error"></span>
                     </div>
 
                     <div class="edit-field edit-full-width">
@@ -194,9 +176,7 @@
                                 class="form-control"
                                 placeholder="https://www.linkedin.com/in/username" />
 
-                        <span asp-validation-for="LinkedInProfile"
-                              class="edit-validation-error">
-                        </span>
+                        <span asp-validation-for="LinkedInProfile" class="edit-validation-error"> </span>
                     </div>
 
                 </div>
@@ -205,13 +185,11 @@
 
             <div class="edit-actions">
 
-                <a href="/Users/Users/Index" 
-                   class="btn-cancel-edit">
+                <a href="/Users/Users/Index" class="btn-cancel-edit">
                     Cancel
                 </a>
 
-                <button type="submit"
-                        class="btn-save-user">
+                <button type="submit" class="btn-save-user">
                     Save Changes
                 </button>
 

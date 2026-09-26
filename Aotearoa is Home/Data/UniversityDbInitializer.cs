@@ -13,7 +13,89 @@ namespace Aotearoa_is_Home.Data
 
             await context.Database.MigrateAsync();
 
-            // If students already exist, don't add them again
+
+            // Seed Organizations
+            if (!await context.Organizations.AnyAsync())
+            {
+                var organizations = new List<Organization>
+                {
+                    new Organization
+                    {
+                        Name = "WelTec"
+                    },
+
+                    new Organization
+                    {
+                        Name = "Whitireia"
+                    }
+                };
+
+                await context.Organizations.AddRangeAsync(organizations);
+                await context.SaveChangesAsync();
+            }
+
+
+            // Seed Employees
+            if (!await context.Employees.AnyAsync())
+            {
+                var welTec = await context.Organizations
+                    .FirstAsync(o => o.Name == "WelTec");
+
+                var whitireia = await context.Organizations
+                    .FirstAsync(o => o.Name == "Whitireia");
+
+                var employees = new List<Employee>
+                {
+                    // WelTec employee
+                    new Employee
+                    {
+                        EmployeeId = "EMP001",
+                        FirstName = "Michael",
+                        LastName = "Taylor",
+                        Email = "michael.taylor@weltec.ac.nz",
+                        OrganizationId = welTec.Id,
+                        IsActive = true
+                    },
+
+                    new Employee
+                    {
+                        EmployeeId = "EMP002",
+                        FirstName = "Emma",
+                        LastName = "Johnson",
+                        Email = "emma.johnson@weltec.ac.nz",
+                        OrganizationId = welTec.Id,
+                        IsActive = true
+                    },
+
+                    // Whitireia employee
+                    new Employee
+                    {
+                        EmployeeId = "EMP003",
+                        FirstName = "Daniel",
+                        LastName = "Brown",
+                        Email = "daniel.brown@whitireia.ac.nz",
+                        OrganizationId = whitireia.Id,
+                        IsActive = true
+                    },
+
+                    // Inactive employee - useful for testing
+                    new Employee
+                    {
+                        EmployeeId = "EMP005",
+                        FirstName = "James",
+                        LastName = "Anderson",
+                        Email = "james.anderson@weltec.ac.nz",
+                        OrganizationId = welTec.Id,
+                        IsActive = false
+                    }
+                };
+
+                await context.Employees.AddRangeAsync(employees);
+
+                await context.SaveChangesAsync();
+            }
+
+            // Seed Students
             if (await context.UniversityStudents.AnyAsync())
             {
                 return;
@@ -56,7 +138,7 @@ namespace Aotearoa_is_Home.Data
             };
 
             await context.UniversityStudents.AddRangeAsync(students);
-
+            
             await context.SaveChangesAsync();
         }
     }

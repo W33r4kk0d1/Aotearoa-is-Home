@@ -75,6 +75,16 @@ namespace Aotearoa_is_Home.Controllers
 
             if (result.Succeeded)
             {
+                // Super Admin
+                if (await _userManager.IsInRoleAsync(user, "Super Admin"))
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Home",
+                        new { area = "Admin" });
+                }
+
+                // Normal Admin
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                 {
                     return RedirectToAction(
@@ -149,9 +159,9 @@ namespace Aotearoa_is_Home.Controllers
         {
             await LoadLanguages();
             bool isPendingStudent = false;
+            Employee? verifiedEmployee = null;
 
             // VALID ACCOUNT TYPES
-
             var validAccountTypes = new[]
             {
                 "Student",
@@ -223,7 +233,43 @@ namespace Aotearoa_is_Home.Controllers
                         ModelState.AddModelError(
                             "EmployeeId",
                             "Employee ID is required.");
+
+                        break;
                     }
+
+                    verifiedEmployee = await _universityContext.Employees
+                                                .Include(e => e.Organization)
+                                                .FirstOrDefaultAsync(e =>
+                                                    e.EmployeeId == model.EmployeeId.Trim());
+
+                    if (verifiedEmployee == null)
+                    {
+                        ModelState.AddModelError(
+                            "EmployeeId",
+                            "The Employee ID could not be verified.");
+
+                        break;
+                    }
+
+                    if (!verifiedEmployee.IsActive)
+                    {
+                        ModelState.AddModelError(
+                            "EmployeeId",
+                            "This Employee ID belongs to an inactive employee. Please contact your organisation administrator.");
+
+                        break;
+                    }
+
+                    model.FirstName = verifiedEmployee.FirstName;
+                    model.LastName = verifiedEmployee.LastName;
+                    model.Email = verifiedEmployee.Email;
+
+                    model.DepartmentOrganisation = verifiedEmployee.Organization?.Name;
+
+                    ModelState.Remove(nameof(model.FirstName));
+                    ModelState.Remove(nameof(model.LastName));
+                    ModelState.Remove(nameof(model.Email));
+
                     break;
 
                 case "Family Member":
@@ -281,7 +327,6 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-
             // CHECK EXISTING EMAIL
             var existingUser =
                 await _userManager.FindByEmailAsync(model.Email);
@@ -326,17 +371,35 @@ namespace Aotearoa_is_Home.Controllers
             // CREATE IDENTITY USER
             var user = new ApplicationUser
             {
-                UserName = model.Email,
-                Email = model.Email,
+                UserName = model.AccountType == "Admin"
+                    ? verifiedEmployee!.Email
+                    : model.Email,
 
-                FirstName = model.FirstName,
-                LastName = model.LastName,
+                Email = model.AccountType == "Admin"
+                    ? verifiedEmployee!.Email
+                    : model.Email,
 
-                PhoneNumber = model.ContactNumber,
+                FirstName = model.AccountType == "Admin"
+                    ? verifiedEmployee!.FirstName
+                    : model.FirstName,
 
-                LinkedInProfile = model.LinkedInProfile,
+                LastName = model.AccountType == "Admin"
+                    ? verifiedEmployee!.LastName
+                    : model.LastName,
 
-                LanguageId = model.LanguageId
+                PhoneNumber = model.AccountType == "Admin"
+                    ? null
+                    : model.ContactNumber,
+
+                LinkedInProfile = model.AccountType == "Admin"
+                    ? null
+                    : model.LinkedInProfile,
+
+                LanguageId = model.AccountType == "Admin"
+                    ? null
+                    : model.LanguageId,
+                
+                CreatedAt = DateTime.UtcNow,
             };
 
 
@@ -452,12 +515,33 @@ namespace Aotearoa_is_Home.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine("========================================");
-                    Console.WriteLine("ACCOUNT CREATION EMAIL FAILED");
+                    Console.WriteLine("STUDENT ACCOUNT CREATION EMAIL FAILED");
                     Console.WriteLine(ex.Message);
                     Console.WriteLine("========================================");
 
                     TempData["RegistrationWarning"] =
                         "Your account was created successfully, but the confirmation email could not be sent.";
+                }
+            }
+            else if (model.AccountType == "Admin")
+            {
+                try
+                {
+                    await _emailService.SendAdminAccountCreatedEmailAsync(
+                        user.Email!,
+                        user.FirstName,
+                        model.EmployeeId!,
+                        model.DepartmentOrganisation ?? "Not specified");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("========================================");
+                    Console.WriteLine("ADMIN ACCOUNT CREATION EMAIL FAILED");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("========================================");
+
+                    TempData["RegistrationWarning"] =
+                        "Your administrator account was created successfully, but the confirmation email could not be sent.";
                 }
             }
 
