@@ -31,8 +31,7 @@
 
     <div class="profile-edit-card">
 
-        <form action="/Profile/Edit"
-              method="post">
+        <form action="/Profile/Edit" method="post">
 
             @Html.AntiForgeryToken()
 
@@ -59,8 +58,7 @@
                                value="@Model.FirstName"
                                class="form-control" />
 
-                        <span asp-validation-for="FirstName"
-                              class="profile-validation-error">
+                        <span asp-validation-for="FirstName" class="profile-validation-error">
                         </span>
 
                     </div>
@@ -78,8 +76,7 @@
                                value="@Model.LastName"
                                class="form-control" />
 
-                        <span asp-validation-for="LastName"
-                              class="profile-validation-error">
+                        <span asp-validation-for="LastName" class="profile-validation-error">
                         </span>
 
                     </div>
@@ -97,8 +94,7 @@
                                value="@Model.Email"
                                class="form-control" />
 
-                        <span asp-validation-for="Email"
-                              class="profile-validation-error">
+                        <span asp-validation-for="Email"  class="profile-validation-error">
                         </span>
 
                     </div>
@@ -116,8 +112,7 @@
                                class="form-control"
                                placeholder="Enter contact number" />
 
-                        <span asp-validation-for="ContactNumber"
-                              class="profile-validation-error">
+                        <span asp-validation-for="ContactNumber" class="profile-validation-error">
                         </span>
 
                     </div>
@@ -159,8 +154,7 @@
 
                         </select>
 
-                        <span asp-validation-for="LanguageId"
-                              class="profile-validation-error">
+                        <span asp-validation-for="LanguageId" class="profile-validation-error">
                         </span>
 
                     </div>
@@ -178,8 +172,7 @@
                                class="form-control"
                                placeholder="https://www.linkedin.com/in/username" />
 
-                        <span asp-validation-for="LinkedInProfile"
-                              class="profile-validation-error">
+                        <span asp-validation-for="LinkedInProfile" class="profile-validation-error">
                         </span>
 
                     </div>
@@ -190,13 +183,11 @@
 
             <div class="profile-edit-actions">
 
-                <a href="/Profile"
-                   class="profile-cancel-button">
+                <a href="/Profile" class="profile-cancel-button">
                     Cancel
                 </a>
 
-                <button type="submit"
-                        class="profile-save-button">
+                <button type="submit" class="profile-save-button">
                     Save Changes
                 </button>
 

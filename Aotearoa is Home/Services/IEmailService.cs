@@ -10,5 +10,11 @@ namespace Aotearoa_is_Home.Services
             Task SendStudentAccountCreatedEmailAsync(
                 string recipientEmail,
                 string firstName);
+
+            Task SendAdminAccountCreatedEmailAsync(
+                string recipientEmail,
+                string firstName,
+                string employeeId,
+                string organisationName);
         }
 }

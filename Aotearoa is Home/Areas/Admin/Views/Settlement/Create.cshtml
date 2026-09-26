@@ -17,10 +17,9 @@
             </p>
         </div>
 
-        <a href="/Admin/Home"
-            class="admin-back-button">
+        <a href="/Admin/Settlement" class="admin-back-button">
                 ← Back to Dashboard
-            </a>
+        </a>
 
     </div>
 
@@ -34,9 +33,7 @@
 
         @Html.AntiForgeryToken()
 
-        <div asp-validation-summary="All"
-             class="admin-validation-summary">
-        </div>
+        <div asp-validation-summary="All" class="admin-validation-summary"></div>
 
 
         <!-- Category Details -->
@@ -51,8 +48,7 @@
                         <h2>Category Details</h2>
 
                         <p>
-                            Give your settlement information hub a clear name
-                            and optional background image.
+                            Give your settlement information hub a clear name and optional background image.
                         </p>
                     </div>
                 </div>
@@ -77,9 +73,7 @@
                            placeholder="e.g., Accommodation"
                            required />
 
-                    <span asp-validation-for="CategoryName"
-                          class="admin-field-error">
-                    </span>
+                    <span asp-validation-for="CategoryName" class="admin-field-error"></span>
 
                 </div>
 
@@ -96,16 +90,36 @@
                     </p>
 
                     <div class="admin-file-upload">
-
                         <input type="file"
-                               id="backgroundImage"
-                               name="backgroundImage"
-                               accept="image/*" />
+                            id="backgroundImage"
+                            name="backgroundImage"
+                            accept="image/*" />
 
                         <span class="admin-file-note">
                             JPG, PNG or other supported image format
                         </span>
+                    </div>
 
+                    <!-- Background Image Preview -->
+                    <div id="backgroundImagePreviewContainer"
+                        class="mt-3"
+                        style="display: none;">
+
+                        <p class="small fw-bold text-muted mb-2">
+                            Image Preview
+                        </p>
+
+                        <div class="border rounded overflow-hidden"
+                            style="max-width: 500px;">
+
+                            <img id="backgroundImagePreview"
+                                src=""
+                                alt="Category background preview"
+                                style="width: 100%;
+                                        height: 220px;
+                                        object-fit: cover;
+                                        display: block;" />
+                        </div>
                     </div>
 
                 </div>
@@ -128,15 +142,13 @@
                         <h2>Topic Cards</h2>
 
                         <p>
-                            Add sections of information that visitors can
-                            explore within this category.
+                            Add sections of information that visitors can explore within this category.
                         </p>
                     </div>
 
                 </div>
 
-                <span class="admin-topic-counter"
-                      id="cardCounter">
+                <span class="admin-topic-counter" id="cardCounter">
                     0 Topic Cards
                 </span>
 
@@ -145,14 +157,10 @@
 
             <div class="admin-topic-section-body">
 
-                <div id="topicCardsContainer"
-                     class="admin-topic-cards-container">
-                </div>
-
+                <div id="topicCardsContainer" class="admin-topic-cards-container"></div>
 
                 <!-- Empty Topic State -->
-                <div id="topicCardsEmptyState"
-                     class="admin-topic-empty">
+                <div id="topicCardsEmptyState" class="admin-topic-empty">
 
                     <div class="admin-topic-empty-icon">
                         +
@@ -161,12 +169,10 @@
                     <h3>No Topic Cards Yet</h3>
 
                     <p>
-                        Add topic cards to organise the information
-                        visitors will see on this settlement page.
+                        Add topic cards to organise the information visitors will see on this settlement page.
                     </p>
 
                 </div>
-
 
                 <div class="admin-add-topic-wrapper">
 
@@ -189,15 +195,12 @@
         <!-- Publish Actions -->
         <div class="admin-create-actions">
 
-            <a href="/Admin/Home" class="admin-back-button">
+            <a href="/Admin/Settlement" class="admin-back-button">
                 Cancel
             </a>
 
-            <button type="submit"
-                    class="admin-publish-button">
-
+            <button type="submit" class="admin-publish-button">
                 Publish Settlement Information
-
             </button>
 
         </div>
@@ -378,16 +381,41 @@
 
 
             else if (selectedType === "image") {
-
                 badgeColor = "bg-warning text-dark";
 
                 inputHtml = `
-                            <input type="text"
-                                   class="form-control form-control-sm item-content-field"
-                                   placeholder="Paste image URL...">
-                        `;
-            }
+                    <input type="text"
+                        class="form-control form-control-sm item-content-field image-url-input"
+                        placeholder="Paste image URL..."
+                        oninput="previewTopicImage(this)">
 
+                    <div class="topic-image-preview mt-2"
+                        style="display: none;">
+
+                        <p class="small fw-bold text-muted mb-2">
+                            Image Preview
+                        </p>
+
+                        <div class="border rounded overflow-hidden"
+                            style="max-width: 500px;">
+
+                            <img src=""
+                                alt="Topic image preview"
+                                class="topic-preview-image"
+                                style="width: 100%;
+                                        max-height: 250px;
+                                        object-fit: cover;
+                                        display: block;">
+                        </div>
+
+                        <small class="text-danger topic-image-error"
+                            style="display: none;">
+                            Image could not be loaded. Please check the URL.
+                        </small>
+
+                    </div>
+                `;
+            }
 
             else if (selectedType === "link") {
 
@@ -491,6 +519,83 @@
             reIndexAllInputs();
         }
 
+        function previewBackgroundImage() {
+
+            const input = document.getElementById("backgroundImage");
+            const previewContainer = document.getElementById("backgroundImagePreviewContainer");
+            const previewImage = document.getElementById("backgroundImagePreview");
+
+            if (!input || !previewContainer || !previewImage) {
+                return;
+            }
+
+            const file = input.files[0];
+
+            if (!file) {
+                previewContainer.style.display = "none";
+                previewImage.src = "";
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                previewContainer.style.display = "none";
+                previewImage.src = "";
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+
+                previewImage.src = event.target.result;
+
+                previewContainer.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        document
+            .getElementById("backgroundImage")
+            ?.addEventListener("change", previewBackgroundImage);
+
+
+        function previewTopicImage(input) {
+
+            const previewContainer =
+                input.parentElement.querySelector(".topic-image-preview");
+
+            const previewImage =
+                input.parentElement.querySelector(".topic-preview-image");
+
+            const errorMessage =
+                input.parentElement.querySelector(".topic-image-error");
+
+            const imageUrl = input.value.trim();
+
+            if (!imageUrl) {
+
+                previewContainer.style.display = "none";
+                previewImage.src = "";
+                errorMessage.style.display = "none";
+
+                return;
+            }
+
+            previewImage.onload = function () {
+
+                previewContainer.style.display = "block";
+                errorMessage.style.display = "none";
+            };
+
+            previewImage.onerror = function () {
+
+                previewContainer.style.display = "block";
+                errorMessage.style.display = "block";
+            };
+
+            previewImage.src = imageUrl;
+        }
 
         function reIndexAllInputs() {
 

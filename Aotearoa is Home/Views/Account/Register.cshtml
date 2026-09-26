@@ -41,9 +41,7 @@
 
             @Html.AntiForgeryToken()
 
-            <div asp-validation-summary="ModelOnly"
-                 class="text-danger">
-            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
 
             <!-- ACCOUNT TYPE -->
             <div class="form-group">
@@ -53,154 +51,110 @@
                     <span class="required-star">*</span>
                 </label>
 
-                <select asp-for="AccountType"
-                        id="accountType"
-                        class="form-control">
-
-                    <option value="">
-                        Select account type
-                    </option>
-
-                    <option value="Student">
-                        Student
-                    </option>
-
-                    <option value="Admin">
-                        Admin
-                    </option>
-
-                    <option value="Service Provider">
-                        Service Provider
-                    </option>
-
-                    <option value="Family Member">
-                        Family Member
-                    </option>
-
+                <select asp-for="AccountType" id="accountType" class="form-control">
+                    <option value=""> Select account type </option>
+                    <option value="Student"> Student </option>
+                    <option value="Admin"> Admin </option>
+                    <option value="Service Provider"> Service Provider </option>
+                    <option value="Family Member"> Family Member </option>
                 </select>
 
-                <span asp-validation-for="AccountType"
-                      class="text-danger">
-                </span>
+                <span asp-validation-for="AccountType" class="text-danger"> </span>
+            </div>
 
+            <!-- COMMON INFORMATION -->
+            <div id="commonPersonalFields">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="FirstName">
+                            First name
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input asp-for="FirstName"
+                            class="form-control"
+                            placeholder="First name" />
+
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="LastName">
+                            Last name
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input asp-for="LastName"
+                            class="form-control"
+                            placeholder="Last name" />
+
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="Email">
+                            Email Address
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input asp-for="Email"
+                            class="form-control"
+                            placeholder="Email Address" />
+
+                        <span asp-validation-for="Email" class="text-danger"> </span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="ContactNumber">
+                            Contact number
+                        </label>
+
+                        <input asp-for="ContactNumber"
+                            class="form-control"
+                            placeholder="Contact number" />
+
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
 
-            <!-- COMMON INFORMATION -->
+            <!-- PASSWORD -->
+
             <div class="form-grid">
-
                 <div class="form-group">
-
-                    <label asp-for="FirstName">
-                        First name
-                        <span class="required-star">*</span>
-                    </label>
-
-                    <input asp-for="FirstName"
-                           class="form-control"
-                           placeholder="First name" />
-
-                    <span asp-validation-for="FirstName"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label asp-for="LastName">
-                        Last name
-                        <span class="required-star">*</span>
-                    </label>
-
-                    <input asp-for="LastName"
-                           class="form-control"
-                           placeholder="Last name" />
-
-                    <span asp-validation-for="LastName"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label asp-for="Email">
-                        Email Address
-                        <span class="required-star">*</span>
-                    </label>
-
-                    <input asp-for="Email"
-                           class="form-control"
-                           placeholder="Email Address" />
-
-                    <span asp-validation-for="Email"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label asp-for="ContactNumber">
-                        Contact number
-                    </label>
-
-                    <input asp-for="ContactNumber"
-                           class="form-control"
-                           placeholder="Contact number" />
-
-                    <span asp-validation-for="ContactNumber"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="form-group">
-
                     <label asp-for="Password">
                         Password
                         <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="Password"
-                           class="form-control"
-                           placeholder="Password" />
+                        class="form-control"
+                        placeholder="Password" />
 
-                    <span asp-validation-for="Password"
-                          class="text-danger">
-                    </span>
-
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-
                 <div class="form-group">
-
                     <label asp-for="ConfirmPassword">
                         Confirm password
                         <span class="required-star">*</span>
                     </label>
 
                     <input asp-for="ConfirmPassword"
-                           class="form-control"
-                           placeholder="Confirm password" />
+                        class="form-control"
+                        placeholder="Confirm password" />
 
-                    <span asp-validation-for="ConfirmPassword"
-                          class="text-danger">
-                    </span>
-
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
-
             </div>
 
 
             <!-- STUDENT -->
             <div id="studentFields" class="role-fields">
-
                 <div class="form-group">
                     <label asp-for="HasStudentId">
                         Do you have a Student ID?
@@ -213,7 +167,7 @@
                                 asp-for="HasStudentId"
                                 value="true"
                                 id="hasStudentIdYes" />
-                            Yes
+                                Yes
                         </label>
 
                         <label>
@@ -221,17 +175,14 @@
                                 asp-for="HasStudentId"
                                 value="false"
                                 id="hasStudentIdNo" />
-                            No, I don't have one yet
+                                No, I don't have one yet
                         </label>
                     </div>
 
-                    <span asp-validation-for="HasStudentId"
-                        class="text-danger"></span>
+                    <span asp-validation-for="HasStudentId" class="text-danger"></span>
                 </div>
 
-                <div class="form-group"
-                    id="studentIdField">
-
+                <div class="form-group" id="studentIdField">
                     <label asp-for="StudentId">
                         Student ID
                         <span class="required-star">*</span>
@@ -242,8 +193,7 @@
                         id="studentIdInput"
                         placeholder="Enter your Student ID" />
 
-                    <span asp-validation-for="StudentId"
-                        class="text-danger"></span>
+                    <span asp-validation-for="StudentId" class="text-danger"></span>
                 </div>
 
                 <div id="preArrivalMessage"
@@ -251,13 +201,11 @@
                     style="display:none;">
 
                     <p>
-                        You can register as a pre-arrival student if you
-                        have not received your Student ID yet.
+                        You can register as a pre-arrival student if you have not received your Student ID yet.
                     </p>
 
                     <p>
-                        Your registration will be reviewed by an administrator
-                        before your account is activated.
+                        Your registration will be reviewed by an administrator before your account is activated.
                     </p>
 
                 </div>
@@ -269,9 +217,7 @@
                         Preferred language
                     </label>
 
-                    <select asp-for="LanguageId"
-                            class="form-control">
-
+                    <select asp-for="LanguageId" class="form-control">
                         <option value="">
                             Select preferred language
                         </option>
@@ -282,13 +228,11 @@
                                 @language.Name
                             </option>
                         }
-
                     </select>
 
                     <span asp-validation-for="LanguageId"
                           class="text-danger">
                     </span>
-
                 </div>
 
                 <div class="form-group">
@@ -299,68 +243,42 @@
                         placeholder="https://www.linkedin.com/in/your-name" />
 
                     <small class="form-text text-muted">
-                        Optional. This information is collected for university/project purposes
-                        and will not affect your registration.
+                        Optional. This information is collected for university/project purposes and will not affect your registration.
                     </small>
 
-                    <span asp-validation-for="LinkedInProfile"
-                        class="text-danger"></span>
+                    <span asp-validation-for="LinkedInProfile" class="text-danger"></span>
                 </div>
-
             </div>
 
 
             <!-- ADMIN -->
-            <div id="adminFields"
-                 class="role-fields">
-
+            <div id="adminFields" class="role-fields">
                 <h3>Administration details</h3>
 
-                <div class="form-grid">
+                <div class="form-group">
 
-                    <div class="form-group">
+                    <label asp-for="EmployeeId">
+                        Employee ID
+                        <span class="required-star">*</span>
+                    </label>
 
-                        <label asp-for="EmployeeId">
-                            Employee ID
-                            <span class="required-star">*</span>
-                        </label>
+                    <input asp-for="EmployeeId"
+                        class="form-control"
+                        placeholder="Enter your Employee ID" />
 
-                        <input asp-for="EmployeeId"
-                               class="form-control"
-                               placeholder="Employee ID" />
+                    <small class="form-text text-muted">
+                        Enter the Employee ID provided by your organisation.
+                        Your name, email address and organisation will be retrieved
+                        automatically.
+                    </small>
 
-                        <span asp-validation-for="EmployeeId"
-                              class="text-danger">
-                        </span>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label asp-for="DepartmentOrganisation">
-                            Department / Organisation
-                            <span class="required-star">*</span>
-                        </label>
-
-                        <input asp-for="DepartmentOrganisation"
-                               class="form-control"
-                               placeholder="Department / Organisation" />
-
-                        <span asp-validation-for="DepartmentOrganisation"
-                              class="text-danger">
-                        </span>
-
-                    </div>
-
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
                 </div>
-
             </div>
 
 
             <!-- FAMILY -->
-            <div id="familyFields"
-                 class="role-fields">
+            <div id="familyFields" class="role-fields">
 
                 <h3>Family details</h3>
 
@@ -371,41 +289,17 @@
                         <span class="required-star">*</span>
                     </label>
 
-                    <select asp-for="RelationshipToStudent"
-                            class="form-control">
-
-                        <option value="">
-                            Select relationship
-                        </option>
-
-                        <option value="Parent">
-                            Parent
-                        </option>
-
-                        <option value="Spouse/Partner">
-                            Spouse / Partner
-                        </option>
-
-                        <option value="Sibling">
-                            Sibling
-                        </option>
-
-                        <option value="Child">
-                            Child
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
+                    <select asp-for="RelationshipToStudent" class="form-control">
+                        <option value=""> Select relationship </option>
+                        <option value="Parent"> Parent </option>
+                        <option value="Spouse/Partner"> Spouse / Partner </option>
+                        <option value="Sibling"> Sibling </option>
+                        <option value="Child"> Child </option>
+                        <option value="Other"> Other </option>
                     </select>
 
-                    <span asp-validation-for="RelationshipToStudent"
-                          class="text-danger">
-                    </span>
-
+                    <span asp-validation-for="RelationshipToStudent" class="text-danger"></span>
                 </div>
-
 
                 <div class="form-group">
 
@@ -418,10 +312,7 @@
                            class="form-control"
                            placeholder="Student ID / Student email" />
 
-                    <span asp-validation-for="StudentReference"
-                          class="text-danger">
-                    </span>
-
+                    <span asp-validation-for="StudentReference" class="text-danger"></span>
                 </div>
 
 
@@ -431,12 +322,9 @@
                         Preferred language
                     </label>
 
-                    <select asp-for="LanguageId"
-                            class="form-control">
+                    <select asp-for="LanguageId" class="form-control">
 
-                        <option value="">
-                            Select preferred language
-                        </option>
+                        <option value=""> Select preferred language </option>
 
                         @foreach (var language in ViewBag.Languages)
                         {
@@ -446,15 +334,12 @@
                         }
 
                     </select>
-
                 </div>
-
             </div>
 
 
             <!-- Service PROVIDER -->
-            <div id="eventProviderFields"
-                 class="role-fields">
+            <div id="eventProviderFields" class="role-fields">
 
                 <h3>Organisation details</h3>
 
@@ -471,10 +356,7 @@
                                class="form-control"
                                placeholder="Organisation name" />
 
-                        <span asp-validation-for="OrganisationName"
-                              class="text-danger">
-                        </span>
-
+                        <span asp-validation-for="OrganisationName" class="text-danger"></span>
                     </div>
 
 
@@ -489,12 +371,9 @@
                                class="form-control"
                                placeholder="Organisation type" />
 
-                        <span asp-validation-for="OrganisationType"
-                              class="text-danger">
-                        </span>
+                        <span asp-validation-for="OrganisationType" class="text-danger"></span>
 
                     </div>
-
                 </div>
 
 
@@ -508,9 +387,7 @@
                               class="form-control"
                               placeholder="Organisation description"></textarea>
 
-                    <span asp-validation-for="OrganisationDescription"
-                          class="text-danger">
-                    </span>
+                    <span asp-validation-for="OrganisationDescription" class="text-danger"></span>
 
                 </div>
 
@@ -528,29 +405,21 @@
                                class="form-control"
                                placeholder="Organisation phone" />
 
-                        <span asp-validation-for="OrganisationPhone"
-                              class="text-danger">
-                        </span>
+                        <span asp-validation-for="OrganisationPhone" class="text-danger"></span>
 
                     </div>
 
 
                     <div class="form-group">
 
-                        <label asp-for="Website">
-                            Website
-                        </label>
+                        <label asp-for="Website"> Website </label>
 
                         <input asp-for="Website"
                                class="form-control"
                                placeholder="Website" />
 
-                        <span asp-validation-for="Website"
-                              class="text-danger">
-                        </span>
-
+                        <span asp-validation-for="Website" class="text-danger"> </span>
                     </div>
-
                 </div>
 
 
@@ -565,10 +434,7 @@
                               class="form-control"
                               placeholder="Office address"></textarea>
 
-                    <span asp-validation-for="OfficeAddress"
-                          class="text-danger">
-                    </span>
-
+                    <span asp-validation-for="OfficeAddress" class="text-danger"></span>
                 </div>
 
 
@@ -582,20 +448,13 @@
                               class="form-control"
                               placeholder="Supporting information"></textarea>
 
-                    <span asp-validation-for="SupportingInformation"
-                          class="text-danger">
-                    </span>
+                    <span asp-validation-for="SupportingInformation" class="text-danger"></span>
 
                 </div>
-
             </div>
 
 
-            <button type="submit"
-                    class="btn-register">
-                Register
-            </button>
-
+            <button type="submit" class="btn-register"> Register </button>
         </form>
 
 
@@ -637,6 +496,8 @@
         const eventProviderFields =
             document.getElementById("eventProviderFields");
 
+        const commonPersonalFields =
+            document.getElementById("commonPersonalFields");
 
         function hideAllFields() {
 
@@ -647,31 +508,36 @@
 
         }
 
+function updateFields() {
 
-        function updateFields() {
+    hideAllFields();
 
-            hideAllFields();
+    // Show personal information for everyone except Admin
+    if (accountType.value === "Admin") {
+        commonPersonalFields.style.display = "none";
+    } else {
+        commonPersonalFields.style.display = "block";
+    }
 
-            switch (accountType.value) {
+    switch (accountType.value) {
 
-                case "Student":
-                    studentFields.style.display = "block";
-                    break;
+        case "Student":
+            studentFields.style.display = "block";
+            break;
 
-                case "Admin":
-                    adminFields.style.display = "block";
-                    break;
+        case "Admin":
+            adminFields.style.display = "block";
+            break;
 
-                case "Family Member":
-                    familyFields.style.display = "block";
-                    break;
+        case "Family Member":
+            familyFields.style.display = "block";
+            break;
 
-                case "Service Provider":
-                    eventProviderFields.style.display = "block";
-                    break;
-            }
-        }
-
+        case "Service Provider":
+            eventProviderFields.style.display = "block";
+            break;
+    }
+}
 
         accountType.addEventListener(
             "change",

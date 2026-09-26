@@ -3636,7 +3636,6 @@ Admin SETTLEMENT PAGE
     padding: 40px 24px 60px;
 }
 
-
 /* HEADER */
 
 .student-approval-header {
@@ -3644,15 +3643,12 @@ Admin SETTLEMENT PAGE
     align-items: flex-start;
     justify-content: space-between;
     gap: 30px;
-
     margin-bottom: 28px;
 }
 
 .student-management-label {
     margin-bottom: 8px;
-
     color: #397957;
-
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 1.5px;
@@ -3660,18 +3656,14 @@ Admin SETTLEMENT PAGE
 
 .student-approval-header h1 {
     margin: 0;
-
     color: #183d2b;
-
     font-size: 36px;
     line-height: 1.2;
 }
 
 .student-approval-header p {
     margin: 8px 0 0;
-
     color: #66736c;
-
     font-size: 15px;
 }
 
@@ -3680,21 +3672,15 @@ Admin SETTLEMENT PAGE
 
 .back-dashboard-button {
     flex-shrink: 0;
-
     display: inline-flex;
     align-items: center;
-
     padding: 10px 16px;
-
     background: #ffffff;
     color: #285e43;
-
     border: 1px solid #d8e6dc;
     border-radius: 8px;
-
     font-size: 14px;
     font-weight: 600;
-
     text-decoration: none;
 }
 
@@ -3709,12 +3695,9 @@ Admin SETTLEMENT PAGE
 
 .approval-form-card {
     background: #ffffff;
-
     border: 1px solid #dce8e0;
     border-radius: 14px;
-
     padding: 30px;
-
     box-shadow: 0 5px 20px rgba(28, 65, 45, 0.06);
 }
 
@@ -3730,33 +3713,25 @@ Admin SETTLEMENT PAGE
 .approval-avatar {
     width: 56px;
     height: 56px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: #e4f3e9;
     color: #397957;
-
     border-radius: 50%;
-
     font-size: 22px;
     font-weight: 700;
 }
 
 .approval-student-header h2 {
     margin: 0;
-
     color: #244535;
-
     font-size: 22px;
 }
 
 .approval-student-header p {
     margin: 4px 0 0;
-
     color: #66736c;
-
     font-size: 14px;
 }
 
@@ -3765,9 +3740,7 @@ Admin SETTLEMENT PAGE
 
 .approval-divider {
     height: 1px;
-
     margin: 24px 0;
-
     background: #e4ebe6;
 }
 
@@ -3777,7 +3750,6 @@ Admin SETTLEMENT PAGE
 .approval-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-
     gap: 20px;
 }
 
@@ -3792,9 +3764,7 @@ Admin SETTLEMENT PAGE
 
 .approval-field label {
     margin-bottom: 7px;
-
     color: #33483d;
-
     font-size: 14px;
     font-weight: 600;
 }
@@ -3807,24 +3777,17 @@ Admin SETTLEMENT PAGE
 .approval-field .form-control {
     width: 100%;
     min-height: 46px;
-
     padding: 10px 13px;
-
     border: 1px solid #d5e2da;
     border-radius: 8px;
-
     background: #ffffff;
-
     font-size: 14px;
-
     box-sizing: border-box;
 }
 
 .approval-field .form-control:focus {
     border-color: #397957;
-
     outline: none;
-
     box-shadow: 0 0 0 3px rgba(57, 121, 87, 0.10);
 }
 
@@ -3835,9 +3798,7 @@ Admin SETTLEMENT PAGE
     display: flex;
     justify-content: flex-end;
     align-items: center;
-
     gap: 12px;
-
     margin-top: 28px;
 }
 
@@ -3845,19 +3806,14 @@ Admin SETTLEMENT PAGE
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     min-height: 44px;
     padding: 10px 18px;
-
     background: #ffffff;
     color: #555f5a;
-
     border: 1px solid #d7dfda;
     border-radius: 8px;
-
     font-size: 14px;
     font-weight: 600;
-
     text-decoration: none;
 }
 
@@ -3874,21 +3830,15 @@ Admin SETTLEMENT PAGE
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     min-height: 44px;
     padding: 10px 20px;
-
     background: #c46b45;
     color: #ffffff;
-
     border: 1px solid #c46b45;
     border-radius: 8px;
-
     font-size: 14px;
     font-weight: 700;
-
     cursor: pointer;
-
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
@@ -3899,11 +3849,8 @@ Admin SETTLEMENT PAGE
 .approve-account-button:hover {
     background: #a95335;
     border-color: #a95335;
-
     cursor: pointer;
-
     transform: translateY(-1px);
-
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
 }
 
@@ -3915,12 +3862,10 @@ Admin SETTLEMENT PAGE
 .approval-validation-summary {
     margin-bottom: 20px;
     padding: 12px 16px;
-
     background: #fff3f1;
     border: 1px solid #e5b8b0;
     border-left: 4px solid #c0392b;
     border-radius: 8px;
-
     color: #8a2f24;
     font-size: 14px;
 }
@@ -3928,7 +3873,6 @@ Admin SETTLEMENT PAGE
 .approval-field .text-danger {
     display: block;
     margin-top: 6px;
-
     color: #c0392b;
     font-size: 13px;
 }
@@ -4849,8 +4793,8 @@ SMALL MOBILE
 
 .users-empty-state {
     text-align: center;
-    padding: 50px 20px !important;
-    color: #555 !important;
+    padding: 50px 20px;
+    color: #555;
 }
 
 .users-empty-state div {

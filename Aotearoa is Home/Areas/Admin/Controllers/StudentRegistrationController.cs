@@ -151,8 +151,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             if (registration.Status != "Pending")
             {
-                TempData["RegistrationError"] =
-                    "This registration has already been processed.";
+                TempData["RegistrationError"] = "This registration has already been processed.";
 
                 return RedirectToAction(nameof(Index));
             }
@@ -204,11 +203,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     return View("Approve", model);
                 }
 
-
-            // -------------------------------------------------
             // GET REGISTRATION
-            // -------------------------------------------------
-
             var registration =
                 await _context.PendingStudentRegistrations
                     .FirstOrDefaultAsync(r => r.Id == model.Id);
@@ -218,33 +213,22 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return NotFound();
             }
 
-
-            // -------------------------------------------------
             // CHECK REGISTRATION STATUS
-            // -------------------------------------------------
-
             if (registration.Status != "Pending")
             {
-                TempData["RegistrationError"] =
-                    "This registration has already been processed.";
+                TempData["RegistrationError"] = "This registration has already been processed.";
 
                 return RedirectToAction(nameof(Index));
             }
 
 
-            // -------------------------------------------------
             // NORMALISE STUDENT ID
-            // -------------------------------------------------
-
             var studentId = string.IsNullOrWhiteSpace(model.StudentId)
                 ? null
                 : model.StudentId.Trim();
 
 
-            // -------------------------------------------------
             // VERIFY STUDENT ID AND EMAIL
-            // -------------------------------------------------
-
             UniversityStudent? universityStudent = null;
 
             if (!string.IsNullOrWhiteSpace(studentId))
@@ -309,10 +293,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
 
-            // -------------------------------------------------
             // CREATE APPLICATION USER
-            // -------------------------------------------------
-
             var user = new ApplicationUser
             {
                 UserName = registration.Email,
@@ -339,10 +320,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
 
-            // -------------------------------------------------
             // ADD STUDENT ROLE
-            // -------------------------------------------------
-
             var roleResult =
                 await _userManager.AddToRoleAsync(
                     user,
@@ -363,15 +341,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
 
-            // -------------------------------------------------
             // CREATE STUDENT PROFILE
-            // -------------------------------------------------
             //
-            // Only create a StudentProfile when a Student ID
-            // is available.
-            //
-            // A pre-arrival student may be approved without
-            // having a Student ID yet.
+            // Only create a StudentProfile when a Student ID is available.
+            // A pre-arrival student may be approved without having a Student ID yet.
             //
 
             if (!string.IsNullOrWhiteSpace(studentId))
@@ -386,19 +359,13 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
 
-            // -------------------------------------------------
             // MARK REGISTRATION AS APPROVED
-            // -------------------------------------------------
-
             registration.Status = "Approved";
 
             await _context.SaveChangesAsync();
 
 
-            // -------------------------------------------------
             // SEND APPROVAL EMAIL
-            // -------------------------------------------------
-
             try
             {
                 await _emailService.SendStudentApprovalEmailAsync(
@@ -420,10 +387,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             }
 
 
-            // -------------------------------------------------
             // SUCCESS
-            // -------------------------------------------------
-
             TempData["RegistrationSuccess"] =
                 $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully, and the login details were emailed to {registration.Email}.";
 

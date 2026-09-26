@@ -9,7 +9,7 @@ using Aotearoa_is_Home.Data;
 namespace Aotearoa_is_Home.Areas.Users.Controllers
 {
     [Area("Users")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Super Admin")]
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -153,6 +153,7 @@ namespace Aotearoa_is_Home.Areas.Users.Controllers
             return View(user);
         }
 
+        [Authorize(Roles = "Super Admin")]
         public async Task<IActionResult> Edit(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -188,6 +189,7 @@ namespace Aotearoa_is_Home.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin")]
         public async Task<IActionResult> Edit(EditUserViewModel model)
         {
             if (!ModelState.IsValid)
@@ -263,6 +265,8 @@ namespace Aotearoa_is_Home.Areas.Users.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize(Roles = "Super Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -289,6 +293,7 @@ namespace Aotearoa_is_Home.Areas.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
+        [Authorize(Roles = "Super Admin")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

@@ -139,7 +139,7 @@
 
                             <!-- ADMIN NAVIGATION -->
 
-                            @if (User.IsInRole("Admin"))
+                            @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
@@ -162,7 +162,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
                                        asp-area="Admin"
-                                       asp-controller="Home"
+                                       asp-controller="Settlement"
                                        asp-action="Index">
                                         Settlement Content
                                     </a>
@@ -263,7 +263,7 @@
                                                 Profile
                                             </a>
                                         }
-                                        else if (User.IsInRole("Admin"))
+                                        else if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
                                         {
                                             <a class="dropdown-item"
                                                asp-area="Views"
@@ -350,7 +350,7 @@
 
                         </a>
                     }
-                    else if (User.IsInRole("Admin"))
+                    else if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2"
                            asp-area="Admin"
