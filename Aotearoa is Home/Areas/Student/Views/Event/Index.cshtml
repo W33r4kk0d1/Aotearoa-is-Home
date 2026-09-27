@@ -3,193 +3,496 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Events";
+
+    var events = Model.ToList();
+
+    var categories = events
+        .Where(e => !string.IsNullOrWhiteSpace(e.Category))
+        .Select(e => e.Category!)
+        .Distinct()
+        .OrderBy(c => c)
+        .ToList();
+
+    var regions = events
+        .Where(e => !string.IsNullOrWhiteSpace(e.Region))
+        .Select(e => e.Region!)
+        .Distinct()
+        .OrderBy(r => r)
+        .ToList();
 }
 
-<div class="container admin-container">
+<div class="student-events-page">
 
-    <h1>Events</h1>
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
 
-    <p class="admin-subtitle">
-        Discover events and activities happening in your community.
-    </p>
+    <section class="student-events-intro">
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            No events are currently available.
-        </div>
-    }
-    else
-    {
-        <div class="row">
+        <span class="student-eyebrow">
+            COMMUNITY & EVENTS
+        </span>
 
-            <div class="col-md-5">
+        <h1>
+            Events happening around you
+        </h1>
 
-                @foreach (var eventItem in Model)
-                {
-                    <div class="card mb-3 event-card"
-                         onclick="showEvent(@eventItem.Id)"
-                         style="cursor: pointer;">
+        <p>
+            Discover events, activities, and opportunities
+            happening in your community.
+        </p>
 
-                        @if (eventItem.ImageData != null)
-                        {
-                            <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
-                                 class="card-img-top"
-                                 alt="@eventItem.Title" />
-                        }
+    </section>
 
-                        <div class="card-body">
 
-                            <h5 class="card-title">
-                                @eventItem.Title
-                            </h5>
+    <!-- =====================================================
+         SEARCH & FILTERS
+         ===================================================== -->
 
-                            @if (!string.IsNullOrEmpty(eventItem.Category))
-                            {
-                                <span class="badge bg-primary mb-2">
-                                    @eventItem.Category
-                                </span>
-                            }
+    <div class="student-events-filters">
 
-                            <p class="card-text">
-                                @eventItem.Description
-                            </p>
+        <!-- SEARCH -->
 
-                            <p class="mb-1">
-                                <strong>Location:</strong>
-                                @eventItem.Location
-                            </p>
+        <div class="student-events-search">
 
-                            <p class="mb-0">
-                                <strong>Starts:</strong>
-                                @eventItem.StartDate.ToString("dd/MM/yyyy h:mm tt")
-                            </p>
+            <div class="student-search-wrapper">
 
-                        </div>
+                <span class="student-search-icon">
+                    🔍
+                </span>
 
-                    </div>
-                }
+                <input type="text"
+                       id="eventSearch"
+                       class="student-search-input"
+                       placeholder="Search events..."
+                       autocomplete="off" />
 
             </div>
 
-            <div class="col-md-7">
+        </div>
 
-                <div id="eventDetails"
-                     class="card"
-                     style="display: none;">
 
-                    <div class="card-body">
+        <!-- FILTERS -->
 
-                        <div id="eventImageContainer"></div>
+        @if (categories.Any() || regions.Any())
+        {
+            <div class="student-event-filter-row">
 
-                        <h2 id="eventTitle"></h2>
+                <!-- CATEGORY -->
 
-                        <span id="eventCategory"
-                              class="badge bg-primary mb-3"></span>
+                <div class="student-event-filter">
 
-                        <p id="eventDescription"></p>
+                    <label for="categoryFilter">
+                        Category
+                    </label>
 
-                        <p>
-                            <strong>Location:</strong>
-                            <span id="eventLocation"></span>
-                        </p>
+                    <select id="categoryFilter"
+                            class="student-event-filter-select">
 
-                        <p>
-                            <strong>Start:</strong>
-                            <span id="eventStart"></span>
-                        </p>
+                        <option value="">
+                            All Categories
+                        </option>
 
-                        <p>
-                            <strong>End:</strong>
-                            <span id="eventEnd"></span>
-                        </p>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category">
+                                @category
+                            </option>
+                        }
 
-                        <p>
-                            <strong>Organised by:</strong>
-                            <span id="eventOrganisation"></span>
-                        </p>
+                    </select>
 
-                    </div>
+                </div>
+
+
+                <!-- LOCATION / REGION -->
+
+                <div class="student-event-filter">
+
+                    <label for="regionFilter">
+                        Location
+                    </label>
+
+                    <select id="regionFilter"
+                            class="student-event-filter-select">
+
+                        <option value="">
+                            All Locations
+                        </option>
+
+                        @foreach (var region in regions)
+                        {
+                            <option value="@region">
+                                @region
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- CLEAR FILTERS -->
+
+                <div class="student-event-filter-clear">
+
+                    <button type="button"
+                            id="clearEventFilters"
+                            class="student-event-clear-button">
+
+                        Clear Filters
+
+                    </button>
 
                 </div>
 
             </div>
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         EVENTS
+         ===================================================== -->
+
+    @if (!events.Any())
+    {
+        <div class="student-empty-state">
+
+            <h2>
+                No events are currently available
+            </h2>
+
+            <p>
+                Check back later for upcoming events and activities.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="student-event-grid"
+             id="eventGrid">
+
+            @foreach (var eventItem in events)
+            {
+                <a href="@Url.Action(
+                            "Details",
+                            "Event",
+                            new
+                            {
+                                area = "Student",
+                                id = eventItem.Id
+                            })"
+                   class="student-event-card"
+                   data-search="@eventItem.Title @eventItem.Category @eventItem.Location @eventItem.Region @eventItem.Description"
+                   data-category="@eventItem.Category"
+                   data-region="@eventItem.Region">
+
+                    <!-- IMAGE -->
+
+                    @if (eventItem.ImageData != null &&
+                         eventItem.ImageData.Length > 0)
+                    {
+                        <div class="student-event-card-image-wrapper">
+
+                            <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
+                                 alt="@eventItem.Title"
+                                 class="student-event-card-image" />
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="student-event-card-placeholder">
+
+                            <span>
+                                EVENT
+                            </span>
+
+                        </div>
+                    }
+
+
+                    <!-- CONTENT -->
+
+                    <div class="student-event-card-content">
+
+                        @if (!string.IsNullOrWhiteSpace(eventItem.Category))
+                        {
+                            <span class="student-event-category">
+                                @eventItem.Category
+                            </span>
+                        }
+
+                        <h2>
+                            @eventItem.Title
+                        </h2>
+
+                        <p class="student-event-description">
+                            @eventItem.Description
+                        </p>
+
+
+                        <div class="student-event-info">
+
+                            <!-- DATE -->
+
+                            <div>
+
+                                <strong>
+                                    📅
+                                </strong>
+
+                                @eventItem.StartDate.ToString(
+                                    "dd MMM yyyy, h:mm tt")
+
+                            </div>
+
+
+                            <!-- LOCATION -->
+
+                            <div>
+
+                                <strong>
+                                    📍
+                                </strong>
+
+                                @eventItem.Location
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- REGION -->
+
+                        @if (!string.IsNullOrWhiteSpace(eventItem.Region))
+                        {
+                            <div class="student-event-region">
+
+                                📍 @eventItem.Region
+
+                            </div>
+                        }
+
+
+                        <div class="student-event-view">
+
+                            View event
+
+                            <span>
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+            }
+
+        </div>
+
+
+        <!-- =================================================
+             NO SEARCH / FILTER RESULTS
+             ================================================= -->
+
+        <div id="eventNoResults"
+             class="student-empty-state"
+             style="display: none;">
+
+            <h2>
+                No matching events found
+            </h2>
+
+            <p>
+                Try changing your search or filters.
+            </p>
 
         </div>
     }
 
 </div>
 
+
+<!-- =========================================================
+     FILTER SCRIPT
+     ========================================================= -->
+
 <script>
-    const events = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(e => new
-        {
-            id = e.Id,
-                title = e.Title,
-                description = e.Description,
-                location = e.Location,
-                startDate = e.StartDate.ToString("dd/MM/yyyy h:mm tt"),
-                endDate = e.EndDate.ToString("dd/MM/yyyy h:mm tt"),
-                category = e.Category,
-                organisation = e.EventProviderProfile != null
-                ? e.EventProviderProfile.OrganisationName
-                : "",
-                image = e.ImageData != null
-                ? "data:" + e.ImageContentType + ";base64," + Convert.ToBase64String(e.ImageData)
-                : null
-        })));
 
-    function showEvent(id) {
+    document.addEventListener("DOMContentLoaded", function () {
 
-        const eventItem = events.find(e => e.id === id);
+        const searchInput =
+            document.getElementById("eventSearch");
 
-        if (!eventItem) {
-            return;
+        const categoryFilter =
+            document.getElementById("categoryFilter");
+
+        const regionFilter =
+            document.getElementById("regionFilter");
+
+        const clearButton =
+            document.getElementById("clearEventFilters");
+
+        const eventCards =
+            document.querySelectorAll(".student-event-card");
+
+        const noResults =
+            document.getElementById("eventNoResults");
+
+
+        function filterEvents() {
+
+            const searchText =
+                searchInput
+                    ? searchInput.value.trim().toLowerCase()
+                    : "";
+
+            const selectedCategory =
+                categoryFilter
+                    ? categoryFilter.value.trim().toLowerCase()
+                    : "";
+
+            const selectedRegion =
+                regionFilter
+                    ? regionFilter.value.trim().toLowerCase()
+                    : "";
+
+            let visibleCount = 0;
+
+
+            eventCards.forEach(function (card) {
+
+                const searchContent =
+                    (card.dataset.search || "").toLowerCase();
+
+                const cardCategory =
+                    (card.dataset.category || "").toLowerCase();
+
+                const cardRegion =
+                    (card.dataset.region || "").toLowerCase();
+
+
+                const matchesSearch =
+                    searchText === "" ||
+                    searchContent.includes(searchText);
+
+
+                const matchesCategory =
+                    selectedCategory === "" ||
+                    cardCategory === selectedCategory;
+
+
+                const matchesRegion =
+                    selectedRegion === "" ||
+                    cardRegion === selectedRegion;
+
+
+                if (
+                    matchesSearch &&
+                    matchesCategory &&
+                    matchesRegion
+                ) {
+
+                    card.style.display = "";
+
+                    visibleCount++;
+
+                }
+                else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+
+            if (noResults) {
+
+                if (visibleCount === 0) {
+
+                    noResults.style.display = "block";
+
+                }
+                else {
+
+                    noResults.style.display = "none";
+
+                }
+
+            }
+
         }
 
-        document.getElementById("eventDetails").style.display = "block";
 
-        document.getElementById("eventTitle").textContent =
-            eventItem.title;
+        /* SEARCH */
 
-        document.getElementById("eventDescription").textContent =
-            eventItem.description;
+        if (searchInput) {
 
-        document.getElementById("eventLocation").textContent =
-            eventItem.location;
+            searchInput.addEventListener(
+                "input",
+                filterEvents
+            );
 
-        document.getElementById("eventStart").textContent =
-            eventItem.startDate;
-
-        document.getElementById("eventEnd").textContent =
-            eventItem.endDate;
-
-        document.getElementById("eventOrganisation").textContent =
-            eventItem.organisation;
-
-        const category = document.getElementById("eventCategory");
-
-        if (eventItem.category) {
-            category.textContent = eventItem.category;
-            category.style.display = "inline-block";
-        }
-        else {
-            category.style.display = "none";
         }
 
-        const imageContainer =
-            document.getElementById("eventImageContainer");
 
-        imageContainer.innerHTML = "";
+        /* CATEGORY */
 
-        if (eventItem.image) {
+        if (categoryFilter) {
 
-            const image = document.createElement("img");
+            categoryFilter.addEventListener(
+                "change",
+                filterEvents
+            );
 
-            image.src = eventItem.image;
-            image.alt = eventItem.title;
-            image.className = "img-fluid mb-4";
-
-            imageContainer.appendChild(image);
         }
-    }
+
+
+        /* REGION */
+
+        if (regionFilter) {
+
+            regionFilter.addEventListener(
+                "change",
+                filterEvents
+            );
+
+        }
+
+
+        /* CLEAR */
+
+        if (clearButton) {
+
+            clearButton.addEventListener(
+                "click",
+                function () {
+
+                    if (searchInput) {
+                        searchInput.value = "";
+                    }
+
+                    if (categoryFilter) {
+                        categoryFilter.value = "";
+                    }
+
+                    if (regionFilter) {
+                        regionFilter.value = "";
+                    }
+
+                    filterEvents();
+
+                }
+            );
+
+        }
+
+    });
+
 </script>

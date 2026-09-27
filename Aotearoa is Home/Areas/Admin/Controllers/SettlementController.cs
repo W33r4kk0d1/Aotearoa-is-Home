@@ -129,6 +129,8 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 page.BackgroundImageContentType = backgroundImage.ContentType;
             }
 
+            page.CreatedAt = DateTime.UtcNow;
+            page.UpdatedAt = DateTime.UtcNow;
 
             // Save settlement page
             _context.SettlementPages.Add(page);
@@ -290,6 +292,8 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     _context.ContentBlocks.Add(block);
                 }
             }
+
+            existingPage.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 

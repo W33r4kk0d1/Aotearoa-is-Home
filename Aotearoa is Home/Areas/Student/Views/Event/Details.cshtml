@@ -1,5 +1,177 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Aotearoa_is_Home.Models.Event
+
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Title;
+
+    var nzTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
+    var publishedDate = TimeZoneInfo.ConvertTimeFromUtc(
+        DateTime.SpecifyKind(Model.CreatedAt, DateTimeKind.Utc),
+        nzTimeZone);
 }
+
+<div class="student-event-details-page">
+
+    <!-- BACK -->
+    <div class="student-event-back">
+
+        <a href="@Url.Action(
+                    "Index",
+                    "Event",
+                    new { area = "Student" })"
+           class="student-back-button">
+
+            ← Back to Events
+
+        </a>
+
+    </div>
+
+
+    <!-- EVENT -->
+    <article class="student-event-details">
+
+
+        <!-- IMAGE -->
+        @if (Model.ImageData != null &&
+             Model.ImageData.Length > 0)
+        {
+            <div class="student-event-details-image">
+
+                <img src="data:@Model.ImageContentType;base64,@Convert.ToBase64String(Model.ImageData)"
+                     alt="@Model.Title" />
+
+            </div>
+        }
+
+
+        <!-- HEADER -->
+        <div class="student-event-details-header">
+
+            @if (!string.IsNullOrWhiteSpace(Model.Category))
+            {
+                <span class="student-event-category">
+                    @Model.Category
+                </span>
+            }
+
+            <h1>
+                @Model.Title
+            </h1>
+
+            @if (Model.EventProviderProfile != null)
+            {
+                <p class="student-event-organisation">
+
+                    Organised by
+
+                    <strong>
+                        @Model.EventProviderProfile.OrganisationName
+                    </strong>
+
+                </p>
+            }
+
+            <!-- PUBLISHED DATE -->
+            <p class="student-event-published">
+
+                Published:
+                <strong>
+                    @publishedDate.ToString("dd MMMM yyyy, h:mm tt")
+                </strong>
+
+            </p>
+
+        </div>
+
+
+        <!-- EVENT INFORMATION -->
+        <div class="student-event-details-info">
+
+            <!-- DATE -->
+            <div class="student-event-detail-item">
+
+                <span class="student-event-detail-icon">
+                    📅
+                </span>
+
+                <div>
+
+                    <small>
+                        Date
+                    </small>
+
+                    <strong>
+                        @Model.StartDate.ToString("dd MMMM yyyy")
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TIME -->
+            <div class="student-event-detail-item">
+
+                <span class="student-event-detail-icon">
+                    🕐
+                </span>
+
+                <div>
+
+                    <small>
+                        Time
+                    </small>
+
+                    <strong>
+                        @Model.StartDate.ToString("h:mm tt")
+                        -
+                        @Model.EndDate.ToString("h:mm tt")
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOCATION -->
+            <div class="student-event-detail-item">
+
+                <span class="student-event-detail-icon">
+                    📍
+                </span>
+
+                <div>
+
+                    <small>
+                        Location
+                    </small>
+
+                    <strong>
+                        @Model.Location
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+        <section class="student-event-description-section">
+
+            <h2>
+                About this event
+            </h2>
+
+            <p>
+                @Model.Description
+            </p>
+
+        </section>
+
+
+    </article>
+
+</div>

@@ -1,28 +1,178 @@
-﻿@{
-    ViewData["Title"] = "Home";
-}
-
-@model List<Aotearoa_is_Home.Models.SettlementPage>
+@model Aotearoa_is_Home.Models.ViewModels.StudentHomeViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Student";
 }
 
-<div class="container home-container">
+<div class="student-home">
 
-    <div class="category-grid">
+    <!-- HERO -->
+    <section class="student-home-hero">
 
-        @foreach (var settlementPage in Model)
-        {
-            <a href="/Student/Settlement/View/@settlementPage.Id"
-               class="category-box">
+        <div class="student-home-hero-content">
 
-                <span>@(settlementPage.CategoryName)</span>
+            <span class="student-eyebrow">
+                WELCOME
+            </span>
 
+            <h1>
+                Your Aotearoa journey starts here
+            </h1>
+
+            <p>
+                Find useful information, events, and resources
+                to help you settle into life in New Zealand.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- SETTLEMENT INFORMATION -->
+    <section class="student-home-section">
+
+        <div class="student-section-title-row">
+
+            <div>
+                <span class="student-eyebrow">
+                    SETTLEMENT
+                </span>
+
+                <h2>
+                    Settlement Information
+                </h2>
+            </div>
+
+            <a asp-area="Student"
+               asp-controller="Settlement"
+               asp-action="Index"
+               class="student-view-all">
+                View all →
             </a>
+
+        </div>
+
+
+        @if (Model.SettlementPages.Any())
+        {
+            <div class="student-home-settlement-grid">
+
+                @foreach (var settlementPage in Model.SettlementPages.Take(3))
+                {
+                    <a asp-area="Student"
+                       asp-controller="Settlement"
+                       asp-action="View"
+                       asp-route-id="@settlementPage.Id"
+                       class="student-home-settlement-card">
+
+                        @if (settlementPage.BackgroundImage != null &&
+                             settlementPage.BackgroundImage.Length > 0)
+                        {
+                            <img src="data:@settlementPage.BackgroundImageContentType;base64,@Convert.ToBase64String(settlementPage.BackgroundImage)"
+                                 alt="@settlementPage.CategoryName" />
+                        }
+
+                        <div class="student-home-settlement-overlay"></div>
+
+                        <div class="student-home-settlement-title">
+                            @settlementPage.CategoryName
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                No settlement information is currently available.
+            </div>
         }
 
-    </div>
+    </section>
+
+
+    <!-- EVENTS -->
+    <section class="student-home-section">
+
+        <div class="student-section-title-row">
+
+            <div>
+                <span class="student-eyebrow">
+                    COMMUNITY
+                </span>
+
+                <h2>
+                    Upcoming Events
+                </h2>
+            </div>
+
+            <a asp-area="Student"
+               asp-controller="Event"
+               asp-action="Index"
+               class="student-view-all">
+                View all →
+            </a>
+
+        </div>
+
+
+        @if (Model.Events.Any())
+        {
+            <div class="student-home-event-grid">
+
+                @foreach (var eventItem in Model.Events)
+                {
+                    <a asp-area="Student"
+                       asp-controller="Event"
+                       asp-action="Details"
+                       asp-route-id="@eventItem.Id"
+                       class="student-home-event-card">
+
+                        @if (eventItem.ImageData != null)
+                        {
+                            <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
+                                 alt="@eventItem.Title" />
+                        }
+
+                        <div class="student-home-event-content">
+
+                            @if (!string.IsNullOrWhiteSpace(eventItem.Category))
+                            {
+                                <span class="student-event-category">
+                                    @eventItem.Category
+                                </span>
+                            }
+
+                            <h3>
+                                @eventItem.Title
+                            </h3>
+
+                            <p>
+                                @eventItem.Location
+                            </p>
+
+                            <small>
+                                @eventItem.StartDate.ToString("dd/MM/yyyy h:mm tt")
+                            </small>
+
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                No upcoming events are currently available.
+            </div>
+        }
+
+    </section>
 
 </div>

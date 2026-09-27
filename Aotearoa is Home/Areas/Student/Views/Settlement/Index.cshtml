@@ -1,0 +1,174 @@
+﻿@model List<Aotearoa_is_Home.Models.SettlementPage>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Settlement Information";
+}
+
+<div class="student-settlement-page">
+
+    <!-- INTRO -->
+    <section class="student-settlement-intro">
+
+        <span class="student-eyebrow">
+            SETTLEMENT INFORMATION HUB
+        </span>
+
+        <h1>
+            Information to help you settle in Aotearoa
+        </h1>
+
+        <p>
+            Explore useful information about accommodation,
+            education, healthcare, transport, employment,
+            and other important parts of settling in New Zealand.
+        </p>
+
+    </section>
+
+    <div class="student-settlement-search">
+
+        <div class="student-search-wrapper">
+
+            <span class="student-search-icon">
+                🔍
+            </span>
+
+            <input type="text"
+                id="settlementSearch"
+                class="student-search-input"
+                placeholder="Search settlement information..."
+                autocomplete="off" />
+
+        </div>
+
+    </div>
+
+
+    <!-- SETTLEMENT CATEGORIES -->
+
+    @if (!Model.Any())
+    {
+        <div class="student-empty-state">
+
+            <h2>
+                No settlement information available
+            </h2>
+
+            <p>
+                Settlement information will appear here when it becomes available.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="student-settlement-grid" id="settlementGrid">
+
+            @foreach (var settlementPage in Model)
+            {
+                <a href="@Url.Action(
+                            "View",
+                            "Settlement",
+                            new
+                            {
+                                area = "Student",
+                                id = settlementPage.Id
+                            })"
+                class="student-settlement-card"
+                data-category="@settlementPage.CategoryName">
+
+                    @if (settlementPage.BackgroundImage != null &&
+                        settlementPage.BackgroundImage.Length > 0)
+                    {
+                        <img src="data:@settlementPage.BackgroundImageContentType;base64,@Convert.ToBase64String(settlementPage.BackgroundImage)"
+                            alt="@settlementPage.CategoryName"
+                            class="student-settlement-card-image" />
+                    }
+                    else
+                    {
+                        <div class="student-settlement-card-placeholder">
+                            No image available
+                        </div>
+                    }
+
+                    <div class="student-settlement-card-overlay"></div>
+
+                    <div class="student-settlement-card-title">
+                        @settlementPage.CategoryName
+                    </div>
+
+                </a>
+            }
+
+        </div>
+
+        <div id="settlementNoResults"
+            class="student-empty-state"
+            style="display: none;">
+
+            <h2>
+                No settlement information found
+            </h2>
+
+            <p>
+                Try searching with a different keyword.
+            </p>
+
+        </div>
+    }
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput =
+            document.getElementById("settlementSearch");
+
+        const cards =
+            document.querySelectorAll(".student-settlement-card");
+
+        const noResults =
+            document.getElementById("settlementNoResults");
+
+        searchInput.addEventListener("input", function () {
+
+            const searchText =
+                this.value.trim().toLowerCase();
+
+            let visibleCount = 0;
+
+            cards.forEach(function (card) {
+
+                const category =
+                    card.dataset.category.toLowerCase();
+
+                if (category.includes(searchText)) {
+
+                    card.style.display = "block";
+
+                    visibleCount++;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+            if (visibleCount === 0 && searchText !== "") {
+
+                noResults.style.display = "block";
+
+            } else {
+
+                noResults.style.display = "none";
+
+            }
+
+        });
+
+    });
+</script>

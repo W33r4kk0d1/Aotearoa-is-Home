@@ -65,6 +65,16 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
             ModelState.Remove(nameof(Event.EventProviderProfileId));
 
+            if (string.IsNullOrWhiteSpace(eventItem.Region))
+            {
+                ModelState.AddModelError(nameof(Event.Region), "Please select a region.");
+            }
+
+            if (string.IsNullOrWhiteSpace(eventItem.Category))
+            {
+                ModelState.AddModelError(nameof(Event.Category), "Please select an event category.");
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -91,6 +101,8 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             try
             {
                 _context.Events.Add(eventItem);
+
+                eventItem.CreatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
             }

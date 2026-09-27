@@ -3,55 +3,263 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = Model.CategoryName;
+
+    var nzTimeZone =
+        TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
+
+    var lastUpdated =
+        TimeZoneInfo.ConvertTimeFromUtc(
+            Model.UpdatedAt,
+            nzTimeZone);
 }
 
-<div class="container settlement-page">
 
-    <div class="settlement-page-header">
+<div class="student-settlement-view">
 
-        <h1>
-            @(Model.CategoryName)
-        </h1>
+    <div class="student-settlement-back">
+
+        <a href="@Url.Action(
+                    "Index",
+                    "Settlement",
+                    new { area = "Student" })"
+        class="student-back-button">
+
+            ← Back to Settlement Information
+
+        </a>
 
     </div>
 
-    <div class="settlement-content">
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
 
-        @foreach (var block in Model.ContentBlocks.OrderBy(b => b.DisplayOrder))
+    <section class="student-settlement-hero">
+
+        @if (Model.BackgroundImage != null &&
+             Model.BackgroundImage.Length > 0)
         {
+            <img src="data:@Model.BackgroundImageContentType;base64,@Convert.ToBase64String(Model.BackgroundImage)"
+                 alt="@Model.CategoryName"
+                 class="student-settlement-hero-image" />
+        }
+
+        <div class="student-settlement-hero-overlay"></div>
+
+        <div class="student-settlement-hero-content">
+
+            <span class="student-eyebrow">
+                SETTLEMENT INFORMATION
+            </span>
+
+            <h1>
+                @Model.CategoryName
+            </h1>
+
+            <p>
+                Helpful information and resources to help you
+                settle into Aotearoa New Zealand.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LAST UPDATED
+         ===================================================== -->
+
+    <div class="student-settlement-meta">
+
+        <span>
+            Last updated:
+        </span>
+
+        <strong>
+            @lastUpdated.ToString("dd MMMM yyyy, h:mm tt")
+        </strong>
+
+    </div>
+
+    <div class="student-content-search">
+
+        <div class="student-search-wrapper">
+
+            <span class="student-search-icon">
+                🔍
+            </span>
+
+            <input type="text"
+                id="contentSearch"
+                class="student-search-input"
+                placeholder="Search this page..."
+                autocomplete="off" />
+
+        </div>
+
+    </div>
+
+    <div id="contentNoResults"
+        class="student-content-no-results"
+        style="display: none;">
+
+        No matching information found.
+
+    </div>
+
+    <!-- =====================================================
+         CONTENT
+         ===================================================== -->
+
+    <section class="student-settlement-content"
+         id="settlementContent">
+
+        @foreach (var block in Model.ContentBlocks
+            .OrderBy(b => b.DisplayOrder))
+        {
+
             @if (block.Type == "heading")
             {
-                <h1 class="settlement-heading">
-                    @(block.Content)
-                </h1>
+                <h2 class="student-content-heading searchable-content">
+                    @block.Content
+                </h2>
             }
 
             else if (block.Type == "subheading")
             {
-                <h2 class="settlement-subheading">
-                    @(block.Content)
-                </h2>
+                <h3 class="student-content-subheading searchable-content">
+                    @block.Content
+                </h3>
             }
 
             else if (block.Type == "paragraph")
             {
-                <p class="settlement-paragraph">
-                    @(block.Content)
+                <p class="student-content-paragraph searchable-content">
+                    @block.Content
                 </p>
             }
 
             else if (block.Type == "image")
             {
-                <div class="settlement-image-container">
+                <div class="student-content-image searchable-content">
 
-                    <img src="@block.Content"
-                         alt="@(Model.CategoryName)"
-                         class="settlement-image" />
+                    @if (block.ImageData != null &&
+                        block.ImageData.Length > 0)
+                    {
+                        <img src="data:@block.ImageContentType;base64,@Convert.ToBase64String(block.ImageData)"
+                            alt="@Model.CategoryName" />
+                    }
+                    else if (!string.IsNullOrWhiteSpace(block.Content))
+                    {
+                        <img src="@block.Content"
+                            alt="@Model.CategoryName" />
+                    }
 
                 </div>
             }
+
+            else if (block.Type == "link")
+            {
+                var linkDisplayText = "Visit Resource";
+                var linkTargetUrl = "#";
+
+                if (!string.IsNullOrWhiteSpace(block.Content) &&
+                    block.Content.Contains("||"))
+                {
+                    var pieces = block.Content.Split("||", 2);
+
+                    linkDisplayText = pieces[0].Trim();
+
+                    linkTargetUrl =
+                        pieces.Length > 1
+                            ? pieces[1].Trim()
+                            : "#";
+                }
+                else
+                {
+                    linkTargetUrl =
+                        block.Content?.Trim() ?? "#";
+                }
+
+                <div class="student-content-link searchable-content">
+
+                    <a href="@linkTargetUrl"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                        <span class="student-content-link-icon">
+                            🔗
+                        </span>
+
+                        <span class="student-content-link-text">
+                            @linkDisplayText
+                        </span>
+
+                        <span class="student-content-link-arrow">
+                            ↗
+                        </span>
+
+                    </a>
+
+                </div>
+            }
+
         }
 
-    </div>
+    </section>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput =
+            document.getElementById("contentSearch");
+
+        const contentBlocks =
+            document.querySelectorAll(".searchable-content");
+
+        const noResults =
+            document.getElementById("contentNoResults");
+
+        searchInput.addEventListener("input", function () {
+
+            const searchText =
+                this.value.trim().toLowerCase();
+
+            let visibleCount = 0;
+
+            contentBlocks.forEach(function (block) {
+
+                const text =
+                    block.textContent.toLowerCase();
+
+                if (text.includes(searchText)) {
+
+                    block.style.display = "";
+
+                    visibleCount++;
+
+                } else {
+
+                    block.style.display = "none";
+
+                }
+
+            });
+
+            if (visibleCount === 0 && searchText !== "") {
+
+                noResults.style.display = "block";
+
+            } else {
+
+                noResults.style.display = "none";
+
+            }
+
+        });
+
+    });
+</script>

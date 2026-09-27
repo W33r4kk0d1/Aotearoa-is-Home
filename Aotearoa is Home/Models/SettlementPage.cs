@@ -10,6 +10,10 @@
 
         public string? BackgroundImageContentType { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
         public List<ContentBlock> ContentBlocks { get; set; } = new List<ContentBlock>();
     }
 }
