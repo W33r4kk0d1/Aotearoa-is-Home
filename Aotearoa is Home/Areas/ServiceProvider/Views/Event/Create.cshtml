@@ -19,7 +19,11 @@
 
         @Html.AntiForgeryToken()
 
+
+        <!-- EVENT TITLE -->
+
         <div class="mb-3">
+
             <label for="Title" class="form-label">
                 Event Title
             </label>
@@ -28,10 +32,16 @@
                    id="Title"
                    name="Title"
                    class="form-control"
-                   placeholder="Enter event title" />
+                   placeholder="Enter event title"
+                   required />
+
         </div>
 
+
+        <!-- DESCRIPTION -->
+
         <div class="mb-3">
+
             <label for="Description" class="form-label">
                 Description
             </label>
@@ -40,20 +50,78 @@
                       name="Description"
                       class="form-control"
                       rows="6"
-                      placeholder="Describe the event"></textarea>
+                      placeholder="Describe the event"
+                      required></textarea>
+
         </div>
 
+
+        <!-- LOCATION / VENUE -->
+
         <div class="mb-3">
+
             <label for="Location" class="form-label">
-                Location
+                Location / Venue
             </label>
 
             <input type="text"
                    id="Location"
                    name="Location"
                    class="form-control"
-                   placeholder="Enter event location" />
+                   placeholder="e.g. WelTec Petone Campus"
+                   maxlength="150"
+                   required />
+
         </div>
+
+
+        <!-- REGION -->
+
+        <div class="mb-3">
+
+            <label for="Region" class="form-label">
+                Region
+            </label>
+
+            <select id="Region"
+                    name="Region"
+                    class="form-select"
+                    required>
+
+                <option value="">
+                    Select a region
+                </option>
+
+                <option value="Wellington">
+                    Wellington
+                </option>
+
+                <option value="Lower Hutt">
+                    Lower Hutt
+                </option>
+
+                <option value="Upper Hutt">
+                    Upper Hutt
+                </option>
+
+                <option value="Porirua">
+                    Porirua
+                </option>
+
+                <option value="Kapiti Coast">
+                    Kapiti Coast
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DATE AND TIME -->
 
         <div class="row">
 
@@ -66,9 +134,11 @@
                 <input type="datetime-local"
                        id="StartDate"
                        name="StartDate"
-                       class="form-control" />
+                       class="form-control"
+                       required />
 
             </div>
+
 
             <div class="col-md-6 mb-3">
 
@@ -79,11 +149,15 @@
                 <input type="datetime-local"
                        id="EndDate"
                        name="EndDate"
-                       class="form-control" />
+                       class="form-control"
+                       required />
 
             </div>
 
         </div>
+
+
+        <!-- CATEGORY -->
 
         <div class="mb-3">
 
@@ -93,20 +167,47 @@
 
             <select id="Category"
                     name="Category"
-                    class="form-select">
+                    class="form-select"
+                    required>
 
-                <option value="">Select a category</option>
-                <option value="Community">Community</option>
-                <option value="Education">Education</option>
-                <option value="Employment">Employment</option>
-                <option value="Culture">Culture</option>
-                <option value="Sports">Sports</option>
-                <option value="Family">Family</option>
-                <option value="Other">Other</option>
+                <option value="">
+                    Select a category
+                </option>
+
+                <option value="Community">
+                    Community
+                </option>
+
+                <option value="Education">
+                    Education
+                </option>
+
+                <option value="Employment">
+                    Employment
+                </option>
+
+                <option value="Culture">
+                    Culture
+                </option>
+
+                <option value="Sports">
+                    Sports
+                </option>
+
+                <option value="Family">
+                    Family
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
 
             </select>
 
         </div>
+
+
+        <!-- EVENT IMAGE -->
 
         <div class="mb-4">
 
@@ -122,16 +223,23 @@
 
         </div>
 
+
+        <!-- BUTTONS -->
+
         <div>
 
             <button type="submit"
                     class="admin-create-button">
+
                 Create Event
+
             </button>
 
             <a href="/ServiceProvider/Event/Index"
                class="admin-edit-button">
+
                 Cancel
+
             </a>
 
         </div>
@@ -141,5 +249,7 @@
 </div>
 
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
 }

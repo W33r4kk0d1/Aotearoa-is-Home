@@ -13,15 +13,6 @@ namespace Aotearoa_is_Home.Models
         [Required]
         public string Description { get; set; } = string.Empty;
 
-        [Required]
-        public string Location { get; set; } = string.Empty;
-
-        [Required]
-        public DateTime StartDate { get; set; }
-
-        [Required]
-        public DateTime EndDate { get; set; }
-
         [StringLength(100)]
         public string? Category { get; set; }
 
@@ -32,5 +23,20 @@ namespace Aotearoa_is_Home.Models
         public int EventProviderProfileId { get; set; }
 
         public EventProviderProfile? EventProviderProfile { get; set; }
+
+        [Required]
+        [StringLength(150)]
+        public string Location { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        public string? Region { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime StartDate { get; set; }
+
+        [Required]
+        public DateTime EndDate { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }
