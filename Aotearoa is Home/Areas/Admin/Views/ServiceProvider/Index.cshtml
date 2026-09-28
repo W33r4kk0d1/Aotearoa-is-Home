@@ -1,0 +1,127 @@
+﻿@model IList<Aotearoa_is_Home.Models.ApplicationUser>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Verify Service Providers";
+}
+
+<div class="container my-5">
+
+    <h1>Verify Service Providers</h1>
+
+    <p class="text-muted">
+        Review and approve service provider accounts.
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted">
+                    No service provider accounts found.
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Contact Number</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @user.FirstName @user.LastName
+                                    </td>
+
+                                    <td>
+                                        @user.Email
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrEmpty(user.ContactNumber)
+                                            ? "Not provided"
+                                            : user.ContactNumber)
+                                    </td>
+
+                                    <td>
+                                        @if (user.IsServiceProviderVerified)
+                                        {
+                                            <span class="badge bg-success">
+                                                Approved
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Pending
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        @if (!user.IsServiceProviderVerified)
+                                        {
+                                            <form action="/Admin/ServiceProvider/Approve"
+                                                  method="post"
+                                                  style="display:inline">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@user.Id" />
+
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm">
+                                                    Approve
+                                                </button>
+
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form action="/Admin/ServiceProvider/Reject"
+                                                  method="post"
+                                                  style="display:inline">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@user.Id" />
+
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm">
+                                                    Reject
+                                                </button>
+
+                                            </form>
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

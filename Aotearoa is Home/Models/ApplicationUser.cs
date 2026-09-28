@@ -17,6 +17,9 @@ namespace Aotearoa_is_Home.Models
         public string? LinkedInProfile { get; set; }
 
         public DateTime? CreatedAt { get; set; }
+
+        public bool IsServiceProviderVerified { get; set; } = false;
+
         public Language? Language { get; set; }
     }
 }

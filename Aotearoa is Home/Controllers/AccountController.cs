@@ -30,14 +30,12 @@ namespace Aotearoa_is_Home.Controllers
             _emailService = emailService;
         }
 
-        // LOGIN
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -47,11 +45,9 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-            // Try email first
             var user = await _userManager.FindByEmailAsync(
                 model.UserNameOrEmail);
 
-            // If not found, try username
             if (user == null)
             {
                 user = await _userManager.FindByNameAsync(
@@ -67,6 +63,16 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
+            if (await _userManager.IsInRoleAsync(user, "Service Provider")
+                && !user.IsServiceProviderVerified)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Your service provider account is awaiting administrator approval.");
+
+                return View(model);
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
                 user,
                 model.Password,
@@ -75,7 +81,6 @@ namespace Aotearoa_is_Home.Controllers
 
             if (result.Succeeded)
             {
-                // Super Admin
                 if (await _userManager.IsInRoleAsync(user, "Super Admin"))
                 {
                     return RedirectToAction(
@@ -84,7 +89,6 @@ namespace Aotearoa_is_Home.Controllers
                         new { area = "Admin" });
                 }
 
-                // Normal Admin
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                 {
                     return RedirectToAction(
@@ -131,6 +135,7 @@ namespace Aotearoa_is_Home.Controllers
                 ModelState.AddModelError(
                     string.Empty,
                     "Your account is temporarily locked. Please try again later.");
+
                 return View(model);
             }
 
@@ -141,8 +146,6 @@ namespace Aotearoa_is_Home.Controllers
             return View(model);
         }
 
-
-        // REGISTER
         [HttpGet]
         public async Task<IActionResult> Register()
         {
@@ -151,17 +154,15 @@ namespace Aotearoa_is_Home.Controllers
             return View();
         }
 
-
-        // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             await LoadLanguages();
+
             bool isPendingStudent = false;
             Employee? verifiedEmployee = null;
 
-            // VALID ACCOUNT TYPES
             var validAccountTypes = new[]
             {
                 "Student",
@@ -177,10 +178,10 @@ namespace Aotearoa_is_Home.Controllers
                     "Please select a valid account type.");
             }
 
-            // ROLE-SPECIFIC VALIDATION
             switch (model.AccountType)
             {
                 case "Student":
+
                     if (model.HasStudentId == true)
                     {
                         if (string.IsNullOrWhiteSpace(model.StudentId))
@@ -188,6 +189,7 @@ namespace Aotearoa_is_Home.Controllers
                             ModelState.AddModelError(
                                 "StudentId",
                                 "Student ID is required when you select Yes.");
+
                             break;
                         }
 
@@ -204,7 +206,8 @@ namespace Aotearoa_is_Home.Controllers
                         }
                         else if (!universityStudent.IsCurrentStudent)
                         {
-                            if (string.IsNullOrWhiteSpace(universityStudent.ApplicationEmail) ||
+                            if (string.IsNullOrWhiteSpace(
+                                    universityStudent.ApplicationEmail) ||
                                 !string.Equals(
                                     universityStudent.ApplicationEmail,
                                     model.Email,
@@ -224,6 +227,7 @@ namespace Aotearoa_is_Home.Controllers
                     {
                         isPendingStudent = true;
                     }
+
                     break;
 
                 case "Admin":
@@ -237,10 +241,11 @@ namespace Aotearoa_is_Home.Controllers
                         break;
                     }
 
-                    verifiedEmployee = await _universityContext.Employees
-                                                .Include(e => e.Organization)
-                                                .FirstOrDefaultAsync(e =>
-                                                    e.EmployeeId == model.EmployeeId.Trim());
+                    verifiedEmployee =
+                        await _universityContext.Employees
+                            .Include(e => e.Organization)
+                            .FirstOrDefaultAsync(e =>
+                                e.EmployeeId == model.EmployeeId.Trim());
 
                     if (verifiedEmployee == null)
                     {
@@ -263,8 +268,8 @@ namespace Aotearoa_is_Home.Controllers
                     model.FirstName = verifiedEmployee.FirstName;
                     model.LastName = verifiedEmployee.LastName;
                     model.Email = verifiedEmployee.Email;
-
-                    model.DepartmentOrganisation = verifiedEmployee.Organization?.Name;
+                    model.DepartmentOrganisation =
+                        verifiedEmployee.Organization?.Name;
 
                     ModelState.Remove(nameof(model.FirstName));
                     ModelState.Remove(nameof(model.LastName));
@@ -274,60 +279,66 @@ namespace Aotearoa_is_Home.Controllers
 
                 case "Family Member":
 
-                    if (string.IsNullOrWhiteSpace(model.RelationshipToStudent))
+                    if (string.IsNullOrWhiteSpace(
+                        model.RelationshipToStudent))
                     {
                         ModelState.AddModelError(
                             "RelationshipToStudent",
                             "Relationship to student is required.");
                     }
 
-                    if (string.IsNullOrWhiteSpace(model.StudentReference))
+                    if (string.IsNullOrWhiteSpace(
+                        model.StudentReference))
                     {
                         ModelState.AddModelError(
                             "StudentReference",
                             "Student ID or student email is required.");
                     }
+
                     break;
 
                 case "Service Provider":
 
-                    if (string.IsNullOrWhiteSpace(model.OrganisationName))
+                    if (string.IsNullOrWhiteSpace(
+                        model.OrganisationName))
                     {
                         ModelState.AddModelError(
                             "OrganisationName",
                             "Organisation name is required.");
                     }
 
-                    if (string.IsNullOrWhiteSpace(model.OrganisationType))
+                    if (string.IsNullOrWhiteSpace(
+                        model.OrganisationType))
                     {
                         ModelState.AddModelError(
                             "OrganisationType",
                             "Organisation type is required.");
                     }
 
-                    if (string.IsNullOrWhiteSpace(model.OrganisationPhone))
+                    if (string.IsNullOrWhiteSpace(
+                        model.OrganisationPhone))
                     {
                         ModelState.AddModelError(
                             "OrganisationPhone",
                             "Organisation phone is required.");
                     }
 
-                    if (string.IsNullOrWhiteSpace(model.OfficeAddress))
+                    if (string.IsNullOrWhiteSpace(
+                        model.OfficeAddress))
                     {
                         ModelState.AddModelError(
                             "OfficeAddress",
                             "Office address is required.");
                     }
+
                     break;
             }
 
-            // STOP IF VALIDATION FAILED
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            // CHECK EXISTING EMAIL
             var existingUser =
                 await _userManager.FindByEmailAsync(model.Email);
 
@@ -340,19 +351,19 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-            // CREATE PENDING STUDENT REGISTRATION
             if (isPendingStudent)
             {
-                var pendingRegistration = new PendingStudentRegistration
-                {
-                    StudentId = model.StudentId,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    LinkedInProfile = model.LinkedInProfile,
-                    SubmittedAt = DateTime.UtcNow,
-                    Status = "Pending"
-                };
+                var pendingRegistration =
+                    new PendingStudentRegistration
+                    {
+                        StudentId = model.StudentId,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email,
+                        LinkedInProfile = model.LinkedInProfile,
+                        SubmittedAt = DateTime.UtcNow,
+                        Status = "Pending"
+                    };
 
                 _context.PendingStudentRegistrations.Add(
                     pendingRegistration);
@@ -367,8 +378,6 @@ namespace Aotearoa_is_Home.Controllers
                     "Account");
             }
 
-
-            // CREATE IDENTITY USER
             var user = new ApplicationUser
             {
                 UserName = model.AccountType == "Admin"
@@ -391,6 +400,10 @@ namespace Aotearoa_is_Home.Controllers
                     ? null
                     : model.ContactNumber,
 
+                ContactNumber = model.AccountType == "Admin"
+                    ? null
+                    : model.ContactNumber,
+
                 LinkedInProfile = model.AccountType == "Admin"
                     ? null
                     : model.LinkedInProfile,
@@ -398,17 +411,16 @@ namespace Aotearoa_is_Home.Controllers
                 LanguageId = model.AccountType == "Admin"
                     ? null
                     : model.LanguageId,
-                
-                CreatedAt = DateTime.UtcNow,
-            };
 
+                CreatedAt = DateTime.UtcNow,
+
+                IsServiceProviderVerified = false
+            };
 
             var result = await _userManager.CreateAsync(
                 user,
                 model.Password);
 
-
-            // CHECK USER CREATION
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -421,77 +433,78 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-            // SAVE ROLE-SPECIFIC PROFILE
             switch (model.AccountType)
             {
                 case "Student":
 
-                    _context.StudentProfiles.Add(new StudentProfile
-                    {
-                        UserId = user.Id,
-                        StudentId = model.StudentId!
-                    });
+                    _context.StudentProfiles.Add(
+                        new StudentProfile
+                        {
+                            UserId = user.Id,
+                            StudentId = model.StudentId!
+                        });
+
                     break;
 
                 case "Admin":
 
-                    _context.AdminProfiles.Add(new AdminProfile
-                    {
-                        UserId = user.Id,
-                        EmployeeId = model.EmployeeId!,
-                        DepartmentOrganisation = model.DepartmentOrganisation
-                    });
+                    _context.AdminProfiles.Add(
+                        new AdminProfile
+                        {
+                            UserId = user.Id,
+                            EmployeeId = model.EmployeeId!,
+                            DepartmentOrganisation =
+                                model.DepartmentOrganisation
+                        });
+
                     break;
 
                 case "Family Member":
 
-                    _context.FamilyProfiles.Add(new FamilyProfile
-                    {
-                        UserId = user.Id,
-                        RelationshipToStudent = model.RelationshipToStudent!,
-                        StudentReference = model.StudentReference!
-                    });
+                    _context.FamilyProfiles.Add(
+                        new FamilyProfile
+                        {
+                            UserId = user.Id,
+                            RelationshipToStudent =
+                                model.RelationshipToStudent!,
+                            StudentReference =
+                                model.StudentReference!
+                        });
+
                     break;
 
                 case "Service Provider":
 
-                    _context.EventProviderProfiles.Add(new EventProviderProfile
-                    {
-                        UserId = user.Id,
+                    _context.EventProviderProfiles.Add(
+                        new EventProviderProfile
+                        {
+                            UserId = user.Id,
+                            OrganisationName =
+                                model.OrganisationName!,
+                            OrganisationType =
+                                model.OrganisationType!,
+                            OrganisationDescription =
+                                model.OrganisationDescription,
+                            OrganisationPhone =
+                                model.OrganisationPhone,
+                            Website =
+                                model.Website,
+                            OfficeAddress =
+                                model.OfficeAddress,
+                            SupportingInformation =
+                                model.SupportingInformation
+                        });
 
-                        OrganisationName = model.OrganisationName!,
-                        OrganisationType = model.OrganisationType!,
-
-                        OrganisationDescription =
-                            model.OrganisationDescription,
-
-                        OrganisationPhone =
-                            model.OrganisationPhone,
-
-                        Website =
-                            model.Website,
-
-                        OfficeAddress =
-                            model.OfficeAddress,
-
-                        SupportingInformation =
-                            model.SupportingInformation
-                    });
                     break;
             }
 
-            // SAVE DATABASE CHANGES
             await _context.SaveChangesAsync();
 
-
-            // ADD IDENTITY ROLE
             var roleResult =
                 await _userManager.AddToRoleAsync(
                     user,
                     model.AccountType);
 
-
-            // CHECK ROLE CREATION
             if (!roleResult.Succeeded)
             {
                 foreach (var error in roleResult.Errors)
@@ -500,10 +513,10 @@ namespace Aotearoa_is_Home.Controllers
                         string.Empty,
                         error.Description);
                 }
+
                 return View(model);
             }
 
-            // SEND ACCOUNT CREATION EMAIL
             if (model.AccountType == "Student")
             {
                 try
@@ -531,7 +544,8 @@ namespace Aotearoa_is_Home.Controllers
                         user.Email!,
                         user.FirstName,
                         model.EmployeeId!,
-                        model.DepartmentOrganisation ?? "Not specified");
+                        model.DepartmentOrganisation ??
+                        "Not specified");
                 }
                 catch (Exception ex)
                 {
@@ -545,12 +559,18 @@ namespace Aotearoa_is_Home.Controllers
                 }
             }
 
-            // REGISTRATION SUCCESSFUL
-
             if (TempData["RegistrationWarning"] == null)
             {
-                TempData["RegistrationSuccess"] =
-                    "Account created successfully! A confirmation email has been sent.";
+                if (model.AccountType == "Service Provider")
+                {
+                    TempData["RegistrationSuccess"] =
+                        "Account created successfully. Your service provider account is awaiting administrator approval.";
+                }
+                else
+                {
+                    TempData["RegistrationSuccess"] =
+                        "Account created successfully! A confirmation email has been sent.";
+                }
             }
 
             return RedirectToAction(
@@ -558,21 +578,17 @@ namespace Aotearoa_is_Home.Controllers
                 "Account");
         }
 
-        // LOGOUT
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
 
-            // Return to the existing Student Home page
             return RedirectToAction(
                 "Index",
                 "Home");
         }
 
-
-        // LOAD LANGUAGES
         private async Task LoadLanguages()
         {
             ViewBag.Languages = await _context.Languages
@@ -580,7 +596,6 @@ namespace Aotearoa_is_Home.Controllers
                 .ToListAsync();
         }
 
-        // Access Denied
         [HttpGet]
         public IActionResult AccessDenied()
         {
