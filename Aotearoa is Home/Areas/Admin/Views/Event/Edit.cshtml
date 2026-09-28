@@ -1,0 +1,214 @@
+﻿@model Aotearoa_is_Home.Models.Event
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="container my-5">
+
+    <div class="mb-4">
+        <h1>Edit Event</h1>
+
+        <p class="text-muted">
+            Update the information for this event.
+        </p>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <form action="/Admin/Event/Edit/@Model.Id"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="Id"
+                       value="@Model.Id" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+
+                <div class="mb-3">
+
+                    <label for="Title"
+                           class="form-label">
+                        Event Title
+                    </label>
+
+                    <input type="text"
+                           id="Title"
+                           name="Title"
+                           value="@Model.Title"
+                           class="form-control" />
+
+                    <span asp-validation-for="Title"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label for="Description"
+                           class="form-label">
+                        Description
+                    </label>
+
+                    <textarea id="Description"
+                              name="Description"
+                              class="form-control"
+                              rows="5">@Model.Description</textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label for="Category"
+                           class="form-label">
+                        Category
+                    </label>
+
+                    <input type="text"
+                           id="Category"
+                           name="Category"
+                           value="@Model.Category"
+                           class="form-control" />
+
+                    <span asp-validation-for="Category"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label for="image"
+                           class="form-label">
+                        Event Image
+                    </label>
+
+                    <input type="file"
+                           id="image"
+                           name="image"
+                           class="form-control"
+                           accept="image/*" />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label for="Location"
+                           class="form-label">
+                        Location
+                    </label>
+
+                    <input type="text"
+                           id="Location"
+                           name="Location"
+                           value="@Model.Location"
+                           class="form-control" />
+
+                    <span asp-validation-for="Location"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label for="Region"
+                           class="form-label">
+                        Region
+                    </label>
+
+                    <input type="text"
+                           id="Region"
+                           name="Region"
+                           value="@Model.Region"
+                           class="form-control" />
+
+                    <span asp-validation-for="Region"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label for="StartDate"
+                               class="form-label">
+                            Start Date
+                        </label>
+
+                        <input type="datetime-local"
+                               id="StartDate"
+                               name="StartDate"
+                               value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")"
+                               class="form-control" />
+
+                        <span asp-validation-for="StartDate"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label for="EndDate"
+                               class="form-label">
+                            End Date
+                        </label>
+
+                        <input type="datetime-local"
+                               id="EndDate"
+                               name="EndDate"
+                               value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")"
+                               class="form-control" />
+
+                        <span asp-validation-for="EndDate"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex gap-2 mt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a href="/Admin/Event"
+                       class="btn btn-secondary">
+                        Back
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

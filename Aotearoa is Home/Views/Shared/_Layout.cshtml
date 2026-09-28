@@ -4,23 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Aotearoa_is_Home</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Aotearoa_is_Home.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
+
     @if (ViewContext.RouteData.Values["area"]?.ToString() == "Student")
-            {
-                <link rel="stylesheet"
-                    href="~/css/student.css"
-                    asp-append-version="true" />
-            }
+    {
+        <link rel="stylesheet"
+              href="~/css/student.css"
+              asp-append-version="true" />
+    }
 </head>
 
 @{
     var hideHeader = ViewData["HideHeader"] as bool? ?? false;
 }
-
 
 <body class="@(hideHeader ? "no-header-page" : "")">
 
@@ -50,8 +51,10 @@
 
                         @if (User.Identity != null &&
                              User.Identity.IsAuthenticated)
-                        { 
-                             <!-- STUDENT NAVIGATION -->
+                        {
+
+                            <!-- STUDENT NAVIGATION -->
+
                             @if (User.IsInRole("Student"))
                             {
                                 <li class="nav-item">
@@ -110,7 +113,7 @@
                             }
 
 
-                            <!-- FAMILY MEMBER NAVIGATION-->
+                            <!-- FAMILY MEMBER NAVIGATION -->
 
                             @if (User.IsInRole("Family Member"))
                             {
@@ -185,7 +188,7 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area="Student"
+                                       asp-area="Admin"
                                        asp-controller="Event"
                                        asp-action="Index">
                                         Events
@@ -200,9 +203,19 @@
                                         Student Request
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Admin"
+                                       asp-controller="ServiceProvider"
+                                       asp-action="Index">
+                                        Verify Service Providers
+                                    </a>
+                                </li>
                             }
 
-                            <!-- Service PROVIDER NAVIGATION -->
+
+                            <!-- SERVICE PROVIDER NAVIGATION -->
 
                             @if (User.IsInRole("Service Provider"))
                             {
@@ -252,19 +265,21 @@
                                    role="button"
                                    data-bs-toggle="dropdown"
                                    aria-expanded="false">
-                                    @User.Identity.Name
-                                </a>
 
+                                    @User.Identity.Name
+
+                                </a>
 
                                 <ul class="dropdown-menu dropdown-menu-end"
                                     aria-labelledby="userDropdown">
 
                                     <li>
+
                                         @if (User.IsInRole("Student"))
                                         {
                                             <a class="dropdown-item"
                                                asp-area="Student"
-                                               asp-controller="Home"
+                                               asp-controller="Profile"
                                                asp-action="Index">
                                                 Profile
                                             </a>
@@ -296,13 +311,12 @@
                                                 Profile
                                             </a>
                                         }
-                                    </li>
 
+                                    </li>
 
                                     <li>
                                         <hr class="dropdown-divider" />
                                     </li>
-
 
                                     <li>
                                         <button type="button"
@@ -311,7 +325,9 @@
                                             Logout
                                         </button>
                                     </li>
+
                                 </ul>
+
                             </li>
                         }
                         else
@@ -327,11 +343,12 @@
                                 </a>
                             </li>
                         }
+
                     </ul>
                 </div>
 
 
-                <!-- ROLE-BASED LOGO LINK-->
+                <!-- ROLE-BASED LOGO LINK -->
 
                 @if (User.Identity != null &&
                      User.Identity.IsAuthenticated)
@@ -348,6 +365,7 @@
                                  height="60"
                                  class="d-inline-block align-top rounded"
                                  asp-append-version="true" />
+
                         </a>
                     }
                     else if (User.IsInRole("Family Member"))
@@ -410,6 +428,7 @@
                              height="60"
                              class="d-inline-block align-top rounded"
                              asp-append-version="true" />
+
                     </a>
                 }
 
@@ -423,6 +442,7 @@
     @RenderBody()
 </main>
 
+
 <footer class="border-top footer text-muted">
     <center>
         <div class="container">
@@ -435,6 +455,7 @@
 
 
 <!-- Hidden logout form -->
+
 <form id="logoutForm"
       asp-area=""
       asp-controller="Account"
@@ -446,7 +467,9 @@
 
 </form>
 
+
 <!-- Logout Confirmation Modal -->
+
 <div id="logoutModal" class="logout-modal">
 
     <div class="logout-dialog">
@@ -489,7 +512,9 @@
 
 </div>
 
+
 <!-- Scripts -->
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
