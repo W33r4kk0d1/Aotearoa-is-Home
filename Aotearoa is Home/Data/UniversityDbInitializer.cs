@@ -52,7 +52,7 @@ namespace Aotearoa_is_Home.Data
                         EmployeeId = "EMP001",
                         FirstName = "Michael",
                         LastName = "Taylor",
-                        Email = "michael.taylor@weltec.ac.nz",
+                        Email = "sudhari08sudh@gmail.com",
                         OrganizationId = welTec.Id,
                         IsActive = true
                     },
@@ -62,7 +62,7 @@ namespace Aotearoa_is_Home.Data
                         EmployeeId = "EMP002",
                         FirstName = "Emma",
                         LastName = "Johnson",
-                        Email = "emma.johnson@weltec.ac.nz",
+                        Email = "sudhari08sudh@gmail.com",
                         OrganizationId = welTec.Id,
                         IsActive = true
                     },
