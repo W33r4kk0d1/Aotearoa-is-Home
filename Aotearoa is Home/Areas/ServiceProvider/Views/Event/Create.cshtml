@@ -5,14 +5,33 @@
     ViewData["Title"] = "Create Event";
 }
 
-<div class="container admin-container">
+<div class="event-create-page">
 
-    <h1>Create Event</h1>
+    @* ## Back Navigation *@
+    <div class="event-back-link">
+        <a href="/ServiceProvider/Event/Index">
+            ← Back to events
+        </a>
+    </div>
 
-    <p class="admin-subtitle">
-        Create an event for users to discover.
-    </p>
 
+    @* ## Page Header *@
+    <div class="event-create-header">
+
+        <span class="event-page-label">
+            NEW EVENT
+        </span>
+
+        <h1>Create Event</h1>
+
+        <p>
+            Create an event for users to discover and submit it for review.
+        </p>
+
+    </div>
+
+
+    @* ## Create Event Form *@
     <form action="/ServiceProvider/Event/Create"
           method="post"
           enctype="multipart/form-data">
@@ -20,227 +39,264 @@
         @Html.AntiForgeryToken()
 
 
-        <!-- EVENT TITLE -->
-
-        <div class="mb-3">
-
-            <label for="Title" class="form-label">
-                Event Title
-            </label>
-
-            <input type="text"
-                   id="Title"
-                   name="Title"
-                   class="form-control"
-                   placeholder="Enter event title"
-                   required />
-
-        </div>
+        <div class="event-form-card">
 
 
-        <!-- DESCRIPTION -->
+            @* ## Event Image *@
+            <div class="event-form-group">
 
-        <div class="mb-3">
-
-            <label for="Description" class="form-label">
-                Description
-            </label>
-
-            <textarea id="Description"
-                      name="Description"
-                      class="form-control"
-                      rows="6"
-                      placeholder="Describe the event"
-                      required></textarea>
-
-        </div>
-
-
-        <!-- LOCATION / VENUE -->
-
-        <div class="mb-3">
-
-            <label for="Location" class="form-label">
-                Location / Venue
-            </label>
-
-            <input type="text"
-                   id="Location"
-                   name="Location"
-                   class="form-control"
-                   placeholder="e.g. WelTec Petone Campus"
-                   maxlength="150"
-                   required />
-
-        </div>
-
-
-        <!-- REGION -->
-
-        <div class="mb-3">
-
-            <label for="Region" class="form-label">
-                Region
-            </label>
-
-            <select id="Region"
-                    name="Region"
-                    class="form-select"
-                    required>
-
-                <option value="">
-                    Select a region
-                </option>
-
-                <option value="Wellington">
-                    Wellington
-                </option>
-
-                <option value="Lower Hutt">
-                    Lower Hutt
-                </option>
-
-                <option value="Upper Hutt">
-                    Upper Hutt
-                </option>
-
-                <option value="Porirua">
-                    Porirua
-                </option>
-
-                <option value="Kapiti Coast">
-                    Kapiti Coast
-                </option>
-
-                <option value="Other">
-                    Other
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- DATE AND TIME -->
-
-        <div class="row">
-
-            <div class="col-md-6 mb-3">
-
-                <label for="StartDate" class="form-label">
-                    Start Date & Time
+                <label for="eventImage"
+                       class="event-field-label">
+                    EVENT IMAGE
                 </label>
 
-                <input type="datetime-local"
-                       id="StartDate"
-                       name="StartDate"
-                       class="form-control"
+
+                <label for="eventImage"
+                       class="event-image-upload">
+
+                    <div class="event-upload-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Upload event image
+                    </strong>
+
+                    <span>
+                        Click to choose an image
+                    </span>
+
+                    <span class="event-upload-file"
+                          id="selectedFileName">
+                        No file selected
+                    </span>
+
+                </label>
+
+
+                <input type="file"
+                       id="eventImage"
+                       name="eventImage"
+                       class="event-file-input"
+                       accept="image/*" />
+
+            </div>
+
+
+            @* ## Event Title *@
+            <div class="event-form-group">
+
+                <label for="Title"
+                       class="event-field-label">
+                    EVENT TITLE
+                </label>
+
+                <input type="text"
+                       id="Title"
+                       name="Title"
+                       class="event-input"
+                       placeholder="Enter event title"
                        required />
 
             </div>
 
 
-            <div class="col-md-6 mb-3">
+            @* ## Description *@
+            <div class="event-form-group">
 
-                <label for="EndDate" class="form-label">
-                    End Date & Time
+                <label for="Description"
+                       class="event-field-label">
+                    DESCRIPTION
                 </label>
 
-                <input type="datetime-local"
-                       id="EndDate"
-                       name="EndDate"
-                       class="form-control"
-                       required />
+                <textarea id="Description"
+                          name="Description"
+                          class="event-textarea"
+                          rows="6"
+                          placeholder="Describe the event"
+                          required></textarea>
 
             </div>
 
-        </div>
+
+            @* ## Location and Region *@
+            <div class="event-form-row">
+
+                @* ## Location *@
+                <div class="event-form-group">
+
+                    <label for="Location"
+                           class="event-field-label">
+                        LOCATION / VENUE
+                    </label>
+
+                    <input type="text"
+                           id="Location"
+                           name="Location"
+                           class="event-input"
+                           placeholder="e.g. WelTec Petone Campus"
+                           maxlength="150"
+                           required />
+
+                </div>
 
 
-        <!-- CATEGORY -->
+                @* ## Region *@
+                <div class="event-form-group">
 
-        <div class="mb-3">
+                    <label for="Region"
+                           class="event-field-label">
+                        REGION
+                    </label>
 
-            <label for="Category" class="form-label">
-                Event Category
-            </label>
+                    <select id="Region"
+                            name="Region"
+                            class="event-input event-select"
+                            required>
 
-            <select id="Category"
-                    name="Category"
-                    class="form-select"
-                    required>
+                        <option value="">
+                            Select a region
+                        </option>
 
-                <option value="">
-                    Select a category
-                </option>
+                        <option value="Wellington">
+                            Wellington
+                        </option>
 
-                <option value="Community">
-                    Community
-                </option>
+                        <option value="Lower Hutt">
+                            Lower Hutt
+                        </option>
 
-                <option value="Education">
-                    Education
-                </option>
+                        <option value="Upper Hutt">
+                            Upper Hutt
+                        </option>
 
-                <option value="Employment">
-                    Employment
-                </option>
+                        <option value="Porirua">
+                            Porirua
+                        </option>
 
-                <option value="Culture">
-                    Culture
-                </option>
+                        <option value="Kapiti Coast">
+                            Kapiti Coast
+                        </option>
 
-                <option value="Sports">
-                    Sports
-                </option>
+                        <option value="Other">
+                            Other
+                        </option>
 
-                <option value="Family">
-                    Family
-                </option>
+                    </select>
 
-                <option value="Other">
-                    Other
-                </option>
+                </div>
 
-            </select>
-
-        </div>
+            </div>
 
 
-        <!-- EVENT IMAGE -->
+            @* ## Start and End Date *@
+            <div class="event-form-row">
 
-        <div class="mb-4">
+                @* ## Start Date *@
+                <div class="event-form-group">
 
-            <label for="eventImage" class="form-label">
-                Event Image
-            </label>
+                    <label for="StartDate"
+                           class="event-field-label">
+                        START DATE &amp; TIME
+                    </label>
 
-            <input type="file"
-                   id="eventImage"
-                   name="eventImage"
-                   class="form-control"
-                   accept="image/*" />
+                    <input type="datetime-local"
+                           id="StartDate"
+                           name="StartDate"
+                           class="event-input"
+                           required />
 
-        </div>
+                </div>
 
 
-        <!-- BUTTONS -->
+                @* ## End Date *@
+                <div class="event-form-group">
 
-        <div>
+                    <label for="EndDate"
+                           class="event-field-label">
+                        END DATE &amp; TIME
+                    </label>
 
-            <button type="submit"
-                    class="admin-create-button">
+                    <input type="datetime-local"
+                           id="EndDate"
+                           name="EndDate"
+                           class="event-input"
+                           required />
 
-                Create Event
+                </div>
 
-            </button>
+            </div>
 
-            <a href="/ServiceProvider/Event/Index"
-               class="admin-edit-button">
 
-                Cancel
+            @* ## Event Category *@
+            <div class="event-form-group">
 
-            </a>
+                <label for="Category"
+                       class="event-field-label">
+                    EVENT CATEGORY
+                </label>
+
+                <select id="Category"
+                        name="Category"
+                        class="event-input event-select"
+                        required>
+
+                    <option value="">
+                        Select a category
+                    </option>
+
+                    <option value="Community">
+                        Community
+                    </option>
+
+                    <option value="Education">
+                        Education
+                    </option>
+
+                    <option value="Employment">
+                        Employment
+                    </option>
+
+                    <option value="Culture">
+                        Culture
+                    </option>
+
+                    <option value="Sports">
+                        Sports
+                    </option>
+
+                    <option value="Family">
+                        Family
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            @* ## Form Buttons *@
+            <div class="event-form-actions">
+
+                <a href="/ServiceProvider/Event/Index"
+                   class="event-cancel-button">
+
+                    Cancel
+
+                </a>
+
+
+                <button type="submit"
+                        class="event-submit-button">
+
+                    Create Event →
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -248,8 +304,40 @@
 
 </div>
 
+
 @section Scripts {
 
     <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // ## Display selected image filename
+
+        const eventImage =
+            document.getElementById("eventImage");
+
+        const selectedFileName =
+            document.getElementById("selectedFileName");
+
+
+        eventImage.addEventListener("change", function () {
+
+            if (this.files.length > 0) {
+
+                selectedFileName.textContent =
+                    this.files[0].name;
+
+            }
+            else {
+
+                selectedFileName.textContent =
+                    "No file selected";
+
+            }
+
+        });
+
+    </script>
 
 }

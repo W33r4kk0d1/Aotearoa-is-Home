@@ -1,5 +1,381 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Aotearoa_is_Home.Models.Event
+
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="event-create-page">
+
+    @* ## Back Navigation *@
+    <div class="event-back-link">
+
+        <a href="/ServiceProvider/Event/Index">
+            ← Back to events
+        </a>
+
+    </div>
+
+
+    @* ## Page Header *@
+    <div class="event-create-header">
+
+        <span class="event-page-label">
+            EDIT EVENT
+        </span>
+
+        <h1>Edit Event</h1>
+
+        <p>
+            Update your event information and save your changes.
+        </p>
+
+    </div>
+
+
+    @* ## Edit Event Form *@
+  @* ## Edit Event Form *@
+<form asp-area="ServiceProvider"
+      asp-controller="Event"
+      asp-action="Edit"
+      asp-route-id="@Model.Id"
+      method="post"
+      enctype="multipart/form-data">
+
+    @Html.AntiForgeryToken()
+
+    @* ## Event ID *@
+    <input type="hidden"
+           name="Id"
+           value="@Model.Id" />
+
+        @Html.AntiForgeryToken()
+
+
+        @* ## Event ID *@
+        <input type="hidden"
+               name="Id"
+               value="@Model.Id" />
+
+
+        <div class="event-form-card">
+
+
+            @* ## Event Image *@
+            <div class="event-form-group">
+
+                <label for="eventImage"
+                       class="event-field-label">
+                    EVENT IMAGE
+                </label>
+
+
+                <label for="eventImage"
+                       class="event-image-upload">
+
+                    <div class="event-upload-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Change event image
+                    </strong>
+
+                    <span>
+                        Click to choose a new image
+                    </span>
+
+                    <span class="event-upload-file"
+                          id="selectedFileName">
+                        Keep current image
+                    </span>
+
+                </label>
+
+
+                <input type="file"
+                       id="eventImage"
+                       name="eventImage"
+                       class="event-file-input"
+                       accept="image/*" />
+
+            </div>
+
+
+            @* ## Event Title *@
+            <div class="event-form-group">
+
+                <label for="Title"
+                       class="event-field-label">
+                    EVENT TITLE
+                </label>
+
+                <input type="text"
+                       id="Title"
+                       name="Title"
+                       class="event-input"
+                       value="@Model.Title"
+                       placeholder="Enter event title"
+                       required />
+
+            </div>
+
+
+            @* ## Description *@
+            <div class="event-form-group">
+
+                <label for="Description"
+                       class="event-field-label">
+                    DESCRIPTION
+                </label>
+
+                <textarea id="Description"
+                          name="Description"
+                          class="event-textarea"
+                          rows="6"
+                          placeholder="Describe the event"
+                          required>@Model.Description</textarea>
+
+            </div>
+
+
+            @* ## Location and Region *@
+            <div class="event-form-row">
+
+
+                @* ## Location *@
+                <div class="event-form-group">
+
+                    <label for="Location"
+                           class="event-field-label">
+                        LOCATION / VENUE
+                    </label>
+
+                    <input type="text"
+                           id="Location"
+                           name="Location"
+                           class="event-input"
+                           value="@Model.Location"
+                           placeholder="e.g. WelTec Petone Campus"
+                           maxlength="150"
+                           required />
+
+                </div>
+
+
+                @* ## Region *@
+                <div class="event-form-group">
+
+                    <label for="Region"
+                           class="event-field-label">
+                        REGION
+                    </label>
+
+                    <select id="Region"
+                            name="Region"
+                            class="event-input event-select"
+                            required>
+
+                        <option value="">
+                            Select a region
+                        </option>
+
+                        <option value="Wellington"
+                                selected="@(Model.Region == "Wellington")">
+                            Wellington
+                        </option>
+
+                        <option value="Lower Hutt"
+                                selected="@(Model.Region == "Lower Hutt")">
+                            Lower Hutt
+                        </option>
+
+                        <option value="Upper Hutt"
+                                selected="@(Model.Region == "Upper Hutt")">
+                            Upper Hutt
+                        </option>
+
+                        <option value="Porirua"
+                                selected="@(Model.Region == "Porirua")">
+                            Porirua
+                        </option>
+
+                        <option value="Kapiti Coast"
+                                selected="@(Model.Region == "Kapiti Coast")">
+                            Kapiti Coast
+                        </option>
+
+                        <option value="Other"
+                                selected="@(Model.Region == "Other")">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            @* ## Start and End Date *@
+            <div class="event-form-row">
+
+
+                @* ## Start Date *@
+                <div class="event-form-group">
+
+                    <label for="StartDate"
+                           class="event-field-label">
+                        START DATE &amp; TIME
+                    </label>
+
+                    <input type="datetime-local"
+                           id="StartDate"
+                           name="StartDate"
+                           class="event-input"
+                           value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")"
+                           required />
+
+                </div>
+
+
+                @* ## End Date *@
+                <div class="event-form-group">
+
+                    <label for="EndDate"
+                           class="event-field-label">
+                        END DATE &amp; TIME
+                    </label>
+
+                    <input type="datetime-local"
+                           id="EndDate"
+                           name="EndDate"
+                           class="event-input"
+                           value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")"
+                           required />
+
+                </div>
+
+            </div>
+
+
+            @* ## Event Category *@
+            <div class="event-form-group">
+
+                <label for="Category"
+                       class="event-field-label">
+                    EVENT CATEGORY
+                </label>
+
+                <select id="Category"
+                        name="Category"
+                        class="event-input event-select"
+                        required>
+
+                    <option value="">
+                        Select a category
+                    </option>
+
+                    <option value="Community"
+                            selected="@(Model.Category == "Community")">
+                        Community
+                    </option>
+
+                    <option value="Education"
+                            selected="@(Model.Category == "Education")">
+                        Education
+                    </option>
+
+                    <option value="Employment"
+                            selected="@(Model.Category == "Employment")">
+                        Employment
+                    </option>
+
+                    <option value="Culture"
+                            selected="@(Model.Category == "Culture")">
+                        Culture
+                    </option>
+
+                    <option value="Sports"
+                            selected="@(Model.Category == "Sports")">
+                        Sports
+                    </option>
+
+                    <option value="Family"
+                            selected="@(Model.Category == "Family")">
+                        Family
+                    </option>
+
+                    <option value="Other"
+                            selected="@(Model.Category == "Other")">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            @* ## Form Actions *@
+            <div class="event-form-actions">
+
+                <a href="/ServiceProvider/Event/Index"
+                   class="event-cancel-button">
+
+                    Cancel
+
+                </a>
+
+
+                <button type="submit"
+                        class="event-submit-button">
+
+                    Save Changes →
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // ## Display selected image filename
+
+        const eventImage =
+            document.getElementById("eventImage");
+
+        const selectedFileName =
+            document.getElementById("selectedFileName");
+
+
+        eventImage.addEventListener("change", function () {
+
+            if (this.files.length > 0) {
+
+                selectedFileName.textContent =
+                    this.files[0].name;
+
+            }
+            else {
+
+                selectedFileName.textContent =
+                    "Keep current image";
+
+            }
+
+        });
+
+    </script>
+
 }

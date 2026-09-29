@@ -3,26 +3,229 @@
     ViewData["Title"] = "Service Provider Dashboard";
 }
 
-<div class="container admin-container">
+<div class="sp-dashboard">
 
-    <h1>Service Provider Dashboard</h1>
+    @* ## Page Header *@
+    <div class="sp-dashboard-header">
 
-    <p class="admin-subtitle">
-        Manage your events and service provider information.
-    </p>
+        <span class="sp-label">
+            SERVICE PROVIDER
+        </span>
 
-    <div class="admin-category-grid">
+        <h1>Service Provider Dashboard</h1>
 
-        <a href="/ServiceProvider/Event/Create"
-           class="admin-category-box">
-            <span>Create Event</span>
-        </a>
-
-        <a href="/ServiceProvider/Event/Index"
-           class="admin-category-box">
-            <span>Manage Events</span>
-        </a>
+        <p>
+            Manage your events, view incoming requests,
+            and track your submitted services.
+        </p>
 
     </div>
+
+
+    @* ## Quick Actions *@
+    <section class="sp-section">
+
+        <div class="sp-section-heading">
+
+            <span class="sp-label">
+                EVENTS
+            </span>
+
+            <h2>Manage Events</h2>
+
+        </div>
+
+
+        <div class="sp-action-grid">
+
+            @* ## Create Event *@
+            <a href="/ServiceProvider/Event/Create"
+               class="sp-action-card">
+
+                <div>
+                    <h3>Create Event</h3>
+
+                    <p>
+                        Create and submit a new community event.
+                    </p>
+                </div>
+
+                <span class="sp-card-arrow"
+                      aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+
+            @* ## Manage Events *@
+            <a href="/ServiceProvider/Event/Index"
+               class="sp-action-card">
+
+                <div>
+                    <h3>Manage Events</h3>
+
+                    <p>
+                        View and manage your submitted events.
+                    </p>
+                </div>
+
+                <span class="sp-card-arrow"
+                      aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    @* ## Incoming Requests *@
+    <section class="sp-section">
+
+        <div class="sp-section-heading">
+
+            <span class="sp-label">
+                COMMUNITY
+            </span>
+
+            <h2>Incoming Requests</h2>
+
+        </div>
+
+
+        <div class="sp-action-grid">
+
+            @* ## Housing *@
+            <div class="sp-request-card">
+
+                <div>
+                    <h3>Housing</h3>
+
+                    <p>
+                        View housing and accommodation requests
+                        from the community.
+                    </p>
+                </div>
+
+            </div>
+
+
+            @* ## Tutoring *@
+            <div class="sp-request-card">
+
+                <div>
+                    <h3>Tutoring</h3>
+
+                    <p>
+                        View tutoring and education support
+                        requests from the community.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    @* ## Submitted For Approval *@
+    <section class="sp-section">
+
+        <div class="sp-section-heading">
+
+            <span class="sp-label">
+                YOUR SUBMISSIONS
+            </span>
+
+            <h2>Submitted for approval</h2>
+
+        </div>
+
+
+        <div class="sp-submission-list">
+
+
+            @* ## Legal Services *@
+            <div class="sp-submission-card">
+
+                <div>
+
+                    <span class="sp-item-type">
+                        SERVICE
+                    </span>
+
+                    <h3>Legal services</h3>
+
+                    <p>
+                        Legal support service submitted for approval.
+                    </p>
+
+                </div>
+
+
+                <span class="sp-status sp-approved">
+                    Approved
+                </span>
+
+            </div>
+
+
+            @* ## Mathematics *@
+            <div class="sp-submission-card">
+
+                <div>
+
+                    <span class="sp-item-type">
+                        TUTORING
+                    </span>
+
+                    <h3>Mathematics for Grade 10</h3>
+
+                    <p>
+                        Mathematics tutoring service submitted
+                        for approval.
+                    </p>
+
+                </div>
+
+
+                <span class="sp-status sp-rejected">
+                    Rejected
+                </span>
+
+            </div>
+
+
+            @* ## House For Rent *@
+            <div class="sp-submission-card">
+
+                <div>
+
+                    <span class="sp-item-type">
+                        HOUSING
+                    </span>
+
+                    <h3>House for rent</h3>
+
+                    <p>
+                        Housing listing submitted for approval.
+                    </p>
+
+                </div>
+
+
+                <span class="sp-status sp-pending">
+                    Pending
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>

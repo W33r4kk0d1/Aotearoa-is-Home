@@ -5663,3 +5663,1257 @@ SMALL MOBILE
         gap: 15px;
     }
 }
+
+
+/* ## Settlement Checklist Page */
+
+.settlement-checklist {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 35px 40px 80px 40px;
+}
+
+/* ## Checklist Page Heading */
+
+.checklist-title {
+    font-size: 46px;
+    font-weight: 700;
+    color: #202522;
+    margin-bottom: 12px;
+}
+
+
+    /* ## Subtitle under heading */
+
+    .checklist-title::before {
+        content: "SETTLEMENT JOURNEY";
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: #4e665e;
+        margin-bottom: 15px;
+    }
+
+
+/* ## Overall Progress Section */
+
+.overall-section {
+    max-width: 950px;
+    margin: 45px auto 55px auto;
+}
+
+
+/* ## Overall Progress Text */
+
+.overall-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+
+/* ## Overall Progress Background */
+
+.overall-track {
+    width: 100%;
+    height: 15px;
+    background-color: #e7ebe8;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+
+/* ## Overall Progress Fill */
+
+.overall-fill {
+    height: 100%;
+    background-color: #6f8968;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+/* ## Category Card */
+
+.category-card {
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+    /* ## Same soft border style as other pages */
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+    padding: 28px 75px 30px 32px;
+    margin-bottom: 28px;
+    /* ## Very subtle depth */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.015);
+}
+
+
+/* ## Category Heading */
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+
+    /* ## Category Title */
+
+    .category-header h2 {
+        margin: 0;
+        font-size: 23px;
+        font-weight: 650;
+        color: #202522;
+    }
+
+
+/* ## Category Status */
+
+.category-status {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+/* ## Completed Status */
+
+.status-done {
+    color: #557451;
+}
+
+
+/* ## In Progress Status */
+
+.status-progress {
+    color: #a56b37;
+}
+
+
+/* ## Not Started Status */
+
+.status-not-started {
+    color: #65746d;
+}
+
+
+/* ## Checklist Task */
+
+.task-row {
+    display: grid;
+    grid-template-columns: 45px 1fr;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+
+    /* ## Remove extra space from final task */
+
+    .task-row:last-child {
+        margin-bottom: 0;
+    }
+
+
+/* ## Checkbox Area */
+
+.task-checkbox {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 3px;
+}
+
+
+    /* ## Checkbox */
+
+    .task-checkbox input {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        accent-color: #6f8968;
+    }
+
+
+/* ## Task Information */
+
+.task-information {
+    width: 100%;
+}
+
+
+/* ## Task Title */
+
+.task-title {
+    display: block;
+    font-size: 17px;
+    font-weight: 600;
+    color: #202522;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+
+/* ## Task Description */
+
+.task-description {
+    font-size: 14px;
+    color: #68716c;
+    margin-bottom: 11px;
+}
+
+
+/* ## Task Progress Track */
+
+.task-progress-track {
+    width: 100%;
+    height: 8px;
+    background-color: #e8ece9;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+
+/* ## Task Progress */
+
+.task-progress-fill {
+    height: 100%;
+    background-color: #7b9675;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+
+/* ## Category Arrow */
+
+.category-arrow {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 25px;
+    color: #4f5a55;
+}
+
+
+/* ## Save Button Area */
+
+.save-area {
+    text-align: right;
+    margin-top: 30px;
+}
+
+
+/* ## Save Progress Button */
+
+.save-progress-button {
+    background-color: #657f60;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+
+    /* ## Save Button Hover */
+
+    .save-progress-button:hover {
+        background-color: #536c4f;
+    }
+
+
+/* ## Empty Checklist */
+
+.empty-checklist {
+    background-color: #ffffff;
+    border: 1px solid #d8dfdb;
+    border-radius: 16px;
+    padding: 60px 30px;
+    text-align: center;
+    color: #68716c;
+}
+
+
+/* ## Tablet and Mobile */
+
+@media (max-width: 768px) {
+
+    .settlement-checklist {
+        padding: 30px 20px 60px 20px;
+    }
+
+
+    .checklist-title {
+        font-size: 34px;
+    }
+
+
+    .overall-section {
+        margin-top: 35px;
+        margin-bottom: 40px;
+    }
+
+
+    .category-card {
+        padding: 25px 25px;
+    }
+
+
+    .category-header {
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+
+    .category-arrow {
+        display: none;
+    }
+
+
+    .task-row {
+        grid-template-columns: 35px 1fr;
+    }
+
+
+    .save-area {
+        text-align: center;
+    }
+
+
+    .save-progress-button {
+        width: 100%;
+    }
+}
+
+/* ## Service Provider Dashboard */
+
+.sp-dashboard {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 45px 40px 80px;
+}
+
+
+/* ## Dashboard Header */
+
+.sp-dashboard-header {
+    margin-bottom: 55px;
+}
+
+.sp-label {
+    display: block;
+    color: #496158;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 13px;
+}
+
+.sp-dashboard-header h1 {
+    color: #202522;
+    font-size: 46px;
+    font-weight: 700;
+    margin: 0 0 12px;
+}
+
+.sp-dashboard-header p {
+    color: #59635e;
+    font-size: 18px;
+    margin: 0;
+}
+
+
+/* ## Dashboard Section */
+
+.sp-section {
+    margin-bottom: 60px;
+}
+
+.sp-section-heading {
+    margin-bottom: 22px;
+}
+
+    .sp-section-heading h2 {
+        color: #202522;
+        font-size: 28px;
+        font-weight: 650;
+        margin: 0;
+    }
+
+
+/* ## Action Grid */
+
+.sp-action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+
+/* ## Clickable Action Cards */
+
+.sp-action-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 135px;
+    padding: 28px 65px 28px 30px;
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .sp-action-card:hover {
+        color: inherit;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+
+
+    /* ## Keyboard Accessibility */
+
+    .sp-action-card:focus-visible {
+        outline: 3px solid #6f8968;
+        outline-offset: 3px;
+    }
+
+
+    /* ## Action Card Heading */
+
+    .sp-action-card h3 {
+        color: #202522;
+        font-size: 20px;
+        font-weight: 650;
+        margin: 0 0 7px;
+    }
+
+
+    /* ## Action Card Description */
+
+    .sp-action-card p {
+        color: #68716c;
+        font-size: 15px;
+        margin: 0;
+    }
+
+
+/* ## Functional Arrow */
+
+.sp-card-arrow {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4f5a55;
+    font-size: 24px;
+}
+
+
+/* ## Incoming Request Card */
+
+.sp-request-card {
+    min-height: 135px;
+    padding: 28px 30px;
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+}
+
+    .sp-request-card h3 {
+        color: #202522;
+        font-size: 20px;
+        font-weight: 650;
+        margin: 0 0 7px;
+    }
+
+    .sp-request-card p {
+        color: #68716c;
+        font-size: 15px;
+        margin: 0;
+    }
+
+
+/* ## Submitted List */
+
+.sp-submission-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* ## Submitted Card */
+
+.sp-submission-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 130px;
+    padding: 25px 30px;
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+}
+
+
+/* ## Submission Type */
+
+.sp-item-type {
+    display: block;
+    color: #60766e;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+
+/* ## Submission Heading */
+
+.sp-submission-card h3 {
+    color: #202522;
+    font-size: 20px;
+    font-weight: 650;
+    margin: 0 0 6px;
+}
+
+
+/* ## Submission Description */
+
+.sp-submission-card p {
+    color: #68716c;
+    font-size: 14px;
+    margin: 0;
+}
+
+
+/* ## Status Badge */
+
+.sp-status {
+    min-width: 105px;
+    padding: 8px 17px;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 650;
+    margin-left: 25px;
+}
+
+
+/* ## Approved Status */
+
+.sp-approved {
+    color: #416440;
+    background-color: #edf5ec;
+}
+
+
+/* ## Rejected Status */
+
+.sp-rejected {
+    color: #9a4740;
+    background-color: #f9ecea;
+}
+
+
+/* ## Pending Status */
+
+.sp-pending {
+    color: #94691d;
+    background-color: #faf3df;
+}
+
+
+/* ## Mobile */
+
+@media (max-width: 768px) {
+
+    .sp-dashboard {
+        padding: 30px 20px 60px;
+    }
+
+    .sp-dashboard-header h1 {
+        font-size: 34px;
+    }
+
+    .sp-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sp-submission-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .sp-status {
+        margin-left: 0;
+    }
+}
+
+/* ## Create Event Page */
+
+.event-create-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+}
+
+
+/* ## Back Link */
+
+.event-back-link {
+    margin-bottom: 30px;
+}
+
+    .event-back-link a {
+        color: #596a62;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .event-back-link a:hover {
+            color: #34453d;
+            text-decoration: underline;
+        }
+
+
+/* ## Create Event Header */
+
+.event-create-header {
+    margin-bottom: 35px;
+}
+
+.event-page-label {
+    display: block;
+    color: #4e665e;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+}
+
+.event-create-header h1 {
+    color: #202522;
+    font-size: 44px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+
+.event-create-header p {
+    color: #626c67;
+    font-size: 17px;
+    margin: 0;
+}
+
+
+/* ## Main Event Form Card */
+
+.event-form-card {
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+    padding: 38px;
+}
+
+
+/* ## Form Group */
+
+.event-form-group {
+    margin-bottom: 28px;
+}
+
+
+/* ## Field Labels */
+
+.event-field-label {
+    display: block;
+    color: #4c5d55;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 9px;
+}
+
+
+/* ## Inputs */
+
+.event-input {
+    display: block;
+    width: 100%;
+    padding: 13px 15px;
+    background-color: #ffffff;
+    border: 1px solid #d6ddd9;
+    border-radius: 9px;
+    color: #202522;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+    /* ## Input Placeholder */
+
+    .event-input::placeholder,
+    .event-textarea::placeholder {
+        color: #9aa29e;
+    }
+
+
+    /* ## Input Focus */
+
+    .event-input:focus,
+    .event-textarea:focus {
+        border-color: #708a77;
+        box-shadow: 0 0 0 3px rgba(112, 138, 119, 0.12);
+    }
+
+
+/* ## Two Column Rows */
+
+.event-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+
+/* ## Textarea */
+
+.event-textarea {
+    display: block;
+    width: 100%;
+    min-height: 150px;
+    padding: 14px 15px;
+    background-color: #ffffff;
+    border: 1px solid #d6ddd9;
+    border-radius: 9px;
+    color: #202522;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* ## Dropdown */
+
+.event-select {
+    cursor: pointer;
+}
+
+
+/* ## Image Upload */
+
+.event-image-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 190px;
+    padding: 30px;
+    background-color: #fafbfa;
+    border: 2px dashed #ccd5d0;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+
+    /* ## Image Upload Hover */
+
+    .event-image-upload:hover {
+        background-color: #f5f8f6;
+        border-color: #718a77;
+    }
+
+
+    /* ## Image Upload Keyboard Focus */
+
+    .event-image-upload:focus-within {
+        border-color: #718a77;
+    }
+
+
+/* ## Upload Icon */
+
+.event-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    background-color: #edf2ee;
+    border-radius: 50%;
+    color: #5c7563;
+    font-size: 24px;
+}
+
+
+/* ## Upload Main Text */
+
+.event-image-upload strong {
+    color: #303833;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+
+/* ## Upload Supporting Text */
+
+.event-image-upload span {
+    color: #7b847f;
+    font-size: 13px;
+}
+
+
+/* ## Selected Filename */
+
+.event-image-upload .event-upload-file {
+    color: #52685a;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+
+/* ## Hide Original File Input Visually */
+
+.event-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* ## Form Actions */
+
+.event-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    padding-top: 25px;
+    border-top: 1px solid #edf0ee;
+}
+
+
+/* ## Cancel Button */
+
+.event-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background-color: #ffffff;
+    border: 1px solid #ccd4cf;
+    border-radius: 8px;
+    color: #4b5852;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .event-cancel-button:hover {
+        background-color: #f5f7f6;
+        color: #303a35;
+    }
+
+
+/* ## Create Event Button */
+
+.event-submit-button {
+    padding: 12px 26px;
+    background-color: #637e68;
+    border: 1px solid #637e68;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+    .event-submit-button:hover {
+        background-color: #526b57;
+        border-color: #526b57;
+    }
+
+
+    /* ## Button Keyboard Focus */
+
+    .event-submit-button:focus-visible,
+    .event-cancel-button:focus-visible {
+        outline: 3px solid #8da394;
+        outline-offset: 3px;
+    }
+
+
+/* ## Mobile */
+
+@media (max-width: 768px) {
+
+    .event-create-page {
+        padding: 30px 20px 60px;
+    }
+
+
+    .event-create-header h1 {
+        font-size: 34px;
+    }
+
+
+    .event-form-card {
+        padding: 25px 20px;
+    }
+
+
+    .event-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+
+    .event-form-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .event-cancel-button,
+    .event-submit-button {
+        width: 100%;
+    }
+}
+
+/* ## Manage Events Page */
+
+.manage-events-page {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+}
+
+
+/* ## Page Header */
+
+.manage-events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+    .manage-events-header h1 {
+        color: #202522;
+        font-size: 44px;
+        font-weight: 700;
+        margin: 0 0 10px;
+    }
+
+    .manage-events-header p {
+        color: #626c67;
+        font-size: 17px;
+        margin: 0;
+    }
+
+
+/* ## Create Event Button */
+
+.manage-create-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+    .manage-create-button:hover {
+        color: #ffffff;
+    }
+
+
+/* ## Event List */
+
+.manage-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+/* ## Event Card */
+
+.manage-event-card {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 240px;
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+
+/* ## Event Image */
+
+.manage-event-image {
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
+    background-color: #eef2ef;
+}
+
+    .manage-event-image img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+
+/* ## No Image Placeholder */
+
+.manage-event-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
+    background-color: #eef2ef;
+    color: #77847d;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+
+/* ## Event Content */
+
+.manage-event-content {
+    padding: 28px 32px;
+}
+
+
+/* ## Category */
+
+.manage-event-category {
+    display: block;
+    color: #587064;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+
+/* ## Event Title */
+
+.manage-event-top h2 {
+    color: #202522;
+    font-size: 25px;
+    font-weight: 650;
+    margin: 0 0 20px;
+}
+
+
+/* ## Event Details */
+
+.manage-event-details {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+
+/* ## Individual Detail */
+
+.manage-event-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #414b46;
+    font-size: 14px;
+}
+
+
+/* ## Detail Label */
+
+.detail-label {
+    color: #78827d;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+
+/* ## Description */
+
+.manage-event-description {
+    max-width: 800px;
+    color: #68716c;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 22px;
+}
+
+
+/* ## Actions */
+
+.manage-event-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 18px;
+    border-top: 1px solid #edf0ee;
+}
+
+
+/* ## Edit Button */
+
+.manage-edit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border: 1px solid #cbd4cf;
+    border-radius: 8px;
+    color: #46574e;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+    .manage-edit-button:hover {
+        background-color: #f3f6f4;
+        border-color: #9eada5;
+        color: #34453c;
+    }
+
+
+    /* ## Keyboard Accessibility */
+
+    .manage-edit-button:focus-visible {
+        outline: 3px solid #8da394;
+        outline-offset: 3px;
+    }
+
+
+/* ## Empty State */
+
+.manage-events-empty {
+    padding: 70px 30px;
+    background-color: #ffffff;
+    border: 1px solid #e1e5e3;
+    border-radius: 18px;
+    text-align: center;
+}
+
+    .manage-events-empty h2 {
+        color: #202522;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .manage-events-empty p {
+        color: #68716c;
+        margin: 0 auto 25px;
+        max-width: 450px;
+    }
+
+
+/* ## Tablet */
+
+@media (max-width: 1000px) {
+
+    .manage-event-card {
+        grid-template-columns: 220px 1fr;
+    }
+
+
+    .manage-event-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ## Mobile */
+
+@media (max-width: 768px) {
+
+    .manage-events-page {
+        padding: 30px 20px 60px;
+    }
+
+
+    .manage-events-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+
+        .manage-events-header h1 {
+            font-size: 34px;
+        }
+
+
+    .manage-create-button {
+        width: 100%;
+    }
+
+
+    .manage-event-card {
+        grid-template-columns: 1fr;
+    }
+
+
+    .manage-event-image {
+        height: 210px;
+        min-height: 210px;
+    }
+
+
+    .manage-event-image-placeholder {
+        min-height: 210px;
+    }
+
+
+    .manage-event-content {
+        padding: 24px 20px;
+    }
+
+
+    .manage-event-details {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .manage-edit-button {
+        width: 100%;
+    }
+}
