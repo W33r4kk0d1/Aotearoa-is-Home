@@ -1,0 +1,91 @@
+﻿@model List<Aotearoa_is_Home.Models.Event>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Manage Events";
+}
+
+<div class="container my-5">
+
+    <div class="mb-4">
+        <h1>Manage Events</h1>
+        <p class="text-muted">
+            View and edit events.
+        </p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted mb-0">
+                    No events have been submitted.
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>@item.Title</strong>
+                                    </td>
+
+                                    <td>
+                                        @item.Category
+                                    </td>
+
+                                    <td>
+                                        @item.Location
+                                    </td>
+
+                                    <td>
+                                        @item.StartDate.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @item.EndDate.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        <a href="/Admin/Event/Edit/@item.Id"
+                                           class="btn btn-primary btn-sm">
+                                            Edit
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

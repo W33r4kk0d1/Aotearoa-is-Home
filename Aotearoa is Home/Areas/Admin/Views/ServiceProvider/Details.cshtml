@@ -1,0 +1,186 @@
+@model Aotearoa_is_Home.Models.ApplicationUser
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Service Provider Details";
+}
+
+<div class="container my-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1>Service Provider Details</h1>
+            <p class="text-muted mb-0">
+                View the complete account information.
+            </p>
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="ServiceProvider"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            ← Back
+        </a>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Personal Information
+            </h4>
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>First Name</strong>
+                    <p>@Model.FirstName</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Last Name</strong>
+                    <p>@Model.LastName</p>
+                </div>
+
+            </div>
+
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>Email</strong>
+                    <p>
+                        @(string.IsNullOrEmpty(Model.Email)
+                            ? "Not provided"
+                            : Model.Email)
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Username</strong>
+                    <p>
+                        @(string.IsNullOrEmpty(Model.UserName)
+                            ? "Not provided"
+                            : Model.UserName)
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>Contact Number</strong>
+                    <p>
+                        @(string.IsNullOrEmpty(Model.ContactNumber)
+                            ? "Not provided"
+                            : Model.ContactNumber)
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Phone</strong>
+                    <p>
+                        @(string.IsNullOrEmpty(Model.PhoneNumber)
+                            ? "Not provided"
+                            : Model.PhoneNumber)
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>LinkedIn Profile</strong>
+                    <p>
+                        @if (!string.IsNullOrEmpty(Model.LinkedInProfile))
+                        {
+                            <a href="@Model.LinkedInProfile"
+                               target="_blank">
+                                @Model.LinkedInProfile
+                            </a>
+                        }
+                        else
+                        {
+                            <span>Not provided</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Account Created</strong>
+                    <p>
+                        @(Model.CreatedAt?.ToString("dd MMMM yyyy HH:mm")
+                            ?? "Not available")
+                    </p>
+                </div>
+
+            </div>
+
+
+            <hr class="my-4" />
+
+
+            <h4 class="mb-4">
+                Verification
+            </h4>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <strong>Status</strong>
+                    <p>
+                        @if (Model.IsServiceProviderVerified)
+                        {
+                            <span class="badge bg-success">
+                                Approved
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+                        }
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (User.IsInRole("Super Admin"))
+            {
+                <hr class="my-4" />
+
+                <form asp-area="Admin"
+                      asp-controller="ServiceProvider"
+                      asp-action="Delete"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this service provider account?');">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Id" />
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Delete Service Provider
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+</div>
