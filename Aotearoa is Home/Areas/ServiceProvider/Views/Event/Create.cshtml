@@ -3,11 +3,16 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Event";
+
+    // Current browser/server minimum date is also enforced
+    // by JavaScript below.
+    var minimumDateTime =
+        DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 <div class="event-create-page">
 
-    @* ## Back Navigation *@
+    <!-- Back Navigation -->
     <div class="event-back-link">
         <a href="/ServiceProvider/Event/Index">
             ← Back to events
@@ -15,7 +20,7 @@
     </div>
 
 
-    @* ## Page Header *@
+    <!-- Page Header -->
     <div class="event-create-header">
 
         <span class="event-page-label">
@@ -31,7 +36,14 @@
     </div>
 
 
-    @* ## Create Event Form *@
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="event-validation-summary" asp-validation-summary="All"></div>
+    }
+
+
+    <!-- Create Event Form -->
     <form action="/ServiceProvider/Event/Create"
           method="post"
           enctype="multipart/form-data">
@@ -42,7 +54,7 @@
         <div class="event-form-card">
 
 
-            @* ## Event Image *@
+            <!-- EVENT IMAGE -->
             <div class="event-form-group">
 
                 <label for="eventImage"
@@ -83,7 +95,7 @@
             </div>
 
 
-            @* ## Event Title *@
+            <!-- EVENT TITLE -->
             <div class="event-form-group">
 
                 <label for="Title"
@@ -95,13 +107,19 @@
                        id="Title"
                        name="Title"
                        class="event-input"
+                       value="@Model?.Title"
                        placeholder="Enter event title"
+                       maxlength="200"
                        required />
+
+                <span asp-validation-for="Title"
+                      class="text-danger">
+                </span>
 
             </div>
 
 
-            @* ## Description *@
+            <!-- DESCRIPTION -->
             <div class="event-form-group">
 
                 <label for="Description"
@@ -114,15 +132,19 @@
                           class="event-textarea"
                           rows="6"
                           placeholder="Describe the event"
-                          required></textarea>
+                          required>@Model?.Description</textarea>
+
+                <span asp-validation-for="Description"
+                      class="text-danger">
+                </span>
 
             </div>
 
 
-            @* ## Location and Region *@
+            <!-- LOCATION + REGION -->
             <div class="event-form-row">
 
-                @* ## Location *@
+                <!-- LOCATION -->
                 <div class="event-form-group">
 
                     <label for="Location"
@@ -134,14 +156,18 @@
                            id="Location"
                            name="Location"
                            class="event-input"
+                           value="@Model?.Location"
                            placeholder="e.g. WelTec Petone Campus"
                            maxlength="150"
                            required />
 
+                    <span asp-validation-for="Location"
+                          class="text-danger">
+                    </span>
                 </div>
 
 
-                @* ## Region *@
+                <!-- REGION -->
                 <div class="event-form-group">
 
                     <label for="Region"
@@ -158,41 +184,48 @@
                             Select a region
                         </option>
 
-                        <option value="Wellington">
+                        <option value="Wellington"
+                                selected="@(Model?.Region == "Wellington")">
                             Wellington
                         </option>
 
-                        <option value="Lower Hutt">
+                        <option value="Lower Hutt"
+                                selected="@(Model?.Region == "Lower Hutt")">
                             Lower Hutt
                         </option>
 
-                        <option value="Upper Hutt">
+                        <option value="Upper Hutt"
+                                selected="@(Model?.Region == "Upper Hutt")">
                             Upper Hutt
                         </option>
 
-                        <option value="Porirua">
+                        <option value="Porirua"
+                                selected="@(Model?.Region == "Porirua")">
                             Porirua
                         </option>
 
-                        <option value="Kapiti Coast">
+                        <option value="Kapiti Coast"
+                                selected="@(Model?.Region == "Kapiti Coast")">
                             Kapiti Coast
                         </option>
 
-                        <option value="Other">
+                        <option value="Other"
+                                selected="@(Model?.Region == "Other")">
                             Other
                         </option>
-
                     </select>
 
+                    <span asp-validation-for="Region"
+                          class="text-danger">
+                    </span>
                 </div>
-
             </div>
 
 
-            @* ## Start and End Date *@
+            <!-- START + END DATE -->
             <div class="event-form-row">
 
-                @* ## Start Date *@
+                <!-- START -->
                 <div class="event-form-group">
 
                     <label for="StartDate"
@@ -204,12 +237,19 @@
                            id="StartDate"
                            name="StartDate"
                            class="event-input"
+                           min="@minimumDateTime"
+                           value="@(Model?.StartDate > DateTime.MinValue
+                               ? Model.StartDate.ToString("yyyy-MM-ddTHH:mm")
+                               : "")"
                            required />
 
+                    <span asp-validation-for="StartDate"
+                          class="text-danger">
+                    </span>
                 </div>
 
 
-                @* ## End Date *@
+                <!-- END -->
                 <div class="event-form-group">
 
                     <label for="EndDate"
@@ -221,14 +261,20 @@
                            id="EndDate"
                            name="EndDate"
                            class="event-input"
+                           min="@minimumDateTime"
+                           value="@(Model?.EndDate > DateTime.MinValue
+                               ? Model.EndDate.ToString("yyyy-MM-ddTHH:mm")
+                               : "")"
                            required />
 
+                    <span asp-validation-for="EndDate"
+                          class="text-danger">
+                    </span>
                 </div>
-
             </div>
 
 
-            @* ## Event Category *@
+            <!-- CATEGORY -->
             <div class="event-form-group">
 
                 <label for="Category"
@@ -245,63 +291,212 @@
                         Select a category
                     </option>
 
-                    <option value="Community">
+                    <option value="Community"
+                            selected="@(Model?.Category == "Community")">
                         Community
                     </option>
 
-                    <option value="Education">
+                    <option value="Education"
+                            selected="@(Model?.Category == "Education")">
                         Education
                     </option>
 
-                    <option value="Employment">
+                    <option value="Employment"
+                            selected="@(Model?.Category == "Employment")">
                         Employment
                     </option>
 
-                    <option value="Culture">
+                    <option value="Culture"
+                            selected="@(Model?.Category == "Culture")">
                         Culture
                     </option>
 
-                    <option value="Sports">
+                    <option value="Sports"
+                            selected="@(Model?.Category == "Sports")">
                         Sports
                     </option>
 
-                    <option value="Family">
+                    <option value="Family"
+                            selected="@(Model?.Category == "Family")">
                         Family
                     </option>
 
-                    <option value="Other">
+                    <option value="Other"
+                            selected="@(Model?.Category == "Other")">
                         Other
                     </option>
 
                 </select>
 
+                <span asp-validation-for="Category"
+                      class="text-danger">
+                </span>
             </div>
 
 
-            @* ## Form Buttons *@
+            <!-- OFFICIAL EVENT INFORMATION -->
+
+            <div class="event-feature-section">
+                <div class="event-feature-header">
+                    <span class="event-field-label">
+                        OFFICIAL EVENT INFORMATION
+                    </span>
+                </div>
+
+
+                <div class="event-form-group">
+
+                    <label for="OfficialEventLink"
+                           class="event-field-label">
+                        OFFICIAL EVENT LINK
+                    </label>
+
+                    <input type="url"
+                           id="OfficialEventLink"
+                           name="OfficialEventLink"
+                           class="event-input"
+                           value="@Model?.OfficialEventLink"
+                           placeholder="https://example.com/event"
+                           maxlength="500" />
+
+                    <small class="event-help-text">
+                        Optional. Add the official website, Facebook event,
+                        Eventbrite page, or other official event information.
+                    </small>
+
+                    <span asp-validation-for="OfficialEventLink"
+                          class="text-danger">
+                    </span>
+                </div>
+            </div>
+
+
+            <!-- EVENT RESPONSE -->
+            <div class="event-feature-section">
+
+                <div class="event-response-header">
+
+                    <div>
+                        <span class="event-field-label">
+                            EVENT RESPONSE
+                        </span>
+
+                        <p class="event-response-description">
+                            Allow visitors to express interest in this event.
+                        </p>
+                    </div>
+
+
+                    <!-- Toggle -->
+
+                    <label class="event-toggle">
+
+                        <input type="checkbox"
+                               id="EnableResponses"
+                               name="EnableResponses"
+                               value="true"
+                               @(Model?.EnableResponses == true
+                                   ? "checked"
+                                   : "") />
+
+                        <span class="event-toggle-slider"></span>
+
+                    </label>
+                </div>
+
+
+                <!-- Response Options -->
+
+                <div id="responseOptions"
+                     class="event-response-options"
+                     style="display: none;">
+
+                    <!-- Record responses -->
+
+                    <label class="event-checkbox-option">
+
+                        <input type="checkbox"
+                               id="RecordResponses"
+                               name="RecordResponses"
+                               value="true"
+                               @(Model?.RecordResponses == true
+                                   ? "checked"
+                                   : "") />
+                        <span>
+                            <strong>
+                                Record expressions of interest
+                            </strong>
+
+                            <small>
+                                Keep track of how many people are interested.
+                            </small>
+                        </span>
+
+                    </label>
+
+
+                    <!-- Show count -->
+                    <label class="event-checkbox-option">
+
+                        <input type="checkbox"
+                               id="ShowResponseCount"
+                               name="ShowResponseCount"
+                               value="true"
+                               @(Model?.ShowResponseCount == true
+                                   ? "checked"
+                                   : "") />
+                        <span>
+                            <strong>
+                                Show interest count publicly
+                            </strong>
+
+                            <small>
+                                Visitors can see how many people are interested.
+                            </small>
+                        </span>
+                    </label>
+
+
+                    <!-- Email -->
+                    <label class="event-checkbox-option">
+
+                        <input type="checkbox"
+                               id="EmailOnResponse"
+                               name="EmailOnResponse"
+                               value="true"
+                               @(Model?.EmailOnResponse == true
+                                   ? "checked"
+                                   : "") />
+                        <span>
+                            <strong>
+                                Email me when someone expresses interest
+                            </strong>
+
+                            <small>
+                                Receive an email notification when someone responds.
+                            </small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- FORM ACTIONS -->
             <div class="event-form-actions">
 
                 <a href="/ServiceProvider/Event/Index"
                    class="event-cancel-button">
-
                     Cancel
-
                 </a>
-
 
                 <button type="submit"
                         class="event-submit-button">
-
                     Create Event →
-
                 </button>
 
             </div>
-
         </div>
-
     </form>
-
 </div>
 
 
@@ -309,10 +504,9 @@
 
     <partial name="_ValidationScriptsPartial" />
 
-
     <script>
 
-        // ## Display selected image filename
+        // IMAGE FILE NAME
 
         const eventImage =
             document.getElementById("eventImage");
@@ -338,6 +532,182 @@
 
         });
 
-    </script>
 
+        // EVENT RESPONSE TOGGLE
+
+        const responseToggle =
+            document.getElementById("EnableResponses");
+
+        const responseOptions =
+            document.getElementById("responseOptions");
+
+        const recordResponses =
+            document.getElementById("RecordResponses");
+
+        const showResponseCount =
+            document.getElementById("ShowResponseCount");
+
+        const emailOnResponse =
+            document.getElementById("EmailOnResponse");
+
+
+        function updateResponseOptions() {
+
+            if (responseToggle.checked) {
+
+                responseOptions.style.display = "block";
+
+            }
+            else {
+
+                responseOptions.style.display = "none";
+
+                recordResponses.checked = false;
+
+                showResponseCount.checked = false;
+
+                emailOnResponse.checked = false;
+
+            }
+        }
+
+
+        responseToggle.addEventListener(
+            "change",
+            updateResponseOptions
+        );
+
+
+        // Run when page first loads
+        updateResponseOptions();
+
+
+        // FUTURE DATE VALIDATION
+
+        const startDate =
+            document.getElementById("StartDate");
+
+        const endDate =
+            document.getElementById("EndDate");
+
+
+        function getCurrentLocalDateTime() {
+
+            const now = new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(now.getMonth() + 1)
+                    .padStart(2, "0");
+
+            const day =
+                String(now.getDate())
+                    .padStart(2, "0");
+
+            const hours =
+                String(now.getHours())
+                    .padStart(2, "0");
+
+            const minutes =
+                String(now.getMinutes())
+                    .padStart(2, "0");
+
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+
+        function updateDateMinimums() {
+
+            const now =
+                getCurrentLocalDateTime();
+
+            startDate.min = now;
+
+            endDate.min = now;
+
+            if (startDate.value) {
+
+                endDate.min =
+                    startDate.value;
+
+            }
+        }
+
+
+        updateDateMinimums();
+
+
+        startDate.addEventListener(
+            "change",
+            function () {
+
+                endDate.min =
+                    startDate.value;
+
+                if (
+                    endDate.value &&
+                    endDate.value <= startDate.value
+                ) {
+
+                    endDate.value = "";
+
+                }
+
+            }
+        );
+
+
+        // FORM VALIDATION
+
+        document.querySelector("form")
+            .addEventListener("submit", function (event) {
+
+                const now =
+                    new Date();
+
+                const selectedStart =
+                    new Date(startDate.value);
+
+                const selectedEnd =
+                    new Date(endDate.value);
+
+
+                if (
+                    !startDate.value ||
+                    selectedStart <= now
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Event start date and time must be in the future."
+                    );
+
+                    startDate.focus();
+
+                    return;
+                }
+
+
+                if (
+                    !endDate.value ||
+                    selectedEnd <= selectedStart
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Event end date and time must be after the start date and time."
+                    );
+
+                    endDate.focus();
+
+                    return;
+                }
+
+            });
+
+    </script>
 }

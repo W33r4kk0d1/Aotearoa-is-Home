@@ -18,25 +18,137 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             _context = context;
         }
 
-
-        // ## Display Service Provider events
+        // VIEW EVENT
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> View(int id)
         {
-            var userId =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
             }
 
-            var events = await _context.Events
+            var eventItem = await _context.Events
                 .Include(e => e.EventProviderProfile)
-                .Where(e =>
-                    e.EventProviderProfile!.UserId == userId)
+                .FirstOrDefaultAsync(e =>
+                    e.Id == id &&
+                    e.EventProviderProfile!.UserId == userId);
+
+            if (eventItem == null)
+            {
+                return NotFound();
+            }
+
+            return View(eventItem);
+        }
+
+
+        // ## Display Service Provider events
+        [HttpGet]
+        public async Task<IActionResult> Index(
+            string? search,
+            string? category,
+            string? region,
+            string? status,
+            string? dateFilter)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            // Get all events belonging to the logged-in provider
+            var query = _context.Events
+                .Include(e => e.EventProviderProfile)
+                .Where(e => e.EventProviderProfile!.UserId == userId)
+                .AsQueryable();
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(e =>
+                    e.Title.Contains(search) ||
+                    e.Location.Contains(search) ||
+                    e.Description.Contains(search));
+            }
+
+            // Category filter
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(e => e.Category == category);
+            }
+
+            // Region filter
+            if (!string.IsNullOrWhiteSpace(region))
+            {
+                query = query.Where(e => e.Region == region);
+            }
+
+            // Status filter
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(e => e.Status == status);
+            }
+
+            // Date filter
+            var newZealandTimeZone =
+                TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
+
+            var currentNewZealandTime =
+                TimeZoneInfo.ConvertTimeFromUtc(
+                    DateTime.UtcNow,
+                    newZealandTimeZone);
+
+            if (dateFilter == "upcoming")
+            {
+                query = query.Where(e =>
+                    e.StartDate > currentNewZealandTime);
+            }
+            else if (dateFilter == "past")
+            {
+                query = query.Where(e =>
+                    e.StartDate <= currentNewZealandTime);
+            }
+
+            // Get filtered events
+            var events = await query
                 .OrderBy(e => e.StartDate)
                 .ToListAsync();
+
+            // Keep filter options available even after filtering
+            var allProviderEvents = await _context.Events
+                .Where(e => e.EventProviderProfile!.UserId == userId)
+                .ToListAsync();
+
+            ViewBag.Search = search;
+            ViewBag.SelectedCategory = category;
+            ViewBag.SelectedRegion = region;
+            ViewBag.SelectedStatus = status;
+            ViewBag.SelectedDateFilter = dateFilter;
+
+            ViewBag.Categories = allProviderEvents
+                .Where(e => !string.IsNullOrWhiteSpace(e.Category))
+                .Select(e => e.Category!)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
+            ViewBag.Regions = allProviderEvents
+                .Where(e => !string.IsNullOrWhiteSpace(e.Region))
+                .Select(e => e.Region!)
+                .Distinct()
+                .OrderBy(r => r)
+                .ToList();
+
+            ViewBag.Statuses = allProviderEvents
+                .Where(e => !string.IsNullOrWhiteSpace(e.Status))
+                .Select(e => e.Status)
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
 
             return View(events);
         }
@@ -57,87 +169,153 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             Event eventItem,
             IFormFile? eventImage)
         {
+            // GET LOGGED-IN USER
             var userId =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
 
             if (string.IsNullOrEmpty(userId))
             {
-                return Content(
-                    "ERROR: Could not find logged-in user.");
+                return Unauthorized();
             }
 
 
-            // ## Find Service Provider profile
+            // FIND SERVICE PROVIDER PROFILE
+
             var provider =
                 await _context.EventProviderProfiles
                     .FirstOrDefaultAsync(
                         p => p.UserId == userId);
 
+
             if (provider == null)
             {
                 return Content(
                     "ERROR: No EventProviderProfile found " +
-                    "for this user. User ID: " +
-                    userId);
+                    "for this user."
+                );
             }
 
 
-            // ## Connect event to Service Provider
+            // CONNECT EVENT TO PROVIDER
+
             eventItem.EventProviderProfileId =
                 provider.Id;
 
-
-            // ## Remove automatically assigned field
-            // ## from model validation
             ModelState.Remove(
-                nameof(Event.EventProviderProfileId));
+                nameof(Event.EventProviderProfileId)
+            );
 
 
-            // ## Validate Region
-            if (string.IsNullOrWhiteSpace(
-                eventItem.Region))
+            // NORMALISE USER INPUT
+
+            eventItem.Title =
+                eventItem.Title?.Trim() ?? string.Empty;
+
+            eventItem.Description =
+                eventItem.Description?.Trim() ?? string.Empty;
+
+            eventItem.Location =
+                eventItem.Location?.Trim() ?? string.Empty;
+
+            eventItem.OfficialEventLink =
+                string.IsNullOrWhiteSpace(
+                    eventItem.OfficialEventLink)
+                    ? null
+                    : eventItem.OfficialEventLink.Trim();
+
+
+            // REGION VALIDATION
+
+            if (string.IsNullOrWhiteSpace(eventItem.Region))
             {
                 ModelState.AddModelError(
                     nameof(Event.Region),
-                    "Please select a region.");
+                    "Please select a region."
+                );
             }
 
 
-            // ## Validate Category
-            if (string.IsNullOrWhiteSpace(
-                eventItem.Category))
+            // CATEGORY VALIDATION
+
+            if (string.IsNullOrWhiteSpace(eventItem.Category))
             {
                 ModelState.AddModelError(
                     nameof(Event.Category),
-                    "Please select an event category.");
+                    "Please select an event category."
+                );
             }
 
 
-            // ## Return validation errors
+            // RESPONSE SETTINGS
+
+            if (!eventItem.EnableResponses)
+            {
+                eventItem.RecordResponses = false;
+                eventItem.ShowResponseCount = false;
+                eventItem.EmailOnResponse = false;
+            }
+
+            if (eventItem.ShowResponseCount &&
+                !eventItem.RecordResponses)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.ShowResponseCount),
+                    "Interest count cannot be displayed unless responses are recorded."
+                );
+            }
+
+
+            // DUPLICATE EVENT CHECK
+
+            if (!string.IsNullOrWhiteSpace(eventItem.Title) &&
+                eventItem.StartDate != default)
+            {
+                var normalisedTitle =
+                    eventItem.Title
+                        .Trim()
+                        .ToLower();
+
+                var eventDate =
+                    eventItem.StartDate.Date;
+
+
+                var duplicateExists =
+                    await _context.Events.AnyAsync(e =>
+                        e.EventProviderProfileId == provider.Id &&
+                        e.Title.Trim().ToLower() == normalisedTitle &&
+                        e.StartDate.Date == eventDate
+                    );
+
+
+                if (duplicateExists)
+                {
+                    ModelState.AddModelError(
+                        nameof(Event.Title),
+                        "You have already submitted an event with the same title on this date."
+                    );
+                }
+            }
+
+
+            // VALIDATE MODEL
+
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-                    .SelectMany(x => x.Value!.Errors)
-                    .Select(x => x.ErrorMessage)
-                    .Where(x =>
-                        !string.IsNullOrEmpty(x))
-                    .ToList();
-
-                return Content(
-                    "VALIDATION ERROR:\n" +
-                    string.Join("\n", errors));
+                return View(eventItem);
             }
 
 
-            // ## Save uploaded event image
+            // SAVE EVENT IMAGE
+
             if (eventImage != null &&
                 eventImage.Length > 0)
             {
                 using var stream =
                     new MemoryStream();
 
-                await eventImage
-                    .CopyToAsync(stream);
+                await eventImage.CopyToAsync(stream);
 
                 eventItem.ImageData =
                     stream.ToArray();
@@ -147,12 +325,18 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
 
-            // ## Set event creation time
+            // SET EVENT INFORMATION
+
             eventItem.CreatedAt =
                 DateTime.UtcNow;
 
 
-            // ## Save event
+            eventItem.Status =
+                "Pending Approval";
+
+
+            // SAVE EVENT
+
             try
             {
                 _context.Events.Add(eventItem);
@@ -164,12 +348,17 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 return Content(
                     "DATABASE ERROR:\n\n" +
                     (ex.InnerException?.Message ??
-                     ex.Message));
+                    ex.Message)
+                );
             }
 
+            TempData["SuccessMessage"] = "Event successfully created.";
+
+            // RETURN TO MANAGE EVENTS
 
             return RedirectToAction(
-                nameof(Index));
+                nameof(Index)
+            );
         }
 
 
@@ -187,9 +376,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 return Unauthorized();
             }
 
-
-            // ## Find event
-            // ## Event must belong to logged-in provider
             var eventItem =
                 await _context.Events
                     .Include(e =>
@@ -219,6 +405,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             Event eventItem,
             IFormFile? eventImage)
         {
+            // GET LOGGED-IN USER
             var userId =
                 User.FindFirstValue(
                     ClaimTypes.NameIdentifier);
@@ -229,120 +416,223 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
 
-            // ## Find existing event
-            // ## and verify event ownership
+            // FIND EXISTING EVENT AND VERIFY EVENT OWNERSHIP
             var existingEvent =
                 await _context.Events
-                    .Include(e =>
-                        e.EventProviderProfile)
+                    .Include(e => e.EventProviderProfile)
                     .FirstOrDefaultAsync(e =>
                         e.Id == id &&
                         e.EventProviderProfile!
                             .UserId == userId);
 
 
-            // ## Event does not exist
-            // ## or does not belong to this provider
+            // EVENT DOES NOT EXIST OR DOES NOT BELONG TO THIS PROVIDER
             if (existingEvent == null)
             {
                 return NotFound();
             }
 
 
-            // ## Provider ID does not come
-            // ## from the Edit form
-            ModelState.Remove(
-                nameof(Event.EventProviderProfileId));
+            // PROVIDER ID DOES NOT COME FROM THE EDIT FORM
+            ModelState.Remove( nameof(Event.EventProviderProfileId));
+            // IMAGE INFORMATION IS PRESERVED
+            ModelState.Remove( nameof(Event.ImageData));
+            ModelState.Remove( nameof(Event.ImageContentType));
+            // NORMALISE USER INPUT
+            eventItem.Title =
+                eventItem.Title?.Trim()
+                ?? string.Empty;
+
+            eventItem.Description =
+                eventItem.Description?.Trim()
+                ?? string.Empty;
+
+            eventItem.Location =
+                eventItem.Location?.Trim()
+                ?? string.Empty;
+
+            eventItem.OfficialEventLink =
+                string.IsNullOrWhiteSpace(
+                    eventItem.OfficialEventLink)
+                    ? null
+                    : eventItem.OfficialEventLink.Trim();
 
 
-            // ## Image information is preserved
-            // ## from the existing database record
-            ModelState.Remove(
-                nameof(Event.ImageData));
+            // REGION VALIDATION
 
-            ModelState.Remove(
-                nameof(Event.ImageContentType));
-
-
-            // ## Validate Region
             if (string.IsNullOrWhiteSpace(
                 eventItem.Region))
             {
                 ModelState.AddModelError(
                     nameof(Event.Region),
-                    "Please select a region.");
+                    "Please select a region."
+                );
             }
 
 
-            // ## Validate Category
+            // CATEGORY VALIDATION
+
             if (string.IsNullOrWhiteSpace(
                 eventItem.Category))
             {
                 ModelState.AddModelError(
                     nameof(Event.Category),
-                    "Please select an event category.");
+                    "Please select an event category."
+                );
             }
 
 
-            // ## Return Edit page when validation fails
+            // DATE VALIDATION
+
+            var newZealandTimeZone =
+                TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
+
+            var currentNewZealandTime =
+                TimeZoneInfo.ConvertTimeFromUtc(
+                    DateTime.UtcNow,
+                    newZealandTimeZone);
+
+            if (eventItem.StartDate == default)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.StartDate),
+                    "Please select a start date and time."
+                );
+            }
+            else if (eventItem.StartDate <= currentNewZealandTime)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.StartDate),
+                    "Event start date and time must be in the future."
+                );
+            }
+
+
+            if (eventItem.EndDate == default)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.EndDate),
+                    "Please select an end date and time."
+                );
+            }
+            else if (
+                eventItem.StartDate != default &&
+                eventItem.EndDate <= eventItem.StartDate)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.EndDate),
+                    "Event end date and time must be after the start date and time."
+                );
+            }
+
+            // RESPONSE SETTINGS
+
+            if (!eventItem.EnableResponses)
+            {
+                eventItem.RecordResponses = false;
+                eventItem.ShowResponseCount = false;
+                eventItem.EmailOnResponse = false;
+            }
+
+
+            if (
+                eventItem.ShowResponseCount &&
+                !eventItem.RecordResponses)
+            {
+                ModelState.AddModelError(
+                    nameof(Event.ShowResponseCount),
+                    "Interest count cannot be displayed unless responses are recorded."
+                );
+            }
+
+
+            // DUPLICATE EVENT CHECK
+
+            if (
+                !string.IsNullOrWhiteSpace(eventItem.Title) &&
+                eventItem.StartDate != default)
+            {
+                var normalisedTitle =
+                    eventItem.Title
+                        .Trim()
+                        .ToLower();
+
+                var eventDate =
+                    eventItem.StartDate.Date;
+
+
+                var duplicateExists =
+                    await _context.Events.AnyAsync(e =>
+                        e.Id != existingEvent.Id &&
+                        e.EventProviderProfileId ==
+                            existingEvent.EventProviderProfileId &&
+                        e.Title.Trim().ToLower() ==
+                            normalisedTitle &&
+                        e.StartDate.Date ==
+                            eventDate
+                    );
+
+
+                if (duplicateExists)
+                {
+                    ModelState.AddModelError(
+                        nameof(Event.Title),
+                        "You have already submitted an event with the same title on this date."
+                    );
+                }
+            }
+
+
+            // RETURN TO EDIT PAGE WHEN VALIDATION FAILS
+
             if (!ModelState.IsValid)
             {
-                // ## Keep database values needed
-                // ## by the Edit view
-                eventItem.Id =
-                    existingEvent.Id;
-
-                eventItem.EventProviderProfileId =
-                    existingEvent
-                        .EventProviderProfileId;
-
-                eventItem.ImageData =
-                    existingEvent.ImageData;
-
-                eventItem.ImageContentType =
-                    existingEvent
-                        .ImageContentType;
-
-                eventItem.CreatedAt =
-                    existingEvent.CreatedAt;
-
+                eventItem.Id = existingEvent.Id;
+                eventItem.EventProviderProfileId = existingEvent.EventProviderProfileId;
+                eventItem.ImageData = existingEvent.ImageData;
+                eventItem.ImageContentType = existingEvent.ImageContentType;
+                eventItem.CreatedAt = existingEvent.CreatedAt;
                 return View(eventItem);
             }
 
 
-            // ## Update editable event information
-            existingEvent.Title =
-                eventItem.Title;
+            // UPDATE EDITABLE EVENT INFORMATION
 
-            existingEvent.Description =
-                eventItem.Description;
+            existingEvent.Title = eventItem.Title;
 
-            existingEvent.Location =
-                eventItem.Location;
+            existingEvent.Description = eventItem.Description;
 
-            existingEvent.Region =
-                eventItem.Region;
+            existingEvent.Location = eventItem.Location;
 
-            existingEvent.StartDate =
-                eventItem.StartDate;
+            existingEvent.Region = eventItem.Region;
 
-            existingEvent.EndDate =
-                eventItem.EndDate;
+            existingEvent.StartDate = eventItem.StartDate;
 
-            existingEvent.Category =
-                eventItem.Category;
+            existingEvent.EndDate = eventItem.EndDate;
+
+            existingEvent.Category = eventItem.Category;
+
+            existingEvent.OfficialEventLink = eventItem.OfficialEventLink;
+
+            existingEvent.EnableResponses = eventItem.EnableResponses;
+
+            existingEvent.RecordResponses = eventItem.RecordResponses;
+
+            existingEvent.ShowResponseCount = eventItem.ShowResponseCount;
+
+            existingEvent.EmailOnResponse = eventItem.EmailOnResponse;
 
 
-            // ## Replace image only when
-            // ## a new image is uploaded
-            if (eventImage != null &&
+            // REPLACE IMAGE ONLY WHEN A NEW IMAGE IS UPLOADED
+
+            if (
+                eventImage != null &&
                 eventImage.Length > 0)
             {
                 using var stream =
                     new MemoryStream();
 
-                await eventImage
-                    .CopyToAsync(stream);
+                await eventImage.CopyToAsync(stream);
 
                 existingEvent.ImageData =
                     stream.ToArray();
@@ -352,23 +642,76 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
 
-            // ## Save updated event
+            // SAVE UPDATED EVENT
+
             try
             {
-                await _context
-                    .SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 return Content(
                     "DATABASE ERROR:\n\n" +
                     (ex.InnerException?.Message ??
-                     ex.Message));
+                    ex.Message)
+                );
+            }
+
+            TempData["SuccessMessage"] = "Event successfully updated.";
+
+            // RETURN TO MANAGE EVENTS
+
+            return RedirectToAction(
+                nameof(Index)
+            );
+        }
+
+        // DELETE EVENT
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
             }
 
 
-            return RedirectToAction(
-                nameof(Index));
+            // Find event and verify ownership
+            var eventItem =
+                await _context.Events
+                    .Include(e =>
+                        e.EventProviderProfile)
+                    .FirstOrDefaultAsync(e =>
+                        e.Id == id &&
+                        e.EventProviderProfile!
+                            .UserId == userId);
+
+
+            // Event does not exist
+            // or does not belong to this provider
+            if (eventItem == null)
+            {
+                return NotFound();
+            }
+
+
+            // Delete event
+            _context.Events.Remove(eventItem);
+
+            await _context.SaveChangesAsync();
+
+
+            // Success message
+            TempData["SuccessMessage"] = "Event successfully deleted.";
+
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
