@@ -42,6 +42,8 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<EventFavourite> EventFavourites { get; set; }
 
+        public DbSet<StudentFamilyMember> StudentFamilyMembers { get; set; }
+
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
@@ -124,6 +126,28 @@ namespace Aotearoa_is_Home.Data
         builder.Entity<EventFavourite>()
             .HasIndex(f => new { f.EventId, f.UserId })
             .IsUnique();
+        
+        builder.Entity<StudentFamilyMember>()
+            .HasOne(f => f.StudentUser)
+            .WithMany()
+            .HasForeignKey(f => f.StudentUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+        builder.Entity<StudentFamilyMember>()
+            .HasOne(f => f.RegisteredUser)
+            .WithMany()
+            .HasForeignKey(f => f.RegisteredUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<StudentFamilyMember>()
+            .HasIndex(f => f.Email)
+            .IsUnique();
+
+        builder.Entity<StudentFamilyMember>()
+            .HasIndex(f => f.RegisteredUserId)
+            .IsUnique()
+            .HasFilter("[RegisteredUserId] IS NOT NULL");
         }
     }
 }

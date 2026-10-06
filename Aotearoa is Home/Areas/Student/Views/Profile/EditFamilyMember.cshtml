@@ -1,0 +1,273 @@
+@model Aotearoa_is_Home.Models.StudentFamilyMember
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Family Member";
+
+    var isRegistered = Model.RegisteredUserId != null;
+}
+
+<div class="container my-5">
+
+    <div class="mb-4">
+
+        <h1>Edit Family Member</h1>
+
+        <p class="text-muted">
+            Update the information for @Model.FullName.
+        </p>
+
+    </div>
+
+
+    @if (isRegistered)
+    {
+        <div class="alert alert-info">
+
+            <strong>This family member has registered.</strong>
+
+            <br />
+
+            Their email address cannot be changed because it is
+            connected to their user account.
+
+        </div>
+    }
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <form asp-area="Student"
+                  asp-controller="Profile"
+                  asp-action="EditFamilyMember"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="Id" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+
+                <!-- Full Name -->
+
+                <div class="mb-3">
+
+                    <label asp-for="FullName"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="FullName"
+                           class="form-control" />
+
+                    <span asp-validation-for="FullName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Relationship -->
+
+                <div class="mb-3">
+
+                    <label asp-for="RelationshipToStudent"
+                           class="form-label">
+                    </label>
+
+                    <select asp-for="RelationshipToStudent"
+                            class="form-select">
+
+                        <option value="">
+                            -- Select Relationship --
+                        </option>
+
+                        <option value="Spouse">Spouse</option>
+                        <option value="Partner">Partner</option>
+                        <option value="Child">Child</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Sibling">Sibling</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                    <span asp-validation-for="RelationshipToStudent"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Email -->
+
+                <div class="mb-3">
+
+                    <label asp-for="Email"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           readonly="@isRegistered" />
+
+                    @if (!isRegistered)
+                    {
+                        <div class="form-text">
+                            This email will be used to connect the family
+                            member when they register.
+                        </div>
+                    }
+
+                    <span asp-validation-for="Email"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Contact -->
+
+                <div class="mb-3">
+
+                    <label asp-for="ContactNumber"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="ContactNumber"
+                           class="form-control" />
+
+                    <span asp-validation-for="ContactNumber"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Date of Birth -->
+
+                <div class="mb-3">
+
+                    <label asp-for="DateOfBirth"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="DateOfBirth"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="DateOfBirth"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Gender -->
+
+                <div class="mb-3">
+
+                    <label asp-for="Gender"
+                           class="form-label">
+                    </label>
+
+                    <select asp-for="Gender"
+                            class="form-select">
+
+                        <option value="">
+                            -- Select Gender --
+                        </option>
+
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Other">Other</option>
+                        <option value="Prefer not to say">
+                            Prefer not to say
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Gender"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Citizenship -->
+
+                <div class="mb-3">
+
+                    <label asp-for="CountryOfCitizenship"
+                           class="form-label">
+                    </label>
+
+                    <input asp-for="CountryOfCitizenship"
+                           class="form-control" />
+
+                    <span asp-validation-for="CountryOfCitizenship"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Notes -->
+
+                <div class="mb-4">
+
+                    <label asp-for="Notes"
+                           class="form-label">
+                    </label>
+
+                    <textarea asp-for="Notes"
+                              class="form-control"
+                              rows="4">
+                    </textarea>
+
+                    <span asp-validation-for="Notes"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Save Changes
+
+                    </button>
+
+                    <a asp-area="Student"
+                       asp-controller="Profile"
+                       asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
