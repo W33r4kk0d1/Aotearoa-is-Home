@@ -45,11 +45,9 @@
                 </h2>
             </div>
 
-            <a asp-area="Student"
-               asp-controller="Settlement"
-               asp-action="Index"
-               class="student-view-all">
-                View all →
+            <a href="@Url.Action("Index", "Settlement", new { area = "Student" })"
+                class="student-view-all">
+                    View all →
             </a>
 
         </div>
@@ -61,11 +59,8 @@
 
                 @foreach (var settlementPage in Model.SettlementPages.Take(3))
                 {
-                    <a asp-area="Student"
-                       asp-controller="Settlement"
-                       asp-action="View"
-                       asp-route-id="@settlementPage.Id"
-                       class="student-home-settlement-card">
+                    <a href="@Url.Action("View", "Settlement", new { area = "Student", id = settlementPage.Id })"
+                        class="student-home-settlement-card">
 
                         @if (settlementPage.BackgroundImage != null &&
                              settlementPage.BackgroundImage.Length > 0)
@@ -110,11 +105,9 @@
                 </h2>
             </div>
 
-            <a asp-area="Student"
-               asp-controller="Event"
-               asp-action="Index"
-               class="student-view-all">
-                View all →
+            <a href="@Url.Action("Index", "Event", new { area = "Student" })"
+                class="student-view-all">
+                    View all →
             </a>
 
         </div>
@@ -126,11 +119,8 @@
 
                 @foreach (var eventItem in Model.Events)
                 {
-                    <a asp-area="Student"
-                       asp-controller="Event"
-                       asp-action="Details"
-                       asp-route-id="@eventItem.Id"
-                       class="student-home-event-card">
+                    <a href="@Url.Action("Details", "Event", new { area = "Student", id = eventItem.Id })"
+                        class="student-home-event-card">
 
                         @if (eventItem.ImageData != null)
                         {

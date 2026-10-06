@@ -4,6 +4,7 @@ using Aotearoa_is_Home.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aotearoa_is_Home.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006000456_AddEventManagementFeatures")]
+    partial class AddEventManagementFeatures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -295,34 +298,6 @@ namespace Aotearoa_is_Home.Migrations
                     b.HasIndex("ServiceProviderId");
 
                     b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("Aotearoa_is_Home.Models.EventFavourite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("EventId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("EventFavourites");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.EventProviderProfile", b =>
@@ -829,25 +804,6 @@ namespace Aotearoa_is_Home.Migrations
                         .HasForeignKey("ServiceProviderId");
 
                     b.Navigation("EventProviderProfile");
-                });
-
-            modelBuilder.Entity("Aotearoa_is_Home.Models.EventFavourite", b =>
-                {
-                    b.HasOne("Aotearoa_is_Home.Models.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.EventProviderProfile", b =>

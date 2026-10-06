@@ -7,13 +7,18 @@
 
 <div class="manage-events-page">
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="event-success-alert">
+            ✓ @TempData["SuccessMessage"]
+        </div>
+    }
+
     @* ## Back Navigation *@
     <div class="event-back-link">
-
         <a href="/ServiceProvider/Home/Index">
             ← Back to dashboard
         </a>
-
     </div>
 
 
@@ -21,7 +26,6 @@
     <div class="manage-events-header">
 
         <div>
-
             <span class="event-page-label">
                 YOUR EVENTS
             </span>
@@ -31,48 +35,217 @@
             <p>
                 View and manage the events you have created.
             </p>
-
         </div>
 
 
         @* ## Create Event Button *@
         <a href="/ServiceProvider/Event/Create"
            class="event-submit-button manage-create-button">
-
             + Create Event
-
         </a>
+    </div>
 
+
+   @* ## Search and Filters *@
+
+    <div class="manage-events-filters">
+
+        <form method="get"
+            asp-area="ServiceProvider"
+            asp-controller="Event"
+            asp-action="Index">
+
+            <div class="event-search-row">
+
+                @* Search *@
+                <div class="event-search-field">
+
+                    <label for="search">  Search </label>
+
+                    <input type="text"
+                        id="search"
+                        name="search"
+                        value="@ViewBag.Search"
+                        placeholder="Search events, locations..." />
+                </div>
+
+
+                @* Category *@
+                <div class="event-filter-field">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select id="category" name="category">
+
+                        <option value="">
+                            All categories
+                        </option>
+
+                        @foreach (var item in ViewBag.Categories)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.SelectedCategory == item ? "selected" : null)">
+                                @item
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                @* Region *@
+                <div class="event-filter-field">
+                    <label for="region">  Region </label>
+
+                    <select id="region" name="region">
+
+                        <option value="">  All regions </option>
+
+                        @foreach (var item in ViewBag.Regions)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.SelectedRegion == item ? "selected" : null)">
+                                @item
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                @* Status *@
+                <div class="event-filter-field">
+
+                    <label for="status"> Status </label>
+
+                    <select id="status" name="status">
+
+                        <option value=""> All statuses </option>
+
+                        @foreach (var item in ViewBag.Statuses)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.SelectedStatus == item ? "selected" : null)">
+                                @item
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                @* Date *@
+                <div class="event-filter-field">
+
+                    <label for="dateFilter"> Date </label>
+
+                    <select id="dateFilter" name="dateFilter">
+
+                        <option value="">
+                            All events
+                        </option>
+
+                        <option value="upcoming"
+                                selected="@(ViewBag.SelectedDateFilter == "upcoming" ? "selected" : null)">
+                            Upcoming
+                        </option>
+
+                        <option value="past"
+                                selected="@(ViewBag.SelectedDateFilter == "past" ? "selected" : null)">
+                            Past
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+
+            @* Filter Buttons *@
+            <div class="event-filter-actions">
+
+                <button type="submit" class="event-filter-button">
+                    Search & Filter
+                </button>
+
+                <a href="@Url.Action(
+                    "Index",
+                    "Event",
+                    new { area = "ServiceProvider" })"
+                class="event-clear-filter-button">
+                    Clear Filters
+                </a>
+
+            </div>
+        </form>
+    </div>
+
+
+    @* ## Results Count *@
+
+    <div class="manage-events-results">
+        <span>
+            Showing <strong>@Model.Count</strong>
+            @(Model.Count == 1 ? "event" : "events")
+        </span>
     </div>
 
 
     @* ## Events *@
+
     @if (!Model.Any())
     {
-        @* ## Empty State *@
-        <div class="manage-events-empty">
+        @* Check whether filters/search are active *@
 
-            <h2>
-                No events yet
-            </h2>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Search)
+            || !string.IsNullOrWhiteSpace(ViewBag.SelectedCategory)
+            || !string.IsNullOrWhiteSpace(ViewBag.SelectedRegion)
+            || !string.IsNullOrWhiteSpace(ViewBag.SelectedStatus)
+            || !string.IsNullOrWhiteSpace(ViewBag.SelectedDateFilter))
+        {
+            @* No matching results *@
 
-            <p>
-                You haven't created any events yet.
-                Create your first event to get started.
-            </p>
+            <div class="manage-events-empty">
 
+                <h2>  No matching events  </h2>
 
-            <a href="/ServiceProvider/Event/Create"
-               class="event-submit-button">
+                <p>
+                    No events match your current search or filters.
+                    Try changing your filters or clearing them.
+                </p>
 
-                + Create Event
+                <a href="@Url.Action(
+                    "Index",
+                    "Event",
+                    new { area = "ServiceProvider" })"
+                class="event-submit-button">
 
-            </a>
+                    Clear Filters
 
-        </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            @* Provider has no events at all *@
+
+            <div class="manage-events-empty">
+
+                <h2>  No events yet </h2>
+
+                <p>
+                    You haven't created any events yet.
+                    Create your first event to get started.
+                </p>
+
+                <a href="/ServiceProvider/Event/Create"
+                class="event-submit-button">
+                    + Create Event
+                </a>
+            </div>
+        }
     }
     else
     {
+        @* Event Cards *@
+
         <div class="manage-events-list">
 
             @foreach (var eventItem in Model)
@@ -80,171 +253,208 @@
                 @* ## Event Card *@
                 <article class="manage-event-card">
 
-
                     @* ## Event Image *@
                     <div class="manage-event-image">
 
                         @if (eventItem.ImageData != null &&
-                             eventItem.ImageData.Length > 0 &&
-                             !string.IsNullOrEmpty(eventItem.ImageContentType))
+                            eventItem.ImageData.Length > 0 &&
+                            !string.IsNullOrEmpty(eventItem.ImageContentType))
                         {
-                            var imageBase64 =
-                                Convert.ToBase64String(
-                                    eventItem.ImageData);
+                            var imageBase64 =  Convert.ToBase64String(eventItem.ImageData);
 
-                            var imageSource =
-                                $"data:{eventItem.ImageContentType};base64,{imageBase64}";
+                            var imageSource = $"data:{eventItem.ImageContentType};base64,{imageBase64}";
 
-
-                            <img src="@imageSource"
-                                 alt="@eventItem.Title event image" />
+                            <img src="@imageSource" alt="@eventItem.Title event image" />
                         }
                         else
                         {
-                            @* ## Image Placeholder *@
                             <div class="manage-event-image-placeholder">
-
-                                <span>
-                                    EVENT
-                                </span>
-
+                                <span> EVENT </span>
                             </div>
                         }
-
                     </div>
 
 
                     @* ## Event Information *@
                     <div class="manage-event-content">
 
-
                         @* ## Event Heading *@
                         <div class="manage-event-top">
-
                             <div>
+                                <span class="manage-event-category"> @eventItem.Category </span>
 
-                                <span class="manage-event-category">
-                                    @eventItem.Category
-                                </span>
-
-
-                                <h2>
-                                    @eventItem.Title
-                                </h2>
-
+                                <h2> @eventItem.Title </h2>
                             </div>
-
                         </div>
 
 
                         @* ## Event Details *@
                         <div class="manage-event-details">
 
-
-                            @* ## Date *@
+                            @* Date *@
                             <div class="manage-event-detail">
+                                <span class="detail-label"> DATE </span>
 
-                                <span class="detail-label">
-                                    DATE
-                                </span>
-
-                                <span>
-                                    @eventItem.StartDate.ToString("dd MMM yyyy")
-                                </span>
-
+                                <span> @eventItem.StartDate.ToString("dd MMM yyyy") </span>
                             </div>
 
 
-                            @* ## Time *@
+                            @* Time *@
                             <div class="manage-event-detail">
-
-                                <span class="detail-label">
-                                    TIME
-                                </span>
+                                <span class="detail-label"> TIME </span>
 
                                 <span>
-
                                     @eventItem.StartDate.ToString("h:mm tt")
-
                                     -
-
                                     @eventItem.EndDate.ToString("h:mm tt")
-
                                 </span>
-
                             </div>
 
 
-                            @* ## Location *@
+                            @* Location *@
                             <div class="manage-event-detail">
+                                <span class="detail-label"> LOCATION </span>
 
-                                <span class="detail-label">
-                                    LOCATION
-                                </span>
-
-                                <span>
-                                    @eventItem.Location
-                                </span>
-
+                                <span> @eventItem.Location </span>
                             </div>
 
 
-                            @* ## Region *@
+                            @* Region *@
                             <div class="manage-event-detail">
+                                <span class="detail-label"> REGION </span>
 
-                                <span class="detail-label">
-                                    REGION
-                                </span>
-
-                                <span>
-                                    @eventItem.Region
-                                </span>
-
+                                <span> @eventItem.Region </span>
                             </div>
-
                         </div>
 
 
                         @* ## Event Description *@
-                        @if (!string.IsNullOrWhiteSpace(
-                            eventItem.Description))
+                        @if (!string.IsNullOrWhiteSpace(eventItem.Description))
                         {
                             <p class="manage-event-description">
-
                                 @eventItem.Description
-
                             </p>
                         }
+
+                        <!-- EVENT ANALYTICS -->
+                        @{
+                            var viewCounts = ViewBag.EventViewCounts
+                                as Dictionary<int, int>
+                                ?? new Dictionary<int, int>();
+
+                            var responseCounts = ViewBag.EventResponseCounts
+                                as Dictionary<int, int>
+                                ?? new Dictionary<int, int>();
+
+                            var eventViewCount = viewCounts.ContainsKey(eventItem.Id)
+                                ? viewCounts[eventItem.Id]
+                                : 0;
+
+                            var eventResponseCount = responseCounts.ContainsKey(eventItem.Id)
+                                ? responseCounts[eventItem.Id]
+                                : 0;
+                        }
+
+                        <div class="manage-event-analytics">
+
+                            <div class="manage-event-analytics-item">
+
+                                <span class="manage-event-analytics-icon">
+                                    👁
+                                </span>
+
+                                <div>
+                                    <span class="manage-event-analytics-label">
+                                        VIEWS
+                                    </span>
+
+                                    <strong>
+                                        @eventViewCount
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            @if (eventItem.EnableResponses &&
+                                eventItem.RecordResponses)
+                            {
+                                <div class="manage-event-analytics-item">
+
+                                    <span class="manage-event-analytics-icon">
+                                        🙋
+                                    </span>
+
+                                    <div>
+                                        <span class="manage-event-analytics-label">
+                                            GOING
+                                        </span>
+
+                                        <strong>
+                                            @eventResponseCount
+                                        </strong>
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
 
 
                         @* ## Event Actions *@
                         <div class="manage-event-actions">
 
-
-                            @* ## Edit Event Button *@
+                            @* View Event *@
                             <a href="@Url.Action(
-                                    "Edit",
-                                    "Event",
-                                    new
-                                    {
-                                        area = "ServiceProvider",
-                                        id = eventItem.Id
-                                    })"
-                               class="manage-edit-button">
+                                "View",
+                                "Event",
+                                new
+                                {
+                                    area = "ServiceProvider",
+                                    id = eventItem.Id
+                                })"
+                            class="manage-view-button">
 
-                                Edit Event
-
+                                View Event
                             </a>
 
 
+                            @* Edit Event *@
+                            <a href="@Url.Action(
+                                "Edit",
+                                "Event",
+                                new
+                                {
+                                    area = "ServiceProvider",
+                                    id = eventItem.Id
+                                })"
+                            class="manage-edit-button">
+
+                                Edit Event
+                            </a>
+
+                            @* Delete Event *@
+                            <form action="@Url.Action(
+                                "Delete",
+                                "Event",
+                                new
+                                {
+                                    area = "ServiceProvider",
+                                    id = eventItem.Id
+                                })"
+                                method="post"
+                                class="manage-delete-form"
+                                onsubmit="return confirm('Are you sure you want to delete this event? This action cannot be undone.');">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="manage-delete-button">
+                                    Delete Event
+                                </button>
+                            </form>
                         </div>
-
                     </div>
-
                 </article>
             }
-
         </div>
-    }
-
-</div>
+}

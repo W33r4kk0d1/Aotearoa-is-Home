@@ -14,33 +14,102 @@
 
     <!-- BACK -->
     <div class="student-event-back">
-
         <a href="@Url.Action(
                     "Index",
                     "Event",
                     new { area = "Student" })"
            class="student-back-button">
-
             ← Back to Events
-
         </a>
-
     </div>
 
+    @if (TempData["EventMessage"] != null)
+    {
+        <div class="student-event-message">
+            ✓ @TempData["EventMessage"]
+        </div>
+    }
+    
+    @{
+        var isOldEvent = Model.EndDate <= DateTime.Now;
+    }
+
+    @if (!isOldEvent)
+    {
+        <div class="student-event-actions">
+
+            @if (Model.EnableResponses && Model.RecordResponses)
+            {
+                @if (ViewBag.IsGoing == true)
+                {
+                    <form action="@Url.Action("CancelGoing", "Event", new { area = "Student", id = Model.Id })"
+                        method="post">
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="student-event-going-button active">
+                            ✓ Going
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form action="@Url.Action("Going", "Event", new { area = "Student", id = Model.Id })"
+                        method="post">
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="student-event-going-button">
+                            I'm Going
+                        </button>
+                    </form>
+                }
+            }
+
+            @if (ViewBag.IsFavourite == true)
+            {
+                <form action="@Url.Action("RemoveFavourite", "Event", new { area = "Student", id = Model.Id })"
+                    method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="student-event-favourite-button active">
+                        ♥ Saved
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form action="@Url.Action("SaveFavourite", "Event", new { area = "Student", id = Model.Id })"
+                    method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="student-event-favourite-button">
+                        ♡ Save
+                    </button>
+                </form>
+            }
+
+        </div>
+    }
+    else if (TempData["EventMessage"] == null)
+    {
+        <div class="student-event-message">
+            This is an old event and is no longer available for attendance or favourites.
+        </div>
+    }
 
     <!-- EVENT -->
     <article class="student-event-details">
-
 
         <!-- IMAGE -->
         @if (Model.ImageData != null &&
              Model.ImageData.Length > 0)
         {
             <div class="student-event-details-image">
-
                 <img src="data:@Model.ImageContentType;base64,@Convert.ToBase64String(Model.ImageData)"
                      alt="@Model.Title" />
-
             </div>
         }
 
@@ -74,14 +143,11 @@
 
             <!-- PUBLISHED DATE -->
             <p class="student-event-published">
-
                 Published:
                 <strong>
                     @publishedDate.ToString("dd MMMM yyyy, h:mm tt")
                 </strong>
-
             </p>
-
         </div>
 
 
@@ -96,15 +162,9 @@
                 </span>
 
                 <div>
+                    <small> Date </small>
 
-                    <small>
-                        Date
-                    </small>
-
-                    <strong>
-                        @Model.StartDate.ToString("dd MMMM yyyy")
-                    </strong>
-
+                    <strong> @Model.StartDate.ToString("dd MMMM yyyy") </strong>
                 </div>
 
             </div>
@@ -112,25 +172,19 @@
 
             <!-- TIME -->
             <div class="student-event-detail-item">
-
                 <span class="student-event-detail-icon">
                     🕐
                 </span>
 
                 <div>
-
-                    <small>
-                        Time
-                    </small>
+                    <small> Time </small>
 
                     <strong>
                         @Model.StartDate.ToString("h:mm tt")
                         -
                         @Model.EndDate.ToString("h:mm tt")
                     </strong>
-
                 </div>
-
             </div>
 
 
@@ -142,36 +196,21 @@
                 </span>
 
                 <div>
+                    <small> Location </small>
 
-                    <small>
-                        Location
-                    </small>
-
-                    <strong>
-                        @Model.Location
-                    </strong>
-
+                    <strong>  @Model.Location </strong>
                 </div>
 
             </div>
-
         </div>
 
 
         <!-- DESCRIPTION -->
         <section class="student-event-description-section">
+            <h2> About this event </h2>
 
-            <h2>
-                About this event
-            </h2>
-
-            <p>
-                @Model.Description
-            </p>
-
+            <p>  @Model.Description </p>
         </section>
 
-
     </article>
-
 </div>

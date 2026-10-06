@@ -33,8 +33,14 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<Event> Events { get; set; }
 
+        public DbSet<EventResponse> EventResponses { get; set; }
+
+        public DbSet<EventView> EventViews { get; set; }
+
         public DbSet<PendingStudentRegistration> PendingStudentRegistrations { get; set; }
         public DbSet<ChecklistItem> ChecklistItems { get; set; }
+
+        public DbSet<EventFavourite> EventFavourites { get; set; }
 
         protected override void OnModelCreating(
             ModelBuilder builder)
@@ -64,6 +70,60 @@ namespace Aotearoa_is_Home.Data
                 .WithOne()
                 .HasForeignKey<EventProviderProfile>(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // EVENT RESPONSE
+            builder.Entity<EventResponse>()
+                .HasOne(r => r.Event)
+                .WithMany()
+                .HasForeignKey(r => r.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<EventResponse>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.Entity<EventResponse>()
+                .HasIndex(r => new
+                {
+                    r.EventId,
+                    r.UserId
+                })
+                .IsUnique();
+
+
+            // EVENT VIEW
+            builder.Entity<EventView>()
+                .HasOne(v => v.Event)
+                .WithMany()
+                .HasForeignKey(v => v.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<EventView>()
+                .HasOne(v => v.User)
+                .WithMany()
+                .HasForeignKey(v => v.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<EventFavourite>()
+            .HasOne(f => f.Event)
+            .WithMany()
+            .HasForeignKey(f => f.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<EventFavourite>()
+            .HasOne(f => f.User)
+            .WithMany()
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<EventFavourite>()
+            .HasIndex(f => new { f.EventId, f.UserId })
+            .IsUnique();
         }
     }
 }

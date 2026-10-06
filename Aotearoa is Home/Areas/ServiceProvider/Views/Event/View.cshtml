@@ -1,0 +1,180 @@
+@model Aotearoa_is_Home.Models.Event
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "View Event";
+}
+
+<div class="event-create-page">
+
+    <!-- Back Navigation -->
+    <div class="event-back-link">
+        <a href="@Url.Action(
+                "Index",
+                "Event",
+                new { area = "ServiceProvider" })">
+            ← Back to events
+        </a>
+    </div>
+
+
+    <!-- Page Header -->
+    <div class="event-create-header">
+
+        <span class="event-page-label"> EVENT DETAILS </span>
+
+        <h1> @Model.Title </h1>
+
+        <p> Preview how your event information is displayed.</p>
+
+    </div>
+
+
+    <!-- Event Card -->
+    <div class="event-form-card">
+
+        <!-- Event Image -->
+        @if (Model.ImageData != null &&
+             Model.ImageData.Length > 0 &&
+             !string.IsNullOrEmpty(Model.ImageContentType))
+        {
+            var imageBase64 = Convert.ToBase64String(Model.ImageData);
+
+            var imageSource = $"data:{Model.ImageContentType};base64,{imageBase64}";
+
+            <div class="manage-event-image">
+                <img src="@imageSource" alt="@Model.Title event image" />
+            </div>
+        }
+
+
+        <!-- Category -->
+        @if (!string.IsNullOrWhiteSpace(Model.Category))
+        {
+            <span class="manage-event-category"> @Model.Category </span>
+        }
+
+
+        <!-- Title -->
+        <h2> @Model.Title </h2>
+
+
+        <!-- Status -->
+        <div class="manage-event-detail">
+            <span class="detail-label">
+                STATUS
+            </span>
+
+            <span>
+                @Model.Status
+            </span>
+        </div>
+
+
+        <!-- Date -->
+        <div class="manage-event-detail">
+            <span class="detail-label">
+                DATE
+            </span>
+
+            <span>
+                @Model.StartDate.ToString("dd MMM yyyy")
+            </span>
+        </div>
+
+
+        <!-- Time -->
+        <div class="manage-event-detail">
+            <span class="detail-label">
+                TIME
+            </span>
+
+            <span>
+                @Model.StartDate.ToString("h:mm tt")
+                -
+                @Model.EndDate.ToString("h:mm tt")
+            </span>
+        </div>
+
+
+        <!-- Location -->
+        <div class="manage-event-detail">
+            <span class="detail-label">
+                LOCATION
+            </span>
+
+            <span>
+                @Model.Location
+            </span>
+        </div>
+
+
+        <!-- Region -->
+        <div class="manage-event-detail">
+            <span class="detail-label">
+                REGION
+            </span>
+
+            <span>
+                @Model.Region
+            </span>
+        </div>
+
+
+        <!-- Description -->
+        <div class="event-form-group">
+            <h3> About this event </h3>
+
+            <p> @Model.Description </p>
+        </div>
+
+
+        <!-- Official Event Link -->
+        @if (!string.IsNullOrWhiteSpace(Model.OfficialEventLink))
+        {
+            <div class="event-form-group">
+
+                <h3> Official Event Information </h3>
+
+                <a href="@Model.OfficialEventLink"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Visit Official Event Website →
+                </a>
+            </div>
+        }
+
+
+        <!-- Posted Date -->
+        <div class="event-form-group">
+            <small>
+                Posted @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+            </small>
+        </div>
+
+
+        <!-- Actions -->
+        <div class="event-form-actions">
+
+            <a href="@Url.Action(
+                    "Edit",
+                    "Event",
+                    new
+                    {
+                        area = "ServiceProvider",
+                        id = Model.Id
+                    })"
+               class="manage-edit-button">
+                Edit Event
+            </a>
+
+            <a href="@Url.Action(
+                    "Index",
+                    "Event",
+                    new { area = "ServiceProvider" })"
+               class="event-cancel-button">
+                Back to Events
+            </a>
+        </div>
+    </div>
+</div>

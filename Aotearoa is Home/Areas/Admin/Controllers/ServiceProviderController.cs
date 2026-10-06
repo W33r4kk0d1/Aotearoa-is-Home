@@ -1,4 +1,5 @@
 ﻿using Aotearoa_is_Home.Models;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -87,9 +88,24 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            if (!await _userManager.IsInRoleAsync(user, "Service Provider"))
+            {
+                return NotFound();
+            }
+
             user.IsServiceProviderVerified = true;
 
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
 
             return RedirectToAction(nameof(Index));
         }

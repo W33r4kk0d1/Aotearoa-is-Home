@@ -1,0 +1,85 @@
+@model List<Aotearoa_is_Home.Models.EventFavourite>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Favourites";
+}
+
+<div class="container my-5">
+
+    <div class="mb-4">
+        <span class="student-eyebrow">MY EVENTS</span>
+
+        <h1>My Favourites</h1>
+
+        <p class="text-muted">
+            Events you have saved for later.
+        </p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="student-empty-state">
+            <h3>No favourite events yet</h3>
+
+            <p>
+                Save an event to find it here later.
+            </p>
+
+            <a href="@Url.Action("Index", "Event", new { area = "Student" })"
+               class="btn btn-primary">
+                Browse Events
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="student-home-event-grid">
+
+            @foreach (var favourite in Model)
+            {
+                var eventItem = favourite.Event;
+
+                if (eventItem == null)
+                {
+                    continue;
+                }
+
+                <a href="@Url.Action(
+                    "Details",
+                    "Event",
+                    new
+                    {
+                        area = "Student",
+                        id = eventItem.Id
+                    })"
+                   class="student-home-event-card">
+
+                    @if (eventItem.ImageData != null &&
+                         eventItem.ImageData.Length > 0)
+                    {
+                        <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
+                             alt="@eventItem.Title" />
+                    }
+
+                    <div class="student-home-event-content">
+
+                        @if (!string.IsNullOrWhiteSpace(eventItem.Category))
+                        {
+                            <span class="student-event-category">
+                                @eventItem.Category
+                            </span>
+                        }
+
+                        <h3> @eventItem.Title </h3>
+
+                        <p> @eventItem.Location </p>
+
+                        <small>  @eventItem.StartDate.ToString("dd/MM/yyyy h:mm tt") </small>
+
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
