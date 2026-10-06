@@ -36,7 +36,8 @@
                                 <th>Location</th>
                                 <th>Start</th>
                                 <th>End</th>
-                                <th></th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -66,12 +67,49 @@
                                         @item.EndDate.ToString("dd/MM/yyyy HH:mm")
                                     </td>
 
+                                    <td>
+                                        @if (item.Status == "Approved")
+                                        {
+                                            <span class="badge bg-success">
+                                                Approved
+                                            </span>
+                                        }
+                                        else if (item.Status == "Pending Approval")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Pending Approval
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @item.Status
+                                            </span>
+                                        }
+                                    </td>
+
                                     <td class="text-end">
 
                                         <a href="/Admin/Event/Edit/@item.Id"
                                            class="btn btn-primary btn-sm">
                                             Edit
                                         </a>
+
+                                        @if (item.Status == "Pending Approval")
+                                        {
+                                            <form action="@Url.Action("Approve", "Event", new { area = "Admin", id = item.Id })"
+                                                    method="post"
+                                                    class="d-inline">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm">
+                                                    Approve
+                                                </button>
+
+                                            </form>
+                                        }
 
                                     </td>
 

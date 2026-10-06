@@ -121,10 +121,10 @@
                 UPCOMING EVENTS
             </span>
 
-            <h2>Your next events</h2>
+            <h2>Upcoming community events</h2>
 
             <p class="sp-section-description">
-                Here are your next scheduled events.
+                Explore upcoming approved events from service providers.
             </p>
         </div>
 
@@ -132,20 +132,16 @@
         @if (Model.UpcomingEventList.Any())
         {
             <div class="sp-upcoming-events">
-
                 @foreach (var eventItem in Model.UpcomingEventList)
                 {
                     <article class="sp-upcoming-event-card">
-
                         <div class="sp-upcoming-event-content">
 
                             <span class="sp-action-label">
                                 @eventItem.Category
                             </span>
 
-                            <h3>
-                                @eventItem.Title
-                            </h3>
+                            <h3>@eventItem.Title</h3>
 
                             <p class="sp-event-meta">
                                 @eventItem.StartDate.ToString("dddd, d MMMM yyyy")
@@ -160,8 +156,8 @@
                             <span class="sp-event-status">
                                 @eventItem.Status
                             </span>
-                        </div>
 
+                        </div>
 
                         <div class="sp-upcoming-event-actions">
                             <a href="@Url.Action(
@@ -172,20 +168,8 @@
                                     area = "ServiceProvider",
                                     id = eventItem.Id
                                 })"
-                               class="sp-dashboard-button">
+                            class="sp-dashboard-button">
                                 View
-                            </a>
-
-                            <a href="@Url.Action(
-                                "Edit",
-                                "Event",
-                                new
-                                {
-                                    area = "ServiceProvider",
-                                    id = eventItem.Id
-                                })"
-                               class="sp-dashboard-button secondary">
-                                Edit
                             </a>
                         </div>
                     </article>

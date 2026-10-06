@@ -40,6 +40,8 @@ namespace Aotearoa_is_Home.Data
         public DbSet<PendingStudentRegistration> PendingStudentRegistrations { get; set; }
         public DbSet<ChecklistItem> ChecklistItems { get; set; }
 
+        public DbSet<EventFavourite> EventFavourites { get; set; }
+
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
@@ -106,6 +108,22 @@ namespace Aotearoa_is_Home.Data
                 .WithMany()
                 .HasForeignKey(v => v.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<EventFavourite>()
+            .HasOne(f => f.Event)
+            .WithMany()
+            .HasForeignKey(f => f.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<EventFavourite>()
+            .HasOne(f => f.User)
+            .WithMany()
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<EventFavourite>()
+            .HasIndex(f => new { f.EventId, f.UserId })
+            .IsUnique();
         }
     }
 }

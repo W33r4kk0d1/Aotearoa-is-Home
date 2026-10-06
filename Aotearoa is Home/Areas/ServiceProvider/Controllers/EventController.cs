@@ -29,15 +29,45 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 return Unauthorized();
             }
 
+            // Allow a Service Provider to view any approved event.
+            // Their own events can also be viewed even if still pending approval.
             var eventItem = await _context.Events
                 .Include(e => e.EventProviderProfile)
                 .FirstOrDefaultAsync(e =>
                     e.Id == id &&
-                    e.EventProviderProfile!.UserId == userId);
+                    (
+                        e.Status == "Approved" ||
+                        e.EventProviderProfile!.UserId == userId
+                    ));
 
             if (eventItem == null)
             {
                 return NotFound();
+            }
+
+            // Check whether this event belongs to the logged-in provider
+            var isOwner =
+                eventItem.EventProviderProfile?.UserId == userId;
+
+            ViewBag.IsOwner = isOwner;
+
+            // Only the event owner should see analytics
+            if (isOwner)
+            {
+                var eventViews = await _context.EventViews
+                    .CountAsync(v => v.EventId == id);
+
+                var peopleGoing = 0;
+
+                if (eventItem.EnableResponses &&
+                    eventItem.RecordResponses)
+                {
+                    peopleGoing = await _context.EventResponses
+                        .CountAsync(r => r.EventId == id);
+                }
+
+                ViewBag.EventViews = eventViews;
+                ViewBag.PeopleGoing = peopleGoing;
             }
 
             return View(eventItem);
@@ -117,6 +147,33 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             var events = await query
                 .OrderBy(e => e.StartDate)
                 .ToListAsync();
+
+            var eventIds = events
+                .Select(e => e.Id)
+                .ToList();
+
+            var viewCounts = await _context.EventViews
+                .Where(v => eventIds.Contains(v.EventId))
+                .GroupBy(v => v.EventId)
+                .Select(g => new
+                {
+                    EventId = g.Key,
+                    Count = g.Count()
+                })
+                .ToDictionaryAsync(x => x.EventId, x => x.Count);
+
+            var responseCounts = await _context.EventResponses
+                .Where(r => eventIds.Contains(r.EventId))
+                .GroupBy(r => r.EventId)
+                .Select(g => new
+                {
+                    EventId = g.Key,
+                    Count = g.Count()
+                })
+                .ToDictionaryAsync(x => x.EventId, x => x.Count);
+
+            ViewBag.EventViewCounts = viewCounts;
+            ViewBag.EventResponseCounts = responseCounts;
 
             // Keep filter options available even after filtering
             var allProviderEvents = await _context.Events

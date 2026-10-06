@@ -336,6 +336,70 @@
                             </p>
                         }
 
+                        <!-- EVENT ANALYTICS -->
+                        @{
+                            var viewCounts = ViewBag.EventViewCounts
+                                as Dictionary<int, int>
+                                ?? new Dictionary<int, int>();
+
+                            var responseCounts = ViewBag.EventResponseCounts
+                                as Dictionary<int, int>
+                                ?? new Dictionary<int, int>();
+
+                            var eventViewCount = viewCounts.ContainsKey(eventItem.Id)
+                                ? viewCounts[eventItem.Id]
+                                : 0;
+
+                            var eventResponseCount = responseCounts.ContainsKey(eventItem.Id)
+                                ? responseCounts[eventItem.Id]
+                                : 0;
+                        }
+
+                        <div class="manage-event-analytics">
+
+                            <div class="manage-event-analytics-item">
+
+                                <span class="manage-event-analytics-icon">
+                                    👁
+                                </span>
+
+                                <div>
+                                    <span class="manage-event-analytics-label">
+                                        VIEWS
+                                    </span>
+
+                                    <strong>
+                                        @eventViewCount
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            @if (eventItem.EnableResponses &&
+                                eventItem.RecordResponses)
+                            {
+                                <div class="manage-event-analytics-item">
+
+                                    <span class="manage-event-analytics-icon">
+                                        🙋
+                                    </span>
+
+                                    <div>
+                                        <span class="manage-event-analytics-label">
+                                            GOING
+                                        </span>
+
+                                        <strong>
+                                            @eventResponseCount
+                                        </strong>
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+
 
                         @* ## Event Actions *@
                         <div class="manage-event-actions">

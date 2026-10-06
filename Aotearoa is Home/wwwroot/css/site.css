@@ -7500,3 +7500,216 @@ SMALL MOBILE
     }
 
 }
+
+/* =========================================================
+   STUDENT EVENT ACTIONS
+   ========================================================= */
+
+.student-event-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0 28px;
+    flex-wrap: wrap;
+}
+
+.student-event-actions form {
+    margin: 0;
+}
+
+/* Common button styling */
+.student-event-going-button,
+.student-event-favourite-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* =========================================================
+   GOING BUTTON
+   ========================================================= */
+
+.student-event-going-button {
+    border: 1px solid #304f3f;
+    background: #304f3f;
+    color: #ffffff;
+}
+
+.student-event-going-button:hover {
+    background: #253e32;
+    border-color: #253e32;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(48, 79, 63, 0.18);
+}
+
+.student-event-going-button.active {
+    background: #e7f0eb;
+    border-color: #304f3f;
+    color: #304f3f;
+}
+
+.student-event-going-button.active:hover {
+    background: #dce9e2;
+}
+
+/* =========================================================
+   FAVOURITE BUTTON
+   ========================================================= */
+
+.student-event-favourite-button {
+    border: 1px solid #d2d9d5;
+    background: #ffffff;
+    color: #304f3f;
+}
+
+.student-event-favourite-button:hover {
+    border-color: #304f3f;
+    background: #f3f7f4;
+    color: #304f3f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(48, 79, 63, 0.10);
+}
+
+.student-event-favourite-button.active {
+    background: #f5e9ec;
+    border-color: #c98291;
+    color: #a84d61;
+}
+
+.student-event-favourite-button.active:hover {
+    background: #f1dfe4;
+    border-color: #b86a7b;
+    color: #963f53;
+}
+
+/* =========================================================
+   EVENT MESSAGE
+   ========================================================= */
+
+.student-event-message {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 18px;
+    padding: 11px 16px;
+    border: 1px solid #c9dfd2;
+    border-radius: 9px;
+    background: #eef7f1;
+    color: #315c43;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .student-event-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .student-event-actions form {
+        width: 100%;
+    }
+
+    .student-event-going-button,
+    .student-event-favourite-button {
+        width: 100%;
+    }
+
+    .student-event-message {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   EVENT ANALYTICS
+   ========================================================= */
+
+.manage-event-analytics {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e9e6;
+    flex-wrap: wrap;
+}
+
+.manage-event-analytics-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 120px;
+    padding: 10px 14px;
+    border: 1px solid #e1e6e3;
+    border-radius: 10px;
+    background: #f8faf9;
+}
+
+.manage-event-analytics-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 17px;
+}
+
+.manage-event-analytics-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.manage-event-analytics-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #7a847e;
+}
+
+.manage-event-analytics-item strong {
+    font-size: 17px;
+    line-height: 1.1;
+    color: #304f3f;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .manage-event-analytics {
+        gap: 8px;
+    }
+
+    .manage-event-analytics-item {
+        flex: 1;
+        min-width: 0;
+    }
+}

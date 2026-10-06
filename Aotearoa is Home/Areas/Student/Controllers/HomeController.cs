@@ -25,6 +25,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             var events = await _context.Events
                 .Include(e => e.EventProviderProfile)
+                .Where(e => e.Status == "Approved")
                 .OrderBy(e => e.StartDate)
                 .Take(3)
                 .ToListAsync();

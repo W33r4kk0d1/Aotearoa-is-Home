@@ -42,9 +42,14 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 .Where(e => e.EventProviderProfileId == providerProfile.Id)
                 .ToListAsync();
 
+            // Get all approved events for the dashboard
+            var allApprovedEvents = await _context.Events
+                .Include(e => e.EventProviderProfile)
+                .Where(e => e.Status == "Approved")
+                .ToListAsync();
+
             // Current New Zealand time
-            var newZealandTimeZone =
-                TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
+            var newZealandTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
 
             var currentNewZealandTime =
                 TimeZoneInfo.ConvertTimeFromUtc(
@@ -52,7 +57,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                     newZealandTimeZone);
 
             // Get upcoming events
-            var upcomingEvents = providerEvents
+            var upcomingEvents = allApprovedEvents
                 .Where(e => e.StartDate > currentNewZealandTime)
                 .OrderBy(e => e.StartDate)
                 .Take(3)
@@ -83,14 +88,11 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
                 TotalEvents = providerEvents.Count,
 
-                UpcomingEvents = providerEvents.Count(e =>
-                    e.StartDate > currentNewZealandTime),
+                UpcomingEvents = providerEvents.Count(e => e.StartDate > currentNewZealandTime),
 
-                PendingApprovalEvents = providerEvents.Count(e =>
-                    e.Status == "Pending Approval"),
+                PendingApprovalEvents = providerEvents.Count(e => e.Status == "Pending Approval"),
 
-                ApprovedEvents = providerEvents.Count(e =>
-                    e.Status == "Approved"),
+                ApprovedEvents = providerEvents.Count(e => e.Status == "Approved"),
 
                 PeopleInterested = peopleInterested,
 
