@@ -3,29 +3,85 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "My Profile";
+
+    var familyMembers =
+        ViewBag.FamilyMembers as List<Aotearoa_is_Home.Models.StudentFamilyMember>
+        ?? new List<Aotearoa_is_Home.Models.StudentFamilyMember>();
 }
 
 <div class="container my-5">
 
+    <!-- ========================================================= -->
+    <!-- PROFILE HEADER -->
+    <!-- ========================================================= -->
+
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <div>
             <h1>My Profile</h1>
-            <p class="text-muted">
-                View your profile information.
+
+            <p class="text-muted mb-0">
+                View and manage your personal information and family members.
             </p>
         </div>
 
-        <a href="/Student/Profile/Edit"
-           class="btn btn-primary">
-            Edit Profile
+        <a href="@Url.Action("Edit", "Profile", new { area = "Student" })"
+            class="btn btn-primary">
+                Edit Profile
         </a>
+
     </div>
 
-    <div class="card shadow-sm">
+
+    <!-- ========================================================= -->
+    <!-- SUCCESS / ERROR MESSAGES -->
+    <!-- ========================================================= -->
+
+    @if (TempData["FamilyMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            @TempData["FamilyMessage"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["FamilyError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            @TempData["FamilyError"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- ========================================================= -->
+    <!-- PERSONAL INFORMATION -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm mb-5">
+
+        <div class="card-header">
+            <h4 class="mb-0">Personal Information</h4>
+        </div>
 
         <div class="card-body">
 
             <div class="row mb-3">
+
                 <div class="col-md-4">
                     <strong>First Name</strong>
                 </div>
@@ -33,9 +89,12 @@
                 <div class="col-md-8">
                     @Model.FirstName
                 </div>
+
             </div>
 
+
             <div class="row mb-3">
+
                 <div class="col-md-4">
                     <strong>Last Name</strong>
                 </div>
@@ -43,9 +102,12 @@
                 <div class="col-md-8">
                     @Model.LastName
                 </div>
+
             </div>
 
+
             <div class="row mb-3">
+
                 <div class="col-md-4">
                     <strong>Email</strong>
                 </div>
@@ -53,54 +115,257 @@
                 <div class="col-md-8">
                     @Model.Email
                 </div>
+
             </div>
 
+
             <div class="row mb-3">
+
                 <div class="col-md-4">
                     <strong>Contact Number</strong>
                 </div>
 
                 <div class="col-md-8">
+
                     @(string.IsNullOrEmpty(Model.ContactNumber)
                         ? "Not provided"
                         : Model.ContactNumber)
+
                 </div>
+
             </div>
 
+
             <div class="row mb-3">
+
                 <div class="col-md-4">
                     <strong>Language</strong>
                 </div>
 
                 <div class="col-md-8">
+
                     @(Model.LanguageId.HasValue
                         ? Model.LanguageId.ToString()
                         : "Not provided")
+
                 </div>
+
             </div>
 
+
             <div class="row">
+
                 <div class="col-md-4">
                     <strong>LinkedIn Profile</strong>
                 </div>
 
                 <div class="col-md-8">
+
                     @if (!string.IsNullOrEmpty(Model.LinkedInProfile))
                     {
                         <a href="@Model.LinkedInProfile"
-                           target="_blank">
+                           target="_blank"
+                           rel="noopener noreferrer">
+
                             @Model.LinkedInProfile
+
                         </a>
                     }
                     else
                     {
                         <span>Not provided</span>
                     }
+
                 </div>
+
             </div>
 
         </div>
 
     </div>
+
+
+    <!-- ========================================================= -->
+    <!-- FAMILY MEMBERS -->
+    <!-- ========================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h2 class="mb-1">Family Members</h2>
+
+            <p class="text-muted mb-0">
+                Add family members who are connected to your settlement journey.
+            </p>
+        </div>
+
+        <a href="@Url.Action("AddFamilyMember", "Profile", new { area = "Student" })"
+        class="btn btn-success">
+            + Add Family Member
+        </a>
+
+    </div>
+
+
+    @if (familyMembers.Count == 0)
+    {
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center py-5">
+
+                <h5>No family members added yet.</h5>
+
+                <p class="text-muted">
+                    You can add your wife, husband, children, parents,
+                    siblings or other family members here.
+                </p>
+
+                <a href="@Url.Action("AddFamilyMember", "Profile", new { area = "Student" })"
+                class="btn btn-primary">
+                    Add Your First Family Member
+                </a>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var familyMember in familyMembers)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <h5 class="card-title mb-1">
+                                        @familyMember.FullName
+                                    </h5>
+
+                                    <span class="text-muted">
+                                        @familyMember.RelationshipToStudent
+                                    </span>
+
+                                </div>
+
+                                @if (familyMember.RegisteredUserId != null)
+                                {
+                                    <span class="badge bg-success">
+                                        Registered
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        Not Registered
+                                    </span>
+                                }
+
+                            </div>
+
+
+                            <hr />
+
+
+                            <p class="mb-2">
+                                <strong>Email:</strong><br />
+                                @familyMember.Email
+                            </p>
+
+
+                            @if (!string.IsNullOrWhiteSpace(familyMember.ContactNumber))
+                            {
+                                <p class="mb-2">
+                                    <strong>Contact:</strong><br />
+                                    @familyMember.ContactNumber
+                                </p>
+                            }
+
+
+                            @if (familyMember.DateOfBirth.HasValue)
+                            {
+                                <p class="mb-2">
+                                    <strong>Date of Birth:</strong><br />
+                                    @familyMember.DateOfBirth.Value.ToString("dd MMM yyyy")
+                                </p>
+                            }
+
+
+                            @if (!string.IsNullOrWhiteSpace(familyMember.CountryOfCitizenship))
+                            {
+                                <p class="mb-2">
+                                    <strong>Citizenship:</strong><br />
+                                    @familyMember.CountryOfCitizenship
+                                </p>
+                            }
+
+                        </div>
+
+
+                        <div class="card-footer bg-white border-0">
+
+                            <div class="d-flex gap-2">
+
+                                <a asp-area="Student"
+                                   asp-controller="Profile"
+                                   asp-action="EditFamilyMember"
+                                   asp-route-id="@familyMember.Id"
+                                   class="btn btn-outline-primary btn-sm">
+
+                                    Edit
+
+                                </a>
+
+
+                                @if (familyMember.RegisteredUserId == null)
+                                {
+                                    <form asp-area="Student"
+                                          asp-controller="Profile"
+                                          asp-action="DeleteFamilyMember"
+                                          asp-route-id="@familyMember.Id"
+                                          method="post"
+                                          onsubmit="return confirm('Are you sure you want to remove this family member?');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-sm">
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            disabled
+                                            title="Registered family members cannot be deleted.">
+
+                                        Delete
+
+                                    </button>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
 
 </div>
