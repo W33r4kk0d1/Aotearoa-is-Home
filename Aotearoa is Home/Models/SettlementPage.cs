@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-    public string CategoryName { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
 
         public byte[]? BackgroundImage { get; set; }
 
@@ -15,5 +15,7 @@
         public DateTime UpdatedAt { get; set; }
 
         public List<ContentBlock> ContentBlocks { get; set; } = new List<ContentBlock>();
+
+        public List<ChecklistTask> ChecklistTasks { get; set; } = new List<ChecklistTask>();
     }
 }

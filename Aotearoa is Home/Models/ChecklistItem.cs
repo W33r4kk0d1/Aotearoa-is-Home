@@ -9,18 +9,12 @@ namespace Aotearoa_is_Home.Models
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        // ## Category for grouping checklist items
-        [Required]
-        public string Category { get; set; } = "Other";
+        public int ChecklistTaskId { get; set; }
 
-        [Required]
-        public string Title { get; set; } = string.Empty;
-
-        public string? Description { get; set; }
-
-        // ## Stores whether the checklist item is completed
         public bool IsCompleted { get; set; }
 
         public ApplicationUser? User { get; set; }
+
+        public ChecklistTask? ChecklistTask { get; set; }
     }
 }
