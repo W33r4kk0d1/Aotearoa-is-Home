@@ -322,15 +322,19 @@
                                                 Profile
                                             </a>
                                         }
-                                        else if (User.IsInRole("Service Provider"))
-                                        {
-                                            <a class="dropdown-item"
-                                               asp-area="ServiceProvider"
-                                               asp-controller="Home"
-                                               asp-action="Index">
-                                                Profile
-                                            </a>
-                                        }
+else if (User.IsInRole("Service Provider"))
+{
+    <a class="dropdown-item"
+       asp-area="ServiceProvider"
+       asp-controller="Profile"
+       asp-action="Index">
+        Profile
+    </a>
+}
+
+
+
+
 
                                     </li>
 
