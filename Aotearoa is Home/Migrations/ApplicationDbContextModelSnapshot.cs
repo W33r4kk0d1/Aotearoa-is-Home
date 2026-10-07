@@ -186,8 +186,15 @@ namespace Aotearoa_is_Home.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChecklistTaskId")
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ChecklistTaskId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -205,8 +212,9 @@ namespace Aotearoa_is_Home.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentChecklistId");
                     b.HasIndex("ChecklistTaskId");
+
+                    b.HasIndex("StudentChecklistId");
 
                     b.HasIndex("UserId");
 
@@ -958,15 +966,14 @@ namespace Aotearoa_is_Home.Migrations
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.ChecklistItem", b =>
                 {
+                    b.HasOne("Aotearoa_is_Home.Models.ChecklistTask", "ChecklistTask")
+                        .WithMany()
+                        .HasForeignKey("ChecklistTaskId");
+
                     b.HasOne("Aotearoa_is_Home.Models.StudentChecklist", "StudentChecklist")
                         .WithMany("Items")
                         .HasForeignKey("StudentChecklistId")
                         .OnDelete(DeleteBehavior.Cascade);
-                    b.HasOne("Aotearoa_is_Home.Models.ChecklistTask", "ChecklistTask")
-                        .WithMany()
-                        .HasForeignKey("ChecklistTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
                         .WithMany()
@@ -974,8 +981,9 @@ namespace Aotearoa_is_Home.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("StudentChecklist");
                     b.Navigation("ChecklistTask");
+
+                    b.Navigation("StudentChecklist");
 
                     b.Navigation("User");
                 });

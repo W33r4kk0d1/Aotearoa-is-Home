@@ -187,46 +187,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
         // UPDATE CHECKLIST PROGRESS
-        // ============================================================
-
-            var tasks = await _context.ChecklistTasks
-                .Include(x => x.SettlementPage)
-                .OrderBy(x => x.SettlementPage!.CategoryName)
-                .ThenBy(x => x.DisplayOrder)
-                .ToListAsync();
-
-            var checklistItems = await _context.ChecklistItems
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
-
-            foreach (var task in tasks)
-            {
-                var existingItem = checklistItems
-                    .FirstOrDefault(x => x.ChecklistTaskId == task.Id);
-
-                if (existingItem == null)
-                {
-                    _context.ChecklistItems.Add(
-                        new ChecklistItem
-                        {
-                            UserId = userId,
-                            ChecklistTaskId = task.Id,
-                            IsCompleted = false
-                        });
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            checklistItems = await _context.ChecklistItems
-                .Include(x => x.ChecklistTask)
-                .ThenInclude(x => x!.SettlementPage)
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
-
-            return View(checklistItems);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
@@ -255,7 +215,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
-
             // --------------------------------------------------------
             // Get only items belonging to this checklist
             // --------------------------------------------------------
@@ -264,12 +223,9 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 .Where(c =>
                     c.StudentChecklistId == checklistId &&
                     c.UserId == userId)
-            var checklistItems = await _context.ChecklistItems
-                .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             completedItems ??= new List<int>();
-
 
             // --------------------------------------------------------
             // Update completion status
@@ -277,22 +233,26 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             foreach (var item in checklistItems)
             {
-                item.IsCompleted =
-                    completedItems.Contains(item.Id);
+                item.IsCompleted = completedItems.Contains(item.Id);
             }
 
             await _context.SaveChangesAsync();
 
+            // --------------------------------------------------------
+            // Return to checklist
+            // --------------------------------------------------------
 
             return RedirectToAction(
-                            "ViewChecklist",
-                            "Checklist",
-                            new
-                            {
-                                area = "Student",
-                                id = checklistId
-                            });
+                "ViewChecklist",
+                "Checklist",
+                new
+                {
+                    area = "Student",
+                    id = checklistId
+                });
         }
+
+            
 
         // GET: /Student/Checklist/Customize/1
         [HttpGet]
@@ -703,9 +663,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             public string Title { get; set; } = string.Empty;
 
             public string Description { get; set; } = string.Empty;
-            await _context.SaveChangesAsync();
+        }
 
-            return RedirectToAction(nameof(Index));
         }
     }
-}
+

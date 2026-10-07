@@ -25,11 +25,8 @@ namespace Aotearoa_is_Home.Models
         public string? Description { get; set; }
 
         public bool IsCompleted { get; set; }
-        public int ChecklistTaskId { get; set; }
 
-        public bool IsCompleted { get; set; }
-
-        public ApplicationUser? User { get; set; }
+        public int? ChecklistTaskId { get; set; }
 
         public ChecklistTask? ChecklistTask { get; set; }
     }

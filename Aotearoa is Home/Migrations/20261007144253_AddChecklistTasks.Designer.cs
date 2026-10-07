@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aotearoa_is_Home.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261007114037_addwnw")]
-    partial class addwnw
+    [Migration("20261007144253_AddChecklistTasks")]
+    partial class AddChecklistTasks
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -189,11 +189,25 @@ namespace Aotearoa_is_Home.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChecklistTaskId")
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ChecklistTaskId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("StudentChecklistId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -202,6 +216,8 @@ namespace Aotearoa_is_Home.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChecklistTaskId");
+
+                    b.HasIndex("StudentChecklistId");
 
                     b.HasIndex("UserId");
 
@@ -677,6 +693,36 @@ namespace Aotearoa_is_Home.Migrations
                     b.ToTable("SettlementPages");
                 });
 
+            modelBuilder.Entity("Aotearoa_is_Home.Models.StudentChecklist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StudentChecklists");
+                });
+
             modelBuilder.Entity("Aotearoa_is_Home.Models.StudentFamilyMember", b =>
                 {
                     b.Property<int>("Id")
@@ -925,9 +971,12 @@ namespace Aotearoa_is_Home.Migrations
                 {
                     b.HasOne("Aotearoa_is_Home.Models.ChecklistTask", "ChecklistTask")
                         .WithMany()
-                        .HasForeignKey("ChecklistTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChecklistTaskId");
+
+                    b.HasOne("Aotearoa_is_Home.Models.StudentChecklist", "StudentChecklist")
+                        .WithMany("Items")
+                        .HasForeignKey("StudentChecklistId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
                         .WithMany()
@@ -936,6 +985,8 @@ namespace Aotearoa_is_Home.Migrations
                         .IsRequired();
 
                     b.Navigation("ChecklistTask");
+
+                    b.Navigation("StudentChecklist");
 
                     b.Navigation("User");
                 });
@@ -1055,6 +1106,17 @@ namespace Aotearoa_is_Home.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Aotearoa_is_Home.Models.StudentChecklist", b =>
+                {
+                    b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Aotearoa_is_Home.Models.StudentFamilyMember", b =>
                 {
                     b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "RegisteredUser")
@@ -1150,6 +1212,11 @@ namespace Aotearoa_is_Home.Migrations
                     b.Navigation("ChecklistTasks");
 
                     b.Navigation("ContentBlocks");
+                });
+
+            modelBuilder.Entity("Aotearoa_is_Home.Models.StudentChecklist", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
