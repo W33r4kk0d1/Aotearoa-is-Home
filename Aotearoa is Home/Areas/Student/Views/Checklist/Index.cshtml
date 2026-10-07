@@ -3,6 +3,19 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "My Checklists";
+    ViewData["Title"] = "Settlement Checklist";
+
+    var categories = Model
+        .Where(x => x.ChecklistTask?.SettlementPage != null)
+        .GroupBy(x => x.ChecklistTask!.SettlementPage!.Id)
+        .ToList();
+
+    var totalCount = Model.Count;
+    var completedCount = Model.Count(x => x.IsCompleted);
+
+    var overallProgress = totalCount == 0
+        ? 0
+        : (completedCount * 100) / totalCount;
 }
 
 <div class="settlement-checklist">
@@ -13,6 +26,11 @@
             <h1 class="checklist-title">
                 My Checklists
             </h1>
+    <h1 class="checklist-title">
+        Settlement Checklist
+    </h1>
+
+    <div class="overall-section">
 
             <p>
                 Create and manage your personalised New Zealand settlement checklists.
@@ -24,6 +42,12 @@
                 class="save-progress-button">
                     + Create New Checklist
             </a>
+        <div class="overall-track">
+
+            <div class="overall-fill"
+                 style="width: @overallProgress%">
+            </div>
+
         </div>
 
     </div>
@@ -32,6 +56,7 @@
     @if (!Model.Any())
     {
         <div class="empty-checklist">
+    <form action="/Student/Checklist/Update" method="post">
 
             <h2>No checklists yet</h2>
 
@@ -55,6 +80,23 @@
             @foreach (var checklist in Model)
             {
                 var totalCount = checklist.Items.Count;
+        @if (!categories.Any())
+        {
+            <div class="empty-checklist">
+                No checklist tasks are currently available.
+            </div>
+        }
+        else
+        {
+            foreach (var category in categories)
+            {
+                var categoryItems = category.ToList();
+
+                var settlementPage =
+                    categoryItems.First().ChecklistTask!.SettlementPage!;
+
+                var categoryTotal =
+                    categoryItems.Count;
 
                 var completedCount =
                     checklist.Items.Count(x => x.IsCompleted);
@@ -66,6 +108,13 @@
                 var status = checklist.IsArchived
                     ? "Archived"
                     : "Active";
+                var categoryProgress =
+                    categoryTotal == 0
+                        ? 0
+                        : (categoryCompleted * 100) / categoryTotal;
+
+                var status = "Not started";
+                var statusClass = "status-not-started";
 
                 var statusClass = checklist.IsArchived
                     ? "status-not-started"
@@ -90,6 +139,9 @@
                                 @checklist.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
                             </div>
                         </div>
+                        <h2>
+                            @settlementPage.CategoryName
+                        </h2>
 
                         <span class="category-status @statusClass">
                             @status
@@ -129,6 +181,49 @@
                         </div>
 
                     </div>
+                    <div class="category-tasks">
+
+                        @foreach (var item in categoryItems
+                            .OrderBy(x => x.ChecklistTask!.DisplayOrder))
+                        {
+                            <div class="task-row">
+
+                                <div class="task-checkbox">
+
+                                    @if (item.IsCompleted)
+                                    {
+                                        <input type="checkbox"
+                                               name="completedItems"
+                                               value="@item.Id"
+                                               id="item-@item.Id"
+                                               checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox"
+                                               name="completedItems"
+                                               value="@item.Id"
+                                               id="item-@item.Id" />
+                                    }
+
+                                </div>
+
+                                <div class="task-information">
+
+                                    <label for="item-@item.Id"
+                                           class="task-title">
+                                        @item.ChecklistTask!.Title
+                                    </label>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        item.ChecklistTask.Description))
+                                    {
+                                        <div class="task-description">
+                                            @item.ChecklistTask.Description
+                                        </div>
+                                    }
+
+                                    <div class="task-progress-track">
 
 
                    <div class="category-arrow">
@@ -150,6 +245,8 @@
 
                         </div>
 
+                    <div class="category-arrow">
+                        →
                     </div>
 
                 </div>
@@ -245,3 +342,18 @@
         }
     }
 </style>
+        @if (Model.Any())
+        {
+            <div class="save-area">
+
+                <button type="submit"
+                        class="save-progress-button">
+                    Save Progress
+                </button>
+
+            </div>
+        }
+
+    </form>
+
+</div>

@@ -24,7 +24,6 @@ namespace Aotearoa_is_Home.Data
                 "Family Member"
             };
 
-            // Create roles if they do not already exist
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
@@ -33,10 +32,6 @@ namespace Aotearoa_is_Home.Data
                         new IdentityRole(role));
                 }
             }
-
-            // ==========================================
-            // CREATE INITIAL SUPER ADMIN
-            // ==========================================
 
             const string superAdminEmail = "superadmin@aotearoaishome.com";
             const string superAdminPassword = "SuperAdmin@12345";
@@ -70,7 +65,6 @@ namespace Aotearoa_is_Home.Data
             }
             else
             {
-                // Make sure the existing account has Super Admin role
                 if (!await userManager.IsInRoleAsync(
                         existingSuperAdmin,
                         "Super Admin"))
@@ -79,21 +73,55 @@ namespace Aotearoa_is_Home.Data
                         existingSuperAdmin,
                         "Super Admin");
                 }
-            }// Else ends
+            }
 
-            // ==========================================
-            // CREATE 2026 CALENDAR INFORMATION
-            // ==========================================
+            const string adminEmail = "admin@aotearoaishome.com";
+            const string adminPassword = "raV7n@la";
+
+            var existingAdmin =
+                await userManager.FindByEmailAsync(adminEmail);
+
+            if (existingAdmin == null)
+            {
+                var admin = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    FirstName = "Admin",
+                    LastName = "User",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                var createAdminResult =
+                    await userManager.CreateAsync(
+                        admin,
+                        adminPassword);
+
+                if (createAdminResult.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(
+                        admin,
+                        "Admin");
+                }
+            }
+            else
+            {
+                if (!await userManager.IsInRoleAsync(
+                        existingAdmin,
+                        "Admin"))
+                {
+                    await userManager.AddToRoleAsync(
+                        existingAdmin,
+                        "Admin");
+                }
+            }
 
             var context =
                 serviceProvider.GetRequiredService<ApplicationDbContext>();
 
             var calendarInformation = new List<CalendarInformation>
             {
-                // ------------------------------------------
-                // NATIONAL PUBLIC HOLIDAYS
-                // ------------------------------------------
-
                 new CalendarInformation
                 {
                     Title = "New Year's Day",
@@ -204,10 +232,6 @@ namespace Aotearoa_is_Home.Data
                     Region = null
                 },
 
-                // ------------------------------------------
-                // WELLINGTON REGIONAL ANNIVERSARY DAY
-                // ------------------------------------------
-
                 new CalendarInformation
                 {
                     Title = "Wellington Anniversary Day",
@@ -218,10 +242,6 @@ namespace Aotearoa_is_Home.Data
                     IsShopClosure = false,
                     Region = "Wellington"
                 },
-
-                // ------------------------------------------
-                // IMPORTANT SHOPPING REMINDERS
-                // ------------------------------------------
 
                 new CalendarInformation
                 {
@@ -246,17 +266,18 @@ namespace Aotearoa_is_Home.Data
                 }
             };
 
-            // Add only records that do not already exist.
             foreach (var information in calendarInformation)
             {
-                var alreadyExists = await context.CalendarInformations
-                    .AnyAsync(x =>
-                        x.Title == information.Title &&
-                        x.Date == information.Date);
+                var alreadyExists =
+                    await context.CalendarInformations
+                        .AnyAsync(x =>
+                            x.Title == information.Title &&
+                            x.Date == information.Date);
 
                 if (!alreadyExists)
                 {
-                    context.CalendarInformations.Add(information);
+                    context.CalendarInformations.Add(
+                        information);
                 }
             }
 
