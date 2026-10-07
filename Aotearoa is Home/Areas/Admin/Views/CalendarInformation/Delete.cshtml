@@ -1,0 +1,192 @@
+﻿@model Aotearoa_is_Home.Models.CalendarInformation
+
+@{
+    ViewData["Title"] = "Delete Calendar Information";
+}
+
+<div class="container mt-4">
+
+    @* Page heading *@
+    <div class="mb-4">
+
+        <h2>Delete Calendar Information</h2>
+
+        <p class="text-muted">
+            Please review the information carefully before deleting it.
+        </p>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            @* Information being deleted *@
+            <h4 class="mb-3">
+                @Model.Title
+            </h4>
+
+
+            <dl class="row">
+
+                @* Date *@
+                <dt class="col-sm-3">
+                    Date
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Date.ToString("dd MMMM yyyy")
+                </dd>
+
+
+                @* Type *@
+                <dt class="col-sm-3">
+                    Type
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Type
+                </dd>
+
+
+                @* Region *@
+                <dt class="col-sm-3">
+                    Region
+                </dt>
+
+                <dd class="col-sm-9">
+                    @(string.IsNullOrWhiteSpace(Model.Region)
+                        ? "Nationwide"
+                        : Model.Region)
+                </dd>
+
+
+                @* Description *@
+                <dt class="col-sm-3">
+                    Description
+                </dt>
+
+                <dd class="col-sm-9">
+                    @(string.IsNullOrWhiteSpace(Model.Description)
+                        ? "No description"
+                        : Model.Description)
+                </dd>
+
+
+                @* Public Holiday *@
+                <dt class="col-sm-3">
+                    Public Holiday
+                </dt>
+
+                <dd class="col-sm-9">
+
+                    @if (Model.IsPublicHoliday)
+                    {
+                        <span class="badge bg-success">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            No
+                        </span>
+                    }
+
+                </dd>
+
+
+                @* Shop Closure *@
+                <dt class="col-sm-3">
+                    Shop Closure
+                </dt>
+
+                <dd class="col-sm-9">
+
+                    @if (Model.IsShopClosure)
+                    {
+                        <span class="badge bg-warning text-dark">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            No
+                        </span>
+                    }
+
+                </dd>
+
+            </dl>
+
+
+            @* First warning *@
+            <div class="alert alert-warning mt-4">
+
+                <h5 class="alert-heading">
+                    ⚠️ Warning
+                </h5>
+
+                <p class="mb-0">
+                    You are about to permanently delete this calendar
+                    information. Once deleted, it cannot be recovered
+                    through this page.
+                </p>
+
+            </div>
+
+
+            @* Delete / Cancel buttons *@
+            <form asp-area="Admin"
+                  asp-controller="CalendarInformation"
+                  asp-action="Delete"
+                  method="post"
+                  onsubmit="return confirmDelete();">
+
+                @Html.AntiForgeryToken()
+
+                @* Keep the selected record ID *@
+                <input type="hidden"
+                       asp-for="Id" />
+
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Delete Permanently
+                </button>
+
+
+                <a asp-area="Admin"
+                   asp-controller="CalendarInformation"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+        Ask the Admin to confirm before permanently
+        deleting the calendar information.
+    */
+    function confirmDelete()
+    {
+        return confirm(
+            "Are you sure you want to permanently delete this calendar information?\n\n" +
+            "This action cannot be undone.\n\n" +
+            "Click OK to permanently delete it, or Cancel to keep it."
+        );
+    }
+
+</script>

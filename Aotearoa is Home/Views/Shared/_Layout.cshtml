@@ -78,7 +78,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
                                        asp-area=""
-                                       asp-controller="Home"
+                                       asp-controller="Events"
                                        asp-action="Calendar">
                                         Calendar
                                     </a>
@@ -147,11 +147,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
                                        asp-area=""
-                                       asp-controller="Home"
-                                       asp-action="Privacy">
+                                       asp-controller="Events"
+                                       asp-action="Calendar">
                                         Calendar
                                     </a>
-                                </li>
+                                </li> 
+
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
@@ -203,6 +204,16 @@
                                         Events
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                    asp-area="Admin"
+                                    asp-controller="CalendarInformation"
+                                    asp-action="Index">
+                                    Calendar Information
+                                </a>
+                                </li>
+
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"

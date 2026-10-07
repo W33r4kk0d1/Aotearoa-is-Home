@@ -1,0 +1,95 @@
+﻿@model Aotearoa_is_Home.Models.CalendarInformation
+
+@{
+    ViewData["Title"] = "Calendar Information";
+}
+
+<div class="container mt-4">
+
+    @* Back to calendar *@
+    <div class="mb-3">
+        <a asp-controller="Events"
+           asp-action="Calendar"
+           class="btn btn-outline-secondary">
+            ← Back to Calendar
+        </a>
+    </div>
+
+
+    @* Calendar information card *@
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            @* Title *@
+            <h2 class="card-title">
+                @Model.Title
+            </h2>
+
+
+            @* Type *@
+            <p>
+                <strong>Type:</strong>
+                @Model.Type
+            </p>
+
+
+            @* Date *@
+            <p>
+                <strong>Date:</strong>
+                @Model.Date.ToString("dd MMMM yyyy")
+            </p>
+
+
+            @* Description *@
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <h5>Important Information</h5>
+
+                <p>
+                    @Model.Description
+                </p>
+            }
+
+
+            @* Public holiday information *@
+            @if (Model.IsPublicHoliday)
+            {
+                <p>
+                    <strong>Public Holiday:</strong>
+                    Yes
+                </p>
+            }
+
+
+            @* Shop closure information *@
+            @if (Model.IsShopClosure)
+            {
+                <div class="alert alert-warning mt-3">
+
+                    <strong>Shopping Reminder</strong>
+
+                    <p class="mb-0 mt-2">
+                        Some shops, supermarkets and other businesses
+                        may be closed or operate with reduced hours.
+                        Please plan your shopping in advance.
+                    </p>
+
+                </div>
+            }
+
+
+            @* Regional information *@
+            @if (!string.IsNullOrWhiteSpace(Model.Region))
+            {
+                <p>
+                    <strong>Region:</strong>
+                    @Model.Region
+                </p>
+            }
+
+        </div>
+
+    </div>
+
+</div>

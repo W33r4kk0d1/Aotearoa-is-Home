@@ -1,0 +1,409 @@
+﻿@model IEnumerable<Aotearoa_is_Home.Models.Event>
+
+@*
+    FR-EM-30: Campus and Community Event Calendar
+
+    This page displays approved campus and community events
+    together with public holidays and important reminders
+    in a monthly calendar format.
+*@
+
+@{
+    ViewData["Title"] = "Event Calendar";
+
+    // Convert the events into a list so they can be used
+    // multiple times in the view.
+    var events = Model?.ToList()
+        ?? new List<Aotearoa_is_Home.Models.Event>();
+
+    // Get the selected month from the controller.
+    var selectedYear = ViewBag.SelectedYear ?? DateTime.Today.Year;
+    var selectedMonth = ViewBag.SelectedMonth ?? DateTime.Today.Month;
+
+    // Get public holidays and important reminders
+    // for the selected month.
+    var calendarInformation =
+        ViewBag.CalendarInformation
+        as List<Aotearoa_is_Home.Models.CalendarInformation>
+        ?? new List<Aotearoa_is_Home.Models.CalendarInformation>();
+
+    // Display the selected month even when there are no events.
+    var currentMonth = new DateTime(
+        selectedYear,
+        selectedMonth,
+        1
+    );
+
+    // First and last day of the month.
+    var firstDayOfMonth = currentMonth;
+    var lastDayOfMonth = currentMonth.AddMonths(1).AddDays(-1);
+
+    // Calculate the Monday-based starting position.
+    var startOffset =
+        ((int)firstDayOfMonth.DayOfWeek + 6) % 7;
+
+    // Number of cells required for the calendar.
+    var totalDays = startOffset + lastDayOfMonth.Day;
+
+    var totalCells =
+        (int)Math.Ceiling(totalDays / 7.0) * 7;
+}
+
+<div class="container mt-4">
+
+    @* Page heading *@
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h2>Campus and Community Event Calendar</h2>
+
+            <p class="text-muted mb-0">
+                Explore upcoming events, public holidays and important reminders
+                for international students and their families.
+            </p>
+        </div>
+
+    </div>
+
+
+    @* Calendar navigation *@
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                onclick="changeMonth(-1)">
+            Previous
+        </button>
+
+        <h3 id="calendarMonth" class="mb-0">
+            @currentMonth.ToString("MMMM yyyy")
+        </h3>
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                onclick="changeMonth(1)">
+            Next
+        </button>
+
+    </div>
+
+
+    @* Calendar container *@
+    <div class="table-responsive">
+
+        <table class="table table-bordered calendar-table">
+
+            @* Day headings *@
+            <thead>
+                <tr>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @{
+                    var dayNumber = 1 - startOffset;
+                }
+
+                @* Create calendar rows *@
+                @for (int row = 0; row < totalCells / 7; row++)
+                {
+                    <tr>
+
+                        @for (int column = 0; column < 7; column++)
+                        {
+                            var cellDate =
+                                currentMonth.AddDays(dayNumber - 1);
+
+                            var isCurrentMonth =
+                                cellDate.Month == currentMonth.Month;
+
+                            <td class="calendar-day @(isCurrentMonth ? "" : "text-muted bg-light")">
+
+                                @if (isCurrentMonth)
+                                {
+                                    @* Display the date number *@
+                                    <div class="calendar-date">
+                                        @cellDate.Day
+                                    </div>
+
+
+                                    @* Find events occurring on this date *@
+                                    var dayEvents = events
+                                        .Where(e =>
+                                            e.StartDate.Date == cellDate.Date)
+                                        .OrderBy(e => e.StartDate)
+                                        .ToList();
+
+
+                                    @* Find public holidays and reminders occurring on this date *@
+                                    var dayInformation = calendarInformation
+                                        .Where(c =>
+                                            c.Date.Date == cellDate.Date)
+                                        .OrderBy(c => c.Date)
+                                        .ToList();
+
+
+                                    @* Display events *@
+                                    @foreach (var eventItem in dayEvents)
+                                    {
+                                        <div class="calendar-event">
+
+                                            @* Click the event to view its full details *@
+                                            <a asp-controller="Events"
+                                               asp-action="Details"
+                                               asp-route-id="@eventItem.Id"
+                                               class="calendar-event-link">
+
+                                                <strong>
+                                                    @eventItem.Title
+                                                </strong>
+
+                                                <br />
+
+                                                <small>
+                                                    @eventItem.StartDate.ToString("h:mm tt")
+                                                    -
+                                                    @eventItem.EndDate.ToString("h:mm tt")
+                                                </small>
+
+                                            </a>
+
+                                        </div>
+                                    }
+
+
+                                    @foreach (var information in dayInformation)
+                                    {
+                                        <div class="calendar-information">
+
+                                            <a asp-controller="Events"
+                                               asp-action="CalendarInformationDetails"
+                                               asp-route-id="@information.Id"
+                                               class="calendar-information-link">
+
+                                                <strong>
+                                                    @information.Title
+                                                </strong>
+
+                                                <br />
+
+                                                <small>
+                                                    @information.Type
+                                                </small>
+
+                                            </a>
+
+                                        </div>
+                                    }
+                                }
+
+                            </td>
+
+                            dayNumber++;
+                        }
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    @* Display a message if there are no approved events *@
+    @if (!events.Any() && !calendarInformation.Any())
+    {
+        <div class="alert alert-info mt-3">
+            No upcoming campus or community events,
+            public holidays or reminders are currently available.
+        </div>
+    }
+
+</div>
+
+
+<style>
+
+    /*
+            Calendar table layout
+        */
+    .calendar-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+
+        /*
+            Day heading
+        */
+        .calendar-table th {
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 12px;
+        }
+
+
+    /*
+            Individual calendar day
+        */
+    .calendar-day {
+        height: 130px;
+        vertical-align: top;
+        padding: 8px;
+    }
+
+
+    /*
+            Date number
+        */
+    .calendar-date {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+
+    /*
+            Event displayed inside a calendar day
+        */
+    .calendar-event {
+        background-color: #e8f1ff;
+        border-left: 4px solid #0d6efd;
+        padding: 5px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+
+    /*
+            Public holidays and important reminders
+        */
+    .calendar-information {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 5px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .calendar-information-link {
+        color: inherit;
+        text-decoration: none;
+        display: block;
+    }
+
+        .calendar-information-link:hover {
+            text-decoration: underline;
+        }
+
+
+    /*
+            Event link
+        */
+    .calendar-event-link {
+        color: inherit;
+        text-decoration: none;
+        display: block;
+    }
+
+
+        .calendar-event-link:hover {
+            text-decoration: underline;
+        }
+
+
+    /*
+            Improve calendar display on smaller screens
+        */
+    @@media (max-width: 768px) {
+
+        .calendar-day {
+            height: 100px;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        .calendar-table th {
+            font-size: 11px;
+            padding: 6px;
+        }
+
+        .calendar-event {
+            font-size: 11px;
+        }
+
+        .calendar-information {
+            font-size: 11px;
+        }
+    }
+
+</style>
+
+
+<script>
+
+    function changeMonth(direction) {
+
+        // Get the current month displayed in the URL.
+        const urlParams =
+            new URLSearchParams(window.location.search);
+
+        let year =
+            parseInt(urlParams.get("year"));
+
+        let month =
+            parseInt(urlParams.get("month"));
+
+
+        // If no month is specified, use the current displayed month.
+        if (!year || !month) {
+
+            const currentMonthText =
+                document.getElementById("calendarMonth").innerText;
+
+            const currentDate =
+                new Date("1 " + currentMonthText);
+
+            year =
+                currentDate.getFullYear();
+
+            month =
+                currentDate.getMonth() + 1;
+        }
+
+
+        // Move to the previous or next month.
+        month += direction;
+
+
+        if (month === 0) {
+
+            month = 12;
+            year--;
+        }
+
+
+        if (month === 13) {
+
+            month = 1;
+            year++;
+        }
+
+
+        // Reload the calendar using the selected month.
+        window.location.href =
+            `/Events/Calendar?year=${year}&month=${month}`;
+    }
+
+</script>
