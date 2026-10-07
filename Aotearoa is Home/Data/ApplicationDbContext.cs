@@ -33,6 +33,9 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<Event> Events { get; set; }
 
+        // Stores public holidays and important calendar reminders.
+        public DbSet<CalendarInformation> CalendarInformations { get; set; }
+
         public DbSet<EventResponse> EventResponses { get; set; }
 
         public DbSet<EventView> EventViews { get; set; }

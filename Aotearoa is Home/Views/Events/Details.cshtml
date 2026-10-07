@@ -1,0 +1,89 @@
+﻿@model Aotearoa_is_Home.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-3">
+        <a asp-controller="Events"
+           asp-action="Calendar"
+           class="btn btn-outline-secondary">
+            ← Back to Calendar
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+
+        @* Display event image when available *@
+        @if (Model.ImageData != null)
+        {
+            <img src="data:@Model.ImageContentType;base64,@Convert.ToBase64String(Model.ImageData)"
+                 class="card-img-top"
+                 alt="@Model.Title"
+                 style="max-height: 400px; object-fit: cover;" />
+        }
+
+        <div class="card-body">
+
+            @* Event title *@
+            <h2 class="card-title">
+                @Model.Title
+            </h2>
+
+            @* Event category *@
+            <p>
+                <strong>Category:</strong>
+                @Model.Category
+            </p>
+
+            @* Event description *@
+            <h5>About this event</h5>
+
+            <p>
+                @Model.Description
+            </p>
+
+            @* Event date *@
+            <p>
+                <strong>Date:</strong>
+                @Model.StartDate.ToString("dd MMMM yyyy")
+            </p>
+
+            @* Event time *@
+            <p>
+                <strong>Time:</strong>
+                @Model.StartDate.ToString("h:mm tt")
+                -
+                @Model.EndDate.ToString("h:mm tt")
+            </p>
+
+            @* Event location *@
+            <p>
+                <strong>Location:</strong>
+                @Model.Location
+            </p>
+
+            @* Event region *@
+            <p>
+                <strong>Region:</strong>
+                @Model.Region
+            </p>
+
+            @* Official event link *@
+            @if (!string.IsNullOrWhiteSpace(Model.OfficialEventLink))
+            {
+                <a href="@Model.OfficialEventLink"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-primary">
+                    Official Event Information
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>
