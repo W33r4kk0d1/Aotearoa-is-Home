@@ -9,7 +9,13 @@ namespace Aotearoa_is_Home.Models
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        // ## Category for grouping checklist items
+        public ApplicationUser? User { get; set; }
+
+        // The checklist journey this item belongs to
+        public int? StudentChecklistId { get; set; }
+
+        public StudentChecklist? StudentChecklist { get; set; }
+
         [Required]
         public string Category { get; set; } = "Other";
 
@@ -18,9 +24,6 @@ namespace Aotearoa_is_Home.Models
 
         public string? Description { get; set; }
 
-        // ## Stores whether the checklist item is completed
         public bool IsCompleted { get; set; }
-
-        public ApplicationUser? User { get; set; }
     }
 }

@@ -1,0 +1,649 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Checklist";
+}
+
+<div class="settlement-checklist">
+
+    <h1 class="checklist-title">
+        Create New Checklist
+    </h1>
+
+    <p>
+        Choose the information you want to include in your
+        personalised New Zealand settlement checklist.
+    </p>
+
+
+    <form asp-area="Student"
+          asp-controller="Checklist"
+          asp-action="Create"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- ===================================================== -->
+        <!-- CHECKLIST NAME -->
+        <!-- ===================================================== -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+                <h2>
+                    Checklist Name
+                </h2>
+            </div>
+
+            <div class="category-tasks">
+
+                <div class="task-row">
+
+                    <div class="task-information">
+
+                        <label for="name"
+                               class="task-title">
+                            Name
+                        </label>
+
+                        <input type="text"
+                                id="name"
+                                name="name"
+                                class="checklist-name-input"
+                                placeholder="e.g. Master's Preparation 2026"
+                                maxlength="150"
+                                required />
+
+                        @if (ViewData.ModelState["name"]?.Errors.Count > 0)
+                        {
+                            <div class="text-danger">
+                                @ViewData.ModelState["name"]!.Errors[0].ErrorMessage
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- BEFORE COMING -->
+        <!-- ===================================================== -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    Before Coming to New Zealand
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-before" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Choosing a University / Tertiary Institute"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Choosing a University / Tertiary Institute
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Offer Letter Process"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Offer Letter Process
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Visa Application"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Visa Application
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Medical Insurance"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Medical Insurance
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Preparing Documents"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Preparing Documents
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Packing Guideline"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Packing Guideline
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Customs Regulations"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Customs Regulations
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Budget Planning"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Budget Planning
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Accommodation Planning"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Accommodation Planning
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Airport Pickup / Arrival Transport"
+                           class="topic-before" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Airport Pickup / Arrival Transport
+                        </span>
+                    </span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- AFTER ARRIVING -->
+        <!-- ===================================================== -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    After Arriving in New Zealand
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-after" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Banking"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Banking
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="IRD Registration"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            IRD Registration
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="SIM Card"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            SIM Card
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Healthcare"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Healthcare
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Transport in New Zealand"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Transport in New Zealand
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Driver Licence"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Driver Licence
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Employment"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Employment
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="CV Preparation"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            CV Preparation
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Interview Tips"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Interview Tips
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Living Expenses"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Living Expenses
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Community Engagement"
+                           class="topic-after" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Community Engagement
+                        </span>
+                    </span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- COMING WITH FAMILY -->
+        <!-- ===================================================== -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    Coming With Family
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-family" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Partner Employment"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Partner Employment
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Childcare"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Childcare
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="School Enrolment"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            School Enrolment
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Health Services"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Health Services
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Recreation"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Recreation
+                        </span>
+                    </span>
+                </label>
+
+
+                <label class="task-row">
+                    <input type="checkbox"
+                           name="selectedTopics"
+                           value="Legal Procedure"
+                           class="topic-family" />
+
+                    <span class="task-information">
+                        <span class="task-title">
+                            Legal Procedure
+                        </span>
+                    </span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="save-area">
+
+            <button type="submit"
+                    class="save-progress-button">
+                Create Checklist
+            </button>
+
+            <a href="@Url.Action("Index", "Checklist", new { area = "Student" })"
+                class="btn btn-outline-secondary checklist-cancel-button">
+                    Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    document.getElementById("select-before")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-before")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+
+    document.getElementById("select-after")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-after")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+
+    document.getElementById("select-family")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-family")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+</script>
+
+<style>
+    .checklist-name-input {
+        width: 100%;
+        max-width: 600px;
+        height: 46px;
+        padding: 10px 14px;
+        border: 1px solid #d6ddd8;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #26332d;
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .checklist-name-input::placeholder {
+        color: #9aa5a0;
+    }
+
+    .checklist-name-input:focus {
+        border-color: #6f8f6c;
+        box-shadow: 0 0 0 3px rgba(111, 143, 108, 0.12);
+    }
+
+    .checklist-name-input:hover {
+        border-color: #aebbb3;
+    }
+
+    .checklist-cancel-button {
+        min-width: 100px;
+        height: 46px;
+        padding: 10px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+    
+    .save-progress-button {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    @@media (max-width: 700px) {
+        .checklist-name-input {
+            max-width: 100%;
+        }
+    }
+</style>

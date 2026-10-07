@@ -11,9 +11,7 @@
 
 <div class="container my-5">
 
-    <!-- ========================================================= -->
     <!-- PROFILE HEADER -->
-    <!-- ========================================================= -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -33,9 +31,7 @@
     </div>
 
 
-    <!-- ========================================================= -->
     <!-- SUCCESS / ERROR MESSAGES -->
-    <!-- ========================================================= -->
 
     @if (TempData["FamilyMessage"] != null)
     {
@@ -68,9 +64,7 @@
     }
 
 
-    <!-- ========================================================= -->
     <!-- PERSONAL INFORMATION -->
-    <!-- ========================================================= -->
 
     <div class="card shadow-sm mb-5">
 
@@ -185,9 +179,7 @@
     </div>
 
 
-    <!-- ========================================================= -->
     <!-- FAMILY MEMBERS -->
-    <!-- ========================================================= -->
 
     <div class="d-flex justify-content-between align-items-center mb-3">
 
@@ -313,35 +305,24 @@
 
                             <div class="d-flex gap-2">
 
-                                <a asp-area="Student"
-                                   asp-controller="Profile"
-                                   asp-action="EditFamilyMember"
-                                   asp-route-id="@familyMember.Id"
-                                   class="btn btn-outline-primary btn-sm">
-
-                                    Edit
-
+                                <a href="@Url.Action("EditFamilyMember", "Profile", new { area = "Student", id = familyMember.Id })"
+                                    class="btn btn-outline-primary btn-sm">
+                                        Edit
                                 </a>
 
 
                                 @if (familyMember.RegisteredUserId == null)
                                 {
-                                    <form asp-area="Student"
-                                          asp-controller="Profile"
-                                          asp-action="DeleteFamilyMember"
-                                          asp-route-id="@familyMember.Id"
-                                          method="post"
-                                          onsubmit="return confirm('Are you sure you want to remove this family member?');">
+                                    <form action="@Url.Action("DeleteFamilyMember", "Profile", new { area = "Student", id = familyMember.Id })"
+                                        method="post"
+                                        onsubmit="return confirm('Are you sure you want to remove this family member?');">
 
                                         @Html.AntiForgeryToken()
 
                                         <button type="submit"
                                                 class="btn btn-outline-danger btn-sm">
-
                                             Delete
-
                                         </button>
-
                                     </form>
                                 }
                                 else

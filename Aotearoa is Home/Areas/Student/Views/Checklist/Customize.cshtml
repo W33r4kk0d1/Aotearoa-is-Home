@@ -1,0 +1,413 @@
+@model Aotearoa_is_Home.Models.StudentChecklist
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Customize Checklist";
+
+    var selectedKeys = Model.Items
+        .Select(x => $"{x.Category}|{x.Title}")
+        .ToHashSet();
+}
+
+<div class="settlement-checklist">
+
+    <div class="checklist-page-header">
+
+        <div>
+            <h1 class="checklist-title">
+                Customize Checklist
+            </h1>
+
+            <p>
+                Add or remove topics from your checklist.
+                Your existing progress will be kept.
+            </p>
+        </div>
+
+        <div>
+
+            <a href="@Url.Action("ViewChecklist", "Checklist", new { area = "Student", id = Model.Id })"
+                class="btn btn-outline-secondary">
+                    ← Back to Checklist
+            </a>
+        </div>
+
+    </div>
+
+
+    <form action="@Url.Action("Customize", "Checklist", new { area = "Student" })"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="id"
+               value="@Model.Id" />
+
+
+        <!-- CHECKLIST NAME -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    Checklist Name
+                </h2>
+
+            </div>
+
+            <div class="category-tasks">
+
+                <div style="padding: 10px 0;">
+
+                    <label for="name"
+                           class="task-title">
+                        Name
+                    </label>
+
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           value="@Model.Name"
+                           maxlength="150"
+                           required
+                           class="form-control"
+                           style="width: 100%; max-width: 600px; padding: 12px 14px;" />
+
+                    @if (ViewData.ModelState["name"]?.Errors.Count > 0)
+                    {
+                        <div class="text-danger">
+                            @ViewData.ModelState["name"]!.Errors[0].ErrorMessage
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BEFORE COMING TO NEW ZEALAND -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    Before Coming to New Zealand
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-before" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                @{
+                    var beforeTopics = new[]
+                    {
+                        ("Choosing a University / Tertiary Institute",
+                         "Research universities and tertiary institutes and choose a suitable study option."),
+
+                        ("Offer Letter Process",
+                         "Understand the offer letter process and complete the required steps."),
+
+                        ("Visa Application",
+                         "Prepare and submit your New Zealand student visa application."),
+
+                        ("Medical Insurance",
+                         "Arrange suitable medical and travel insurance for your stay in New Zealand."),
+
+                        ("Preparing Documents",
+                         "Prepare and organise the important documents you will need before travelling."),
+
+                        ("Packing Guideline",
+                         "Prepare the items and belongings you need to bring to New Zealand."),
+
+                        ("Customs Regulations",
+                         "Learn about New Zealand customs and biosecurity requirements."),
+
+                        ("Budget Planning",
+                         "Plan your expected study, accommodation, transport and living expenses."),
+
+                        ("Accommodation Planning",
+                         "Research and arrange suitable accommodation before arriving."),
+
+                        ("Transport",
+                         "Learn about transport options and plan how you will travel after arriving.")
+                    };
+                }
+
+                @foreach (var topic in beforeTopics)
+                {
+                    var key = $"Before Coming to New Zealand|{topic.Item1}";
+                    var isSelected = selectedKeys.Contains(key);
+
+                    <label class="task-row">
+
+                        <input type="checkbox"
+                               name="selectedTopics"
+                               value="@key"
+                               class="topic-before"
+                               @(isSelected ? "checked" : "") />
+
+                        <span class="task-information">
+
+                            <span class="task-title">
+                                @topic.Item1
+                            </span>
+
+                            <span class="task-description">
+                                @topic.Item2
+                            </span>
+
+                        </span>
+
+                    </label>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- AFTER ARRIVING IN NEW ZEALAND -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    After Arriving in New Zealand
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-after" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                @{
+                    var afterTopics = new[]
+                    {
+                        ("Banking",
+                         "Set up a New Zealand bank account for your everyday financial needs."),
+
+                        ("IRD Registration",
+                         "Learn about IRD registration and your tax responsibilities in New Zealand."),
+
+                        ("SIM Card",
+                         "Choose a suitable mobile provider and arrange a New Zealand SIM card."),
+
+                        ("Healthcare",
+                         "Learn how to access healthcare services in New Zealand."),
+
+                        ("Transport",
+                         "Learn how to use public and other transport services in New Zealand."),
+
+                        ("Driver Licence",
+                         "Understand the requirements for driving and obtaining or converting a driver licence."),
+
+                        ("Employment",
+                         "Learn about finding work and employment requirements for international students."),
+
+                        ("CV Preparation",
+                         "Prepare a suitable New Zealand-style CV for job applications."),
+
+                        ("Interview Tips",
+                         "Learn useful interview preparation and techniques."),
+
+                        ("Living Expenses",
+                         "Understand and plan for everyday living expenses in New Zealand."),
+
+                        ("Community Engagement",
+                         "Explore university workshops, orientation events, cultural activities and support services.")
+                    };
+                }
+
+                @foreach (var topic in afterTopics)
+                {
+                    var key = $"After Arriving in New Zealand|{topic.Item1}";
+                    var isSelected = selectedKeys.Contains(key);
+
+                    <label class="task-row">
+
+                        <input type="checkbox"
+                               name="selectedTopics"
+                               value="@key"
+                               class="topic-after"
+                               @(isSelected ? "checked" : "") />
+
+                        <span class="task-information">
+
+                            <span class="task-title">
+                                @topic.Item1
+                            </span>
+
+                            <span class="task-description">
+                                @topic.Item2
+                            </span>
+
+                        </span>
+
+                    </label>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- COMING WITH FAMILY -->
+
+        <div class="category-card">
+
+            <div class="category-header">
+
+                <h2>
+                    Coming With Family
+                </h2>
+
+                <label>
+                    <input type="checkbox"
+                           id="select-family" />
+                    Select All
+                </label>
+
+            </div>
+
+
+            <div class="category-tasks">
+
+                @{
+                    var familyTopics = new[]
+                    {
+                        ("Partner Employment",
+                         "Learn about employment options and requirements for your partner."),
+
+                        ("Childcare",
+                         "Research childcare options and arrangements for children."),
+
+                        ("School Enrolment",
+                         "Learn about school options and enrolment requirements for children."),
+
+                        ("Health Services",
+                         "Find suitable health services for family members."),
+
+                        ("Recreation",
+                         "Explore recreation, activities and community opportunities for your family."),
+
+                        ("Legal Procedure",
+                         "Learn about relevant legal procedures, including accommodation sharing and visa conditions.")
+                    };
+                }
+
+                @foreach (var topic in familyTopics)
+                {
+                    var key = $"Coming With Family|{topic.Item1}";
+                    var isSelected = selectedKeys.Contains(key);
+
+                    <label class="task-row">
+
+                        <input type="checkbox"
+                               name="selectedTopics"
+                               value="@key"
+                               class="topic-family"
+                               @(isSelected ? "checked" : "") />
+
+                        <span class="task-information">
+
+                            <span class="task-title">
+                                @topic.Item1
+                            </span>
+
+                            <span class="task-description">
+                                @topic.Item2
+                            </span>
+
+                        </span>
+
+                    </label>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- BUTTONS -->
+        <!-- ===================================================== -->
+
+        <div class="save-area">
+
+            <button type="submit"
+                    class="save-progress-button">
+                Save Changes
+            </button>
+
+            <a href="@Url.Action("ViewChecklist", "Checklist", new { area = "Student", id = Model.Id })"
+                class="btn btn-outline-secondary">
+                    Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    document.getElementById("select-before")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-before")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+
+    document.getElementById("select-after")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-after")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+
+    document.getElementById("select-family")
+        .addEventListener("change", function () {
+
+            document.querySelectorAll(".topic-family")
+                .forEach(function (checkbox) {
+
+                    checkbox.checked = this.checked;
+
+                }, this);
+
+        });
+
+</script>
