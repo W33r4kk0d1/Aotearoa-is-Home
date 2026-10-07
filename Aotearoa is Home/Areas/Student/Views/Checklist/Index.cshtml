@@ -1,8 +1,8 @@
-﻿@model List<Aotearoa_is_Home.Models.ChecklistItem>
-@using System.Linq
+﻿@model List<Aotearoa_is_Home.Models.StudentChecklist>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Checklists";
     ViewData["Title"] = "Settlement Checklist";
 
     var categories = Model
@@ -20,17 +20,28 @@
 
 <div class="settlement-checklist">
 
+    <div class="checklist-page-header">
+
+        <div>
+            <h1 class="checklist-title">
+                My Checklists
+            </h1>
     <h1 class="checklist-title">
         Settlement Checklist
     </h1>
 
     <div class="overall-section">
 
-        <div class="overall-label">
-            <span>Overall Progress</span>
-            <span>@overallProgress%</span>
+            <p>
+                Create and manage your personalised New Zealand settlement checklists.
+            </p>
         </div>
 
+        <div>
+            <a href="@Url.Action("Create", "Checklist", new { area = "Student"})"
+                class="save-progress-button">
+                    + Create New Checklist
+            </a>
         <div class="overall-track">
 
             <div class="overall-fill"
@@ -41,10 +52,34 @@
 
     </div>
 
+
+    @if (!Model.Any())
+    {
+        <div class="empty-checklist">
     <form action="/Student/Checklist/Update" method="post">
 
-        @Html.AntiForgeryToken()
+            <h2>No checklists yet</h2>
 
+            <p>
+                Create your first checklist and choose the topics that are relevant to you.
+            </p>
+
+            <a asp-area="Student"
+               asp-controller="Checklist"
+               asp-action="Create"
+               class="save-progress-button">
+                Create My First Checklist
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="checklist-list">
+
+            @foreach (var checklist in Model)
+            {
+                var totalCount = checklist.Items.Count;
         @if (!categories.Any())
         {
             <div class="empty-checklist">
@@ -63,9 +98,16 @@
                 var categoryTotal =
                     categoryItems.Count;
 
-                var categoryCompleted =
-                    categoryItems.Count(x => x.IsCompleted);
+                var completedCount =
+                    checklist.Items.Count(x => x.IsCompleted);
 
+                var progress = totalCount == 0
+                    ? 0
+                    : (completedCount * 100) / totalCount;
+
+                var status = checklist.IsArchived
+                    ? "Archived"
+                    : "Active";
                 var categoryProgress =
                     categoryTotal == 0
                         ? 0
@@ -74,22 +116,29 @@
                 var status = "Not started";
                 var statusClass = "status-not-started";
 
-                if (categoryCompleted == categoryTotal &&
-                    categoryTotal > 0)
-                {
-                    status = "Done";
-                    statusClass = "status-done";
-                }
-                else if (categoryCompleted > 0)
-                {
-                    status = "In progress";
-                    statusClass = "status-progress";
-                }
+                var statusClass = checklist.IsArchived
+                    ? "status-not-started"
+                    : progress == 100 && totalCount > 0
+                        ? "status-done"
+                        : progress > 0
+                            ? "status-progress"
+                            : "status-not-started";
+
 
                 <div class="category-card">
 
                     <div class="category-header">
 
+                        <div>
+                            <h2>
+                                @checklist.Name
+                            </h2>
+
+                            <div class="task-description">
+                                Created
+                                @checklist.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                            </div>
+                        </div>
                         <h2>
                             @settlementPage.CategoryName
                         </h2>
@@ -100,6 +149,38 @@
 
                     </div>
 
+
+                    <div class="category-tasks">
+
+                        <div style="padding: 10px 0;">
+
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 8px;
+                                font-weight: 600;
+                            ">
+                                <span>
+                                    @completedCount of @totalCount tasks completed
+                                </span>
+
+                                <span>
+                                    @progress%
+                                </span>
+                            </div>
+
+                            <div class="task-progress-track">
+
+                                <div class="task-progress-fill"
+                                    style="width: @progress%">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                     <div class="category-tasks">
 
                         @foreach (var item in categoryItems
@@ -144,18 +225,25 @@
 
                                     <div class="task-progress-track">
 
-                                        <div class="task-progress-fill"
-                                             style="width: @(item.IsCompleted ? 100 : 0)%">
-                                        </div>
 
-                                    </div>
+                   <div class="category-arrow">
 
-                                </div>
+                        <div class="checklist-actions">
 
-                            </div>
-                        }
+                            <a href="@Url.Action("ViewChecklist", "Checklist", new { area = "Student", id = checklist.Id })"
+                            class="btn btn-outline-primary btn-sm">
+                                Open →
+                            </a>
 
-                    </div>
+                            @if (!checklist.IsArchived)
+                            {
+                                <a href="@Url.Action("Customize", "Checklist", new { area = "Student", id = checklist.Id })"
+                                class="btn btn-outline-secondary btn-sm">
+                                    Customize
+                                </a>
+                            }
+
+                        </div>
 
                     <div class="category-arrow">
                         →
@@ -163,8 +251,97 @@
 
                 </div>
             }
+        </div>
+    }
+
+</div>
+
+<style>
+    /* Small visual polish for My Checklists */
+
+    .checklist-page-header {
+        margin-bottom: 24px;
+    }
+
+    .checklist-page-header > div:last-child {
+        margin-top: 4px;
+    }
+
+    .checklist-list {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .checklist-list .category-card {
+        padding: 28px;
+    }
+
+    .checklist-list .category-header {
+        margin-bottom: 18px;
+    }
+
+    .checklist-list .category-header h2 {
+        margin-bottom: 4px;
+    }
+
+    .checklist-list .category-status {
+        margin-top: 2px;
+    }
+
+    .checklist-list .category-tasks {
+        margin-top: 4px;
+        padding-top: 0;
+    }
+
+    .checklist-list .category-arrow {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .checklist-list .task-progress-track {
+        height: 7px;
+        border-radius: 10px;
+    }
+
+    .checklist-list .task-progress-fill {
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    .checklist-list .btn {
+        min-width: 82px;
+        text-align: center;
+    }
+
+    .checklist-list .btn + .btn {
+        margin-left: 2px;
+    }
+
+    .checklist-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    @@media (max-width: 700px) {
+
+        .checklist-list .category-card {
+            padding: 20px;
         }
 
+        .checklist-list .category-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .checklist-list .category-arrow {
+            justify-content: flex-start;
+        }
+    }
+</style>
         @if (Model.Any())
         {
             <div class="save-area">

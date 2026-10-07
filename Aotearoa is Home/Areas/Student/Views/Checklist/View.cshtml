@@ -1,0 +1,846 @@
+@model Aotearoa_is_Home.Models.StudentChecklist
+
+@using System.Linq
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Name;
+
+    var totalCount = Model.Items.Count;
+
+    var completedCount =
+        Model.Items.Count(x => x.IsCompleted);
+
+    var overallProgress = totalCount == 0
+        ? 0
+        : (completedCount * 100) / totalCount;
+
+    var categories = Model.Items
+        .GroupBy(x => string.IsNullOrWhiteSpace(x.Category)
+            ? "Other"
+            : x.Category)
+        .ToList();
+}
+
+@{
+    var settlementPages =
+        ViewBag.SettlementPages
+        as List<Aotearoa_is_Home.Models.SettlementPage>
+        ?? new List<Aotearoa_is_Home.Models.SettlementPage>();
+}
+
+
+<div class="settlement-checklist">
+
+
+    <!-- HEADER -->
+
+    <div class="checklist-page-header">
+
+        <div>
+            <h1 class="checklist-title">
+                @Model.Name
+            </h1>
+
+            <p>
+                @completedCount of @totalCount tasks completed
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <div style="display: flex; gap: 8px;">
+
+                <a href="@Url.Action("Customize", "Checklist", new { area = "Student", id = Model.Id })"
+                    class="btn btn-outline-primary">
+                        Customize
+                </a>
+
+                <a href="@Url.Action("Index", "Checklist", new { area = "Student" })"
+                    class="btn btn-outline-secondary">
+                        ← My Checklists
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- OVERALL PROGRESS -->
+
+    <div class="overall-section">
+
+        <div class="overall-label">
+
+            <span>
+                Overall Progress
+            </span>
+
+            <span>
+                @overallProgress%
+            </span>
+
+        </div>
+
+
+        <div class="overall-track">
+
+            <div class="overall-fill"
+                 style="width: @overallProgress%">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHECKLIST -->
+
+    <form action="@Url.Action("Update", "Checklist", new { area = "Student" })"
+            method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="checklistId"
+               value="@Model.Id" />
+
+
+        @if (!Model.Items.Any())
+        {
+            <div class="empty-checklist">
+
+                This checklist does not contain any topics yet.
+
+            </div>
+        }
+        else
+        {
+            foreach (var category in categories)
+            {
+                var categoryItems = category.ToList();
+
+                var categoryTotal = categoryItems.Count;
+
+                var categoryCompleted =
+                    categoryItems.Count(x => x.IsCompleted);
+
+                var categoryProgress = categoryTotal == 0
+                    ? 0
+                    : (categoryCompleted * 100) / categoryTotal;
+
+
+                var status = "Not started";
+                var statusClass = "status-not-started";
+
+
+                if (categoryCompleted == categoryTotal &&
+                    categoryTotal > 0)
+                {
+                    status = "Done";
+                    statusClass = "status-done";
+                }
+                else if (categoryCompleted > 0)
+                {
+                    status = "In progress";
+                    statusClass = "status-progress";
+                }
+
+
+                <!-- CATEGORY CARD -->
+
+                <div class="category-card">
+
+
+                    <div class="category-header">
+
+                        <h2>
+                            @category.Key
+                        </h2>
+
+                        <span class="category-status @statusClass">
+                            @status
+                        </span>
+
+                    </div>
+
+
+                    <div class="category-tasks">
+
+                        @foreach (var item in categoryItems)
+                        {
+                            <div class="task-row">
+
+                                <div class="task-main">
+
+                                    <label class="task-checkbox-area">
+
+                                        <input type="checkbox"
+                                            name="completedItems"
+                                            value="@item.Id"
+                                            @(item.IsCompleted ? "checked" : "") />
+
+                                        <span class="task-information">
+
+                                            <span class="task-title">
+                                                @item.Title
+                                            </span>
+
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <span class="task-description">
+                                                    @item.Description
+                                                </span>
+                                            }
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <button type="button"
+                                        class="topic-info-button"
+                                        onclick="openTopicPanel('@item.Title.Replace("'", "\\'")',
+                                                                '@item.Category.Replace("'", "\\'")')"
+                                        aria-label="More information about @item.Title">
+
+                                    →
+                                    
+                                </button>
+
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <div class="category-arrow">
+                        →
+                    </div>
+
+                </div>
+            }
+        }
+
+
+        <!-- ===================================================== -->
+        <!-- SAVE -->
+        <!-- ===================================================== -->
+
+        @if (Model.Items.Any())
+        {
+            <div class="save-area">
+
+                <button type="submit"
+                        class="save-progress-button">
+
+                    Save Progress
+
+                </button>
+
+            </div>
+        }
+
+    </form>
+
+</div>
+
+<!-- INFORMATION SIDE PANEL -->
+
+<div id="topicPanelOverlay"
+     class="topic-panel-overlay"
+     onclick="closeTopicPanel()">
+</div>
+
+
+<aside id="topicPanel"
+       class="topic-panel"
+       aria-hidden="true">
+
+    <div class="topic-panel-header">
+
+        <div>
+
+            <div id="topicPanelCategory"
+                 class="topic-panel-category">
+            </div>
+
+            <h2 id="topicPanelTitle">
+            </h2>
+
+        </div>
+
+        <button type="button"
+                class="topic-panel-close"
+                onclick="closeTopicPanel()"
+                aria-label="Close information panel">
+            ×
+        </button>
+
+    </div>
+
+
+    <div id="topicPanelContent"
+         class="topic-panel-content">
+
+        <div class="topic-panel-loading">
+            Loading information...
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+<style>
+
+    .task-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .task-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .task-checkbox-area {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .topic-info-button {
+        width: 38px;
+        height: 38px;
+
+        flex-shrink: 0;
+
+        border: 1px solid #d5ddd7;
+        border-radius: 50%;
+
+        background: #ffffff;
+        color: #607b5d;
+
+        font-size: 20px;
+        font-weight: 500;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .topic-info-button:hover {
+        background: #f2f6f2;
+        border-color: #9fb19d;
+        transform: translateX(2px);
+    }
+
+
+    /* ============================
+       SIDE PANEL
+       ============================ */
+
+    .topic-panel-overlay {
+        position: fixed;
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.25);
+
+        z-index: 999;
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .topic-panel-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
+    .topic-panel {
+        position: fixed;
+
+        top: 0;
+        right: 0;
+
+        width: min(480px, 92vw);
+        height: 100vh;
+
+        background: #ffffff;
+
+        z-index: 1000;
+
+        box-shadow:
+            -10px 0 35px rgba(0, 0, 0, 0.12);
+
+        transform: translateX(100%);
+
+        transition:
+            transform 0.3s ease;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .topic-panel.active {
+        transform: translateX(0);
+    }
+
+
+    .topic-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        gap: 20px;
+
+        padding: 26px 28px 20px;
+
+        border-bottom: 1px solid #e5e9e6;
+    }
+
+
+    .topic-panel-category {
+        font-size: 12px;
+        font-weight: 700;
+
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+
+        color: #6f8f6c;
+
+        margin-bottom: 7px;
+    }
+
+
+    .topic-panel-header h2 {
+        margin: 0;
+
+        color: #26332d;
+
+        font-size: 24px;
+        line-height: 1.3;
+    }
+
+
+    .topic-panel-close {
+        width: 36px;
+        height: 36px;
+
+        flex-shrink: 0;
+
+        border: none;
+        border-radius: 50%;
+
+        background: #f1f4f1;
+
+        color: #45524b;
+
+        font-size: 24px;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .topic-panel-content {
+        flex: 1;
+
+        overflow-y: auto;
+
+        padding: 26px 28px 40px;
+
+        color: #46534c;
+
+        line-height: 1.65;
+    }
+
+
+    .topic-panel-content h3 {
+        margin: 24px 0 8px;
+
+        color: #26332d;
+
+        font-size: 18px;
+    }
+
+    .topic-panel-content h3:first-child {
+        margin-top: 0;
+    }
+
+
+    .topic-panel-content p {
+        margin: 0 0 15px;
+    }
+
+
+    .topic-panel-image {
+        margin: 18px 0;
+    }
+
+    .topic-panel-image img {
+        width: 100%;
+        max-height: 240px;
+
+        object-fit: cover;
+
+        border-radius: 8px;
+    }
+
+
+    .topic-panel-link {
+        display: inline-flex;
+
+        align-items: center;
+
+        margin: 8px 8px 0 0;
+
+        padding: 9px 14px;
+
+        border: 1px solid #d5ddd7;
+        border-radius: 6px;
+
+        color: #526f50;
+
+        text-decoration: none;
+
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .topic-panel-link:hover {
+        background: #f3f7f3;
+    }
+
+
+    .topic-panel-empty {
+        padding: 30px 10px;
+
+        text-align: center;
+
+        color: #6d7771;
+    }
+
+    .topic-panel-empty h3 {
+        margin-top: 10px;
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .topic-panel {
+            width: 100%;
+        }
+
+        .topic-panel-header {
+            padding: 22px 20px 18px;
+        }
+
+        .topic-panel-content {
+            padding: 22px 20px 35px;
+        }
+
+    }
+
+</style>
+
+<script>
+
+    const settlementInformation = {
+
+        @foreach (var page in settlementPages)
+        {
+            var jsonTitle =
+                System.Text.Json.JsonSerializer.Serialize(page.CategoryName);
+
+            <text>
+            @Html.Raw(jsonTitle): {
+                category: @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(page.CategoryName)
+                ),
+
+                blocks: [
+
+                    @foreach (var block in page.ContentBlocks.OrderBy(b => b.DisplayOrder))
+                    {
+                        <text>
+                        {
+                            type: @Html.Raw(
+                                System.Text.Json.JsonSerializer.Serialize(block.Type)
+                            ),
+
+                            content: @Html.Raw(
+                                System.Text.Json.JsonSerializer.Serialize(block.Content)
+                            ),
+
+                            details: @Html.Raw(
+                                System.Text.Json.JsonSerializer.Serialize(block.Details)
+                            )
+                        },
+                        </text>
+                    }
+
+                ]
+            },
+            </text>
+        }
+
+    };
+
+
+    function findSettlementInformation(title) {
+
+        const exactMatch = Object.keys(settlementInformation)
+            .find(key =>
+                key.toLowerCase() === title.toLowerCase()
+            );
+
+        if (exactMatch) {
+            return settlementInformation[exactMatch];
+        }
+
+        return null;
+    }
+
+
+    function openTopicPanel(title, category) {
+
+        const information =
+            findSettlementInformation(title);
+
+        document.getElementById("topicPanelTitle")
+            .textContent = title;
+
+        document.getElementById("topicPanelCategory")
+            .textContent = category;
+
+
+        const content =
+            document.getElementById("topicPanelContent");
+
+
+        if (!information) {
+
+            content.innerHTML = `
+                <div class="topic-panel-empty">
+
+                    <div class="topic-panel-empty-icon">
+                        ℹ
+                    </div>
+
+                    <h3>Information coming soon</h3>
+
+                    <p>
+                        Detailed information for this topic
+                        has not been added yet.
+                    </p>
+
+                </div>
+            `;
+
+            openPanel();
+            return;
+        }
+
+
+        let html = "";
+
+
+        information.blocks.forEach(function (block) {
+
+            if (block.type === "heading") {
+
+                // Heading is already represented by the panel title.
+                return;
+            }
+
+
+            if (block.type === "subheading") {
+
+                html += `
+                    <h3>
+                        ${escapeHtml(block.content)}
+                    </h3>
+                `;
+
+                return;
+            }
+
+
+            if (block.type === "paragraph") {
+
+                html += `
+                    <p>
+                        ${escapeHtml(block.content)}
+                    </p>
+                `;
+
+                return;
+            }
+
+
+            if (block.type === "image") {
+
+                html += `
+                    <div class="topic-panel-image">
+
+                        <img src="${escapeAttribute(block.content)}"
+                             alt="Settlement information" />
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            if (block.type === "link") {
+
+                let linkText = "Visit Resource";
+                let linkUrl = "#";
+
+
+                if (block.content &&
+                    block.content.includes("||")) {
+
+                    const parts =
+                        block.content.split("||");
+
+                    linkText =
+                        parts[0] || "Visit Resource";
+
+                    linkUrl =
+                        parts[1] || "#";
+                }
+                else {
+
+                    linkUrl =
+                        block.content || "#";
+                }
+
+
+                html += `
+                    <a href="${escapeAttribute(linkUrl)}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="topic-panel-link">
+
+                        ${escapeHtml(linkText)} →
+
+                    </a>
+                `;
+
+            }
+
+        });
+
+
+        if (!html.trim()) {
+
+            html = `
+                <div class="topic-panel-empty">
+
+                    <h3>Information coming soon</h3>
+
+                    <p>
+                        Detailed information for this topic
+                        has not been added yet.
+                    </p>
+
+                </div>
+            `;
+        }
+
+
+        content.innerHTML = html;
+
+        openPanel();
+    }
+
+
+    function openPanel() {
+
+        document.getElementById("topicPanel")
+            .classList.add("active");
+
+        document.getElementById("topicPanelOverlay")
+            .classList.add("active");
+
+        document.getElementById("topicPanel")
+            .setAttribute("aria-hidden", "false");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    function closeTopicPanel() {
+
+        document.getElementById("topicPanel")
+            .classList.remove("active");
+
+        document.getElementById("topicPanelOverlay")
+            .classList.remove("active");
+
+        document.getElementById("topicPanel")
+            .setAttribute("aria-hidden", "true");
+
+        document.body.style.overflow = "";
+    }
+
+
+    function escapeHtml(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function escapeAttribute(value) {
+
+        return escapeHtml(value);
+    }
+
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+            closeTopicPanel();
+        }
+
+    });
+
+</script>

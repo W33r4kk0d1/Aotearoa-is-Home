@@ -4,6 +4,7 @@ using Aotearoa_is_Home.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aotearoa_is_Home.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261007110436_AddStudentChecklistJourneys")]
+    partial class AddStudentChecklistJourneys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,8 +189,12 @@ namespace Aotearoa_is_Home.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChecklistTaskId")
-                        .HasColumnType("int");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -206,39 +213,10 @@ namespace Aotearoa_is_Home.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("StudentChecklistId");
-                    b.HasIndex("ChecklistTaskId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("ChecklistItems");
-                });
-
-            modelBuilder.Entity("Aotearoa_is_Home.Models.ChecklistTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SettlementPageId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SettlementPageId");
-
-                    b.ToTable("ChecklistTasks");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.ContentBlock", b =>
@@ -962,11 +940,6 @@ namespace Aotearoa_is_Home.Migrations
                         .WithMany("Items")
                         .HasForeignKey("StudentChecklistId")
                         .OnDelete(DeleteBehavior.Cascade);
-                    b.HasOne("Aotearoa_is_Home.Models.ChecklistTask", "ChecklistTask")
-                        .WithMany()
-                        .HasForeignKey("ChecklistTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
                         .WithMany()
@@ -975,20 +948,8 @@ namespace Aotearoa_is_Home.Migrations
                         .IsRequired();
 
                     b.Navigation("StudentChecklist");
-                    b.Navigation("ChecklistTask");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Aotearoa_is_Home.Models.ChecklistTask", b =>
-                {
-                    b.HasOne("Aotearoa_is_Home.Models.SettlementPage", "SettlementPage")
-                        .WithMany("ChecklistTasks")
-                        .HasForeignKey("SettlementPageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SettlementPage");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.ContentBlock", b =>
@@ -1198,8 +1159,6 @@ namespace Aotearoa_is_Home.Migrations
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.SettlementPage", b =>
                 {
-                    b.Navigation("ChecklistTasks");
-
                     b.Navigation("ContentBlocks");
                 });
 

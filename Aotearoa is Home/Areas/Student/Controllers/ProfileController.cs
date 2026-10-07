@@ -23,10 +23,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             _context = context;
         }
 
-        // ============================================================
         // STUDENT PROFILE
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -160,10 +157,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
 
-        // ============================================================
         // ADD FAMILY MEMBER
-        // ============================================================
-
         [HttpGet]
         public IActionResult AddFamilyMember()
         {
@@ -183,12 +177,15 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
+            // Set the student who is adding this family member
+            model.StudentUserId = user.Id;
+
+            // StudentUserId is populated by the controller, not by the form
+            ModelState.Remove(nameof(StudentFamilyMember.StudentUserId));
+
             var email = model.Email?.Trim().ToLowerInvariant();
 
-            // --------------------------------------------------------
             // Prevent student from adding themselves
-            // --------------------------------------------------------
-
             if (string.Equals(
                 email,
                 user.Email?.Trim().ToLowerInvariant(),
@@ -199,15 +196,11 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                     "You cannot use your own email address for a family member.");
             }
 
-            // --------------------------------------------------------
             // Prevent duplicate family-member email
-            // --------------------------------------------------------
-
             if (!string.IsNullOrWhiteSpace(email))
             {
                 var familyEmailExists = await _context.StudentFamilyMembers
-                    .AnyAsync(f =>
-                        f.Email.ToLower() == email);
+                    .AnyAsync(f => f.Email.ToLower() == email);
 
                 if (familyEmailExists)
                 {
@@ -216,10 +209,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                         "This email address has already been added as a family member.");
                 }
 
-                // ----------------------------------------------------
                 // Prevent using an existing application account
-                // ----------------------------------------------------
-
                 var existingUser = await _userManager.FindByEmailAsync(email);
 
                 if (existingUser != null)
@@ -230,34 +220,38 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 }
             }
 
+            // Stop if validation failed
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            model.StudentUserId = user.Id;
+            // Clean the submitted values
             model.Email = email!;
             model.FullName = model.FullName.Trim();
             model.RelationshipToStudent = model.RelationshipToStudent.Trim();
             model.ContactNumber = model.ContactNumber?.Trim();
             model.CountryOfCitizenship = model.CountryOfCitizenship?.Trim();
             model.Notes = model.Notes?.Trim();
+
+            // New family member is not registered yet
             model.RegisteredUserId = null;
             model.CreatedAt = DateTime.UtcNow;
 
+            // Save
             _context.StudentFamilyMembers.Add(model);
             await _context.SaveChangesAsync();
 
+            // Success message
             TempData["FamilyMessage"] =
                 $"{model.FullName} has been added to your family members.";
 
+            // Return to student's profile
             return RedirectToAction(nameof(Index));
         }
 
 
-        // ============================================================
         // EDIT FAMILY MEMBER
-        // ============================================================
 
         [HttpGet]
         public async Task<IActionResult> EditFamilyMember(int id)
@@ -282,6 +276,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             return View(familyMember);
         }
 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFamilyMember(
@@ -306,29 +301,29 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
-            var email = model.Email?.Trim().ToLowerInvariant();
+            model.StudentUserId = user.Id;
+            ModelState.Remove(nameof(StudentFamilyMember.StudentUserId));
 
-            // --------------------------------------------------------
-            // If already registered, do not allow email to change
-            // --------------------------------------------------------
+            // Clean submitted values
+            model.FullName = model.FullName?.Trim() ?? string.Empty;
+            model.RelationshipToStudent =
+                model.RelationshipToStudent?.Trim() ?? string.Empty;
 
-            if (familyMember.RegisteredUserId != null &&
-                !string.Equals(
-                    familyMember.Email,
-                    email,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(
-                    "Email",
-                    "The email address cannot be changed because this family member has already registered.");
-            }
+            model.Email =
+                model.Email?.Trim().ToLowerInvariant() ?? string.Empty;
 
-            // --------------------------------------------------------
-            // Prevent student from using their own email
-            // --------------------------------------------------------
+            model.ContactNumber = model.ContactNumber?.Trim();
+            model.CountryOfCitizenship =
+                model.CountryOfCitizenship?.Trim();
+            model.Notes = model.Notes?.Trim();
 
+            // --------------------------------------------------
+            // VALIDATION
+            // --------------------------------------------------
+
+            // Student cannot add themselves as a family member
             if (string.Equals(
-                email,
+                model.Email,
                 user.Email?.Trim().ToLowerInvariant(),
                 StringComparison.OrdinalIgnoreCase))
             {
@@ -337,16 +332,26 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                     "You cannot use your own email address for a family member.");
             }
 
-            // --------------------------------------------------------
-            // Check duplicate email
-            // --------------------------------------------------------
-
-            if (!string.IsNullOrWhiteSpace(email))
+            // If already registered, email cannot be changed
+            if (familyMember.RegisteredUserId != null &&
+                !string.Equals(
+                    familyMember.Email,
+                    model.Email,
+                    StringComparison.OrdinalIgnoreCase))
             {
-                var duplicateEmail = await _context.StudentFamilyMembers
-                    .AnyAsync(f =>
-                        f.Id != id &&
-                        f.Email.ToLower() == email);
+                ModelState.AddModelError(
+                    "Email",
+                    "The email address cannot be changed because this family member has already registered.");
+            }
+
+            // Check duplicate family member email
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                var duplicateEmail =
+                    await _context.StudentFamilyMembers
+                        .AnyAsync(f =>
+                            f.Id != id &&
+                            f.Email.ToLower() == model.Email);
 
                 if (duplicateEmail)
                 {
@@ -355,13 +360,14 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                         "This email address has already been added as another family member.");
                 }
 
-                // Only check ApplicationUser if email is being changed
+                // Only check ApplicationUser if the email is actually being changed
                 if (!string.Equals(
                     familyMember.Email,
-                    email,
+                    model.Email,
                     StringComparison.OrdinalIgnoreCase))
                 {
-                    var existingUser = await _userManager.FindByEmailAsync(email);
+                    var existingUser =
+                        await _userManager.FindByEmailAsync(model.Email);
 
                     if (existingUser != null)
                     {
@@ -372,36 +378,101 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 }
             }
 
+            // --------------------------------------------------
+            // DEBUG
+            // --------------------------------------------------
+
+            Console.WriteLine("========== EDIT POST ==========");
+            Console.WriteLine($"ID: {id}");
+            Console.WriteLine($"Model ID: {model.Id}");
+            Console.WriteLine($"Name: {model.FullName}");
+            Console.WriteLine($"Relationship: {model.RelationshipToStudent}");
+            Console.WriteLine($"Email: {model.Email}");
+            Console.WriteLine($"Contact: {model.ContactNumber}");
+            Console.WriteLine($"DOB: {model.DateOfBirth}");
+            Console.WriteLine($"Gender: {model.Gender}");
+            Console.WriteLine($"Citizenship: {model.CountryOfCitizenship}");
+            Console.WriteLine($"Notes: {model.Notes}");
+
+            Console.WriteLine("========== MODEL STATE ==========");
+
+            foreach (var state in ModelState)
+            {
+                foreach (var error in state.Value.Errors)
+                {
+                    Console.WriteLine(
+                        $"FIELD: {state.Key} | ERROR: {error.ErrorMessage}");
+
+                    if (error.Exception != null)
+                    {
+                        Console.WriteLine(
+                            $"EXCEPTION: {error.Exception.Message}");
+                    }
+                }
+            }
+
+            Console.WriteLine(
+                $"MODEL STATE VALID: {ModelState.IsValid}");
+
+            // --------------------------------------------------
+            // STOP IF VALIDATION FAILED
+            // --------------------------------------------------
+
             if (!ModelState.IsValid)
             {
-                model.RegisteredUserId = familyMember.RegisteredUserId;
-                model.StudentUserId = familyMember.StudentUserId;
+                model.RegisteredUserId =
+                    familyMember.RegisteredUserId;
+
+                model.StudentUserId =
+                    familyMember.StudentUserId;
 
                 return View(model);
             }
 
-            // --------------------------------------------------------
-            // Update allowed information
-            // --------------------------------------------------------
+            // --------------------------------------------------
+            // UPDATE DATABASE ENTITY
+            // --------------------------------------------------
 
-            familyMember.FullName = model.FullName.Trim();
+            familyMember.FullName = model.FullName;
+
             familyMember.RelationshipToStudent =
-                model.RelationshipToStudent.Trim();
+                model.RelationshipToStudent;
 
-            // Only update email if this family member has not registered
+            // Email can only be changed before registration
             if (familyMember.RegisteredUserId == null)
             {
-                familyMember.Email = email!;
+                familyMember.Email = model.Email;
             }
 
-            familyMember.ContactNumber = model.ContactNumber?.Trim();
-            familyMember.DateOfBirth = model.DateOfBirth;
-            familyMember.Gender = model.Gender;
-            familyMember.CountryOfCitizenship =
-                model.CountryOfCitizenship?.Trim();
-            familyMember.Notes = model.Notes?.Trim();
+            familyMember.ContactNumber =
+                model.ContactNumber;
 
-            await _context.SaveChangesAsync();
+            familyMember.DateOfBirth =
+                model.DateOfBirth;
+
+            familyMember.Gender =
+                model.Gender;
+
+            familyMember.CountryOfCitizenship =
+                model.CountryOfCitizenship;
+
+            familyMember.Notes =
+                model.Notes;
+
+            // --------------------------------------------------
+            // SAVE
+            // --------------------------------------------------
+
+            Console.WriteLine("========== BEFORE SAVE ==========");
+            Console.WriteLine($"Database ID: {familyMember.Id}");
+            Console.WriteLine($"Database Name: {familyMember.FullName}");
+            Console.WriteLine($"Database Email: {familyMember.Email}");
+            Console.WriteLine($"RegisteredUserId: {familyMember.RegisteredUserId}");
+
+            var changes = await _context.SaveChangesAsync();
+
+            Console.WriteLine("========== AFTER SAVE ==========");
+            Console.WriteLine($"Changes Saved: {changes}");
 
             TempData["FamilyMessage"] =
                 $"{familyMember.FullName}'s details have been updated.";
@@ -410,10 +481,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
 
-        // ============================================================
         // DELETE FAMILY MEMBER
-        // ============================================================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFamilyMember(int id)
@@ -435,10 +503,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
-            // --------------------------------------------------------
             // Registered family members cannot be deleted
-            // --------------------------------------------------------
-
             if (familyMember.RegisteredUserId != null)
             {
                 TempData["FamilyError"] =

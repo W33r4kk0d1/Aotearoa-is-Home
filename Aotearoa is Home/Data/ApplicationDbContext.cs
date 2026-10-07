@@ -44,7 +44,7 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<PendingStudentRegistration> PendingStudentRegistrations { get; set; }
         public DbSet<ChecklistItem> ChecklistItems { get; set; }
-
+        public DbSet<StudentChecklist> StudentChecklists { get; set; }
         public DbSet<EventFavourite> EventFavourites { get; set; }
 
         public DbSet<StudentFamilyMember> StudentFamilyMembers { get; set; }
@@ -153,6 +153,305 @@ namespace Aotearoa_is_Home.Data
             .HasIndex(f => f.RegisteredUserId)
             .IsUnique()
             .HasFilter("[RegisteredUserId] IS NOT NULL");
+        
+        builder.Entity<StudentChecklist>()
+            .HasMany(c => c.Items)
+            .WithOne(i => i.StudentChecklist)
+            .HasForeignKey(i => i.StudentChecklistId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<StudentChecklist>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+    }
+
+    public static async Task SeedSettlementData(ApplicationDbContext context)
+    {
+        // Check whether Healthcare already exists.
+        var healthcarePage = await context.SettlementPages
+            .Include(p => p.ContentBlocks)
+            .FirstOrDefaultAsync(p => p.CategoryName == "Healthcare");
+
+        // Do not create duplicates if the page already exists.
+        if (healthcarePage != null)
+        {
+            return;
         }
+
+        healthcarePage = new SettlementPage
+        {
+            CategoryName = "Healthcare",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        context.SettlementPages.Add(healthcarePage);
+
+        await context.SaveChangesAsync();
+
+        var blocks = new List<ContentBlock>
+        {
+            // 1. Understanding NZ Healthcare
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Understanding NZ Healthcare",
+                Details = "",
+                DisplayOrder = 1
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "subheading",
+                Content = "How the New Zealand Healthcare System Works",
+                Details = "",
+                DisplayOrder = 2
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "New Zealand has a combination of publicly funded and privately provided healthcare services. The level of government funding and eligibility depends on a person's citizenship, residency or visa status. International students should check whether they are eligible for publicly funded healthcare and understand what costs they may need to pay themselves.",
+                Details = "",
+                DisplayOrder = 3
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Immigration New Zealand || https://www.immigration.govt.nz/live/setting-up-your-life-in-new-zealand/getting-health-care-and-finding-a-doctor/",
+                Details = "",
+                DisplayOrder = 4
+            },
+
+            // -------------------------------------------------
+            // 2. Public Healthcare
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Public Healthcare",
+                Details = "",
+                DisplayOrder = 5
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Public healthcare services are funded or subsidised by the New Zealand Government for people who meet eligibility requirements. People who are not eligible can still use public healthcare services but will generally need to pay for the services they receive.",
+                Details = "",
+                DisplayOrder = 6
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Immigration New Zealand",
+                Details = "https://www.immigration.govt.nz/live/setting-up-your-life-in-new-zealand/getting-health-care-and-finding-a-doctor/who-can-get-public-health-care/",
+                DisplayOrder = 7
+            },
+
+            // -------------------------------------------------
+            // 3. Private Healthcare
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Private Healthcare",
+                Details = "",
+                DisplayOrder = 8
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Private healthcare allows people to pay directly for healthcare services or use private health insurance. Private services may provide more choice over healthcare providers and appointment times, but costs depend on the service and insurance policy.",
+                Details = "",
+                DisplayOrder = 9
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Immigration New Zealand",
+                Details = "https://www.immigration.govt.nz/live/setting-up-your-life-in-new-zealand/getting-health-care-and-finding-a-doctor/",
+                DisplayOrder = 10
+            },
+
+            // -------------------------------------------------
+            // 4. Primary Healthcare
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Primary Healthcare",
+                Details = "",
+                DisplayOrder = 11
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Primary healthcare is usually the first point of contact when you have a health problem. It includes services such as GPs, nurses, pharmacies and other community healthcare providers. If you are enrolled with a GP, they can provide ongoing healthcare and refer you to other healthcare professionals when necessary.",
+                Details = "",
+                DisplayOrder = 12
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Health New Zealand – Te Whatu Ora",
+                Details = "https://www.healthnz.govt.nz/",
+                DisplayOrder = 13
+            },
+
+            // -------------------------------------------------
+            // 5. Secondary Healthcare
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Secondary Healthcare",
+                Details = "",
+                DisplayOrder = 14
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Secondary healthcare generally refers to specialist and hospital services. A GP or another healthcare professional may refer you to a specialist or hospital when more specialised assessment or treatment is required.",
+                Details = "",
+                DisplayOrder = 15
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Health New Zealand – Hospitals and services",
+                Details = "https://www.healthnz.govt.nz/hospitals-services",
+                DisplayOrder = 16
+            },
+
+            // -------------------------------------------------
+            // 6. Emergency Healthcare
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Emergency Healthcare",
+                Details = "",
+                DisplayOrder = 17
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Emergency healthcare is for serious or life-threatening illness and injuries. In a life-threatening emergency, call 111 and ask for an ambulance. Emergency Departments are available for urgent medical care.",
+                Details = "",
+                DisplayOrder = 18
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Emergency medical help – Health New Zealand",
+                Details = "https://www.healthnz.govt.nz/health-topics/tests-and-treatments/emergencies-and-first-aid/emergency-medical-help",
+                DisplayOrder = 19
+            },
+
+            // -------------------------------------------------
+            // 7. Understanding Healthcare Costs
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Understanding Healthcare Costs",
+                Details = "",
+                DisplayOrder = 20
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Healthcare costs depend on your eligibility, the type of service, the healthcare provider and whether you have insurance. International students should not assume that healthcare will be free and should check their eligibility and insurance policy before receiving non-emergency treatment.",
+                Details = "",
+                DisplayOrder = 21
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Healthcare costs and eligibility – Immigration New Zealand",
+                Details = "https://www.immigration.govt.nz/live/setting-up-your-life-in-new-zealand/getting-health-care-and-finding-a-doctor/",
+                DisplayOrder = 22
+            },
+
+            // -------------------------------------------------
+            // 8. Healthcare for International Students
+            // -------------------------------------------------
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "heading",
+                Content = "Healthcare for International Students",
+                Details = "",
+                DisplayOrder = 23
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "paragraph",
+                Content = "Many international students are required to have medical and travel insurance as a condition of their student visa. Fee-paying student visa holders must meet the applicable insurance requirements for their visa and education provider.",
+                Details = "",
+                DisplayOrder = 24
+            },
+
+            new ContentBlock
+            {
+                SettlementPageId = healthcarePage.Id,
+                Type = "link",
+                Content = "Fee Paying Student Visa – Immigration New Zealand",
+                Details = "https://www.immigration.govt.nz/visas/fee-paying-student-visa/",
+                DisplayOrder = 25
+            }
+        };
+
+        context.ContentBlocks.AddRange(blocks);
+
+        await context.SaveChangesAsync();
+    }
     }
 }

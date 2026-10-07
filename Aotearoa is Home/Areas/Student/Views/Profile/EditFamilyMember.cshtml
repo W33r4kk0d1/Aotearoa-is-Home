@@ -58,64 +58,85 @@
                 <!-- Full Name -->
 
                 <div class="mb-3">
+                    <label asp-for="FullName" class="form-label">Full Name</label>
 
-                    <label asp-for="FullName"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="FullName"
-                           class="form-control" />
+                    <input type="text"
+                        id="FullName"
+                        name="FullName"
+                        value="@Model.FullName"
+                        class="form-control" />
 
                     <span asp-validation-for="FullName"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Relationship -->
 
                 <div class="mb-3">
-
                     <label asp-for="RelationshipToStudent"
-                           class="form-label">
+                        class="form-label">
+                        Relationship to Student
                     </label>
 
-                    <select asp-for="RelationshipToStudent"
+                    <select id="RelationshipToStudent"
+                            name="RelationshipToStudent"
                             class="form-select">
 
-                        <option value="">
-                            -- Select Relationship --
+                        <option value="">-- Select Relationship --</option>
+
+                        <option value="Spouse"
+                                selected="@(Model.RelationshipToStudent == "Spouse")">
+                            Spouse
                         </option>
 
-                        <option value="Spouse">Spouse</option>
-                        <option value="Partner">Partner</option>
-                        <option value="Child">Child</option>
-                        <option value="Parent">Parent</option>
-                        <option value="Sibling">Sibling</option>
-                        <option value="Other">Other</option>
+                        <option value="Partner"
+                                selected="@(Model.RelationshipToStudent == "Partner")">
+                            Partner
+                        </option>
 
+                        <option value="Child"
+                                selected="@(Model.RelationshipToStudent == "Child")">
+                            Child
+                        </option>
+
+                        <option value="Parent"
+                                selected="@(Model.RelationshipToStudent == "Parent")">
+                            Parent
+                        </option>
+
+                        <option value="Sibling"
+                                selected="@(Model.RelationshipToStudent == "Sibling")">
+                            Sibling
+                        </option>
+
+                        <option value="Other"
+                                selected="@(Model.RelationshipToStudent == "Other")">
+                            Other
+                        </option>
                     </select>
 
                     <span asp-validation-for="RelationshipToStudent"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Email -->
 
                 <div class="mb-3">
-
                     <label asp-for="Email"
-                           class="form-label">
+                        class="form-label">
+                        Email Address
                     </label>
 
-                    <input asp-for="Email"
-                           type="email"
-                           class="form-control"
-                           readonly="@isRegistered" />
+                    <input type="email"
+                        id="Email"
+                        name="Email"
+                        value="@Model.Email"
+                        class="form-control"
+                        readonly="@isRegistered" />
 
                     @if (!isRegistered)
                     {
@@ -126,115 +147,128 @@
                     }
 
                     <span asp-validation-for="Email"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Contact -->
 
                 <div class="mb-3">
-
                     <label asp-for="ContactNumber"
-                           class="form-label">
+                        class="form-label">
+                        Contact Number
                     </label>
 
-                    <input asp-for="ContactNumber"
-                           class="form-control" />
+                    <input type="text"
+                        id="ContactNumber"
+                        name="ContactNumber"
+                        value="@Model.ContactNumber"
+                        class="form-control" />
 
                     <span asp-validation-for="ContactNumber"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Date of Birth -->
 
                 <div class="mb-3">
-
                     <label asp-for="DateOfBirth"
-                           class="form-label">
+                        class="form-label">
+                        Date of Birth
                     </label>
 
-                    <input asp-for="DateOfBirth"
-                           type="date"
-                           class="form-control" />
+                    <input type="date"
+                        id="DateOfBirth"
+                        name="DateOfBirth"
+                        value="@(Model.DateOfBirth?.ToString("yyyy-MM-dd"))"
+                        class="form-control" />
 
                     <span asp-validation-for="DateOfBirth"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Gender -->
 
                 <div class="mb-3">
-
                     <label asp-for="Gender"
-                           class="form-label">
+                        class="form-label">
+                        Gender
                     </label>
 
-                    <select asp-for="Gender"
+                    <select id="Gender"
+                            name="Gender"
                             class="form-select">
 
-                        <option value="">
-                            -- Select Gender --
+                        <option value="">-- Select Gender --</option>
+
+                        <option value="Female"
+                                selected="@(Model.Gender == "Female")">
+                            Female
                         </option>
 
-                        <option value="Female">Female</option>
-                        <option value="Male">Male</option>
-                        <option value="Other">Other</option>
-                        <option value="Prefer not to say">
+                        <option value="Male"
+                                selected="@(Model.Gender == "Male")">
+                            Male
+                        </option>
+
+                        <option value="Other"
+                                selected="@(Model.Gender == "Other")">
+                            Other
+                        </option>
+
+                        <option value="Prefer not to say"
+                                selected="@(Model.Gender == "Prefer not to say")">
                             Prefer not to say
                         </option>
-
                     </select>
 
                     <span asp-validation-for="Gender"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Citizenship -->
 
                 <div class="mb-3">
-
                     <label asp-for="CountryOfCitizenship"
-                           class="form-label">
+                        class="form-label">
+                        Country of Citizenship
                     </label>
 
-                    <input asp-for="CountryOfCitizenship"
-                           class="form-control" />
+                    <input type="text"
+                        id="CountryOfCitizenship"
+                        name="CountryOfCitizenship"
+                        value="@Model.CountryOfCitizenship"
+                        class="form-control" />
 
                     <span asp-validation-for="CountryOfCitizenship"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 
                 <!-- Notes -->
 
                 <div class="mb-4">
-
                     <label asp-for="Notes"
-                           class="form-label">
+                        class="form-label">
+                        Notes
                     </label>
 
-                    <textarea asp-for="Notes"
-                              class="form-control"
-                              rows="4">
-                    </textarea>
+                    <textarea id="Notes"
+                            name="Notes"
+                            class="form-control"
+                            rows="4">@Model.Notes</textarea>
 
                     <span asp-validation-for="Notes"
-                          class="text-danger">
+                        class="text-danger">
                     </span>
-
                 </div>
 
 

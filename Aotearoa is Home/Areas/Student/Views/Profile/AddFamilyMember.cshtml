@@ -27,7 +27,7 @@
 
                 @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="ModelOnly"
+                <div asp-validation-summary="All"
                      class="text-danger mb-3">
                 </div>
 
@@ -38,11 +38,13 @@
 
                     <label asp-for="FullName"
                            class="form-label">
+                           FullName
                     </label>
 
                     <input asp-for="FullName"
-                           class="form-control"
-                           placeholder="Enter full name" />
+                            name="FullName"
+                            class="form-control"
+                            placeholder="Enter full name" />
 
                     <span asp-validation-for="FullName"
                           class="text-danger">
@@ -57,9 +59,11 @@
 
                     <label asp-for="RelationshipToStudent"
                            class="form-label">
+                           Relationship To Student
                     </label>
 
                     <select asp-for="RelationshipToStudent"
+                            name="RelationshipToStudent"
                             class="form-select">
 
                         <option value="">
@@ -88,16 +92,17 @@
 
                     <label asp-for="Email"
                            class="form-label">
+                           Email Address
                     </label>
 
                     <input asp-for="Email"
+                            name="Email"
                            type="email"
                            class="form-control"
                            placeholder="familymember@example.com" />
 
                     <div class="form-text">
-                        This email will be used to connect the family member
-                        to their account when they register.
+                        This email will be used to connect the family member to their account when they register.
                     </div>
 
                     <span asp-validation-for="Email"
@@ -113,9 +118,11 @@
 
                     <label asp-for="ContactNumber"
                            class="form-label">
+                           Contact Number
                     </label>
 
                     <input asp-for="ContactNumber"
+                            name="ContactNumber"
                            class="form-control"
                            placeholder="Optional" />
 
@@ -132,9 +139,11 @@
 
                     <label asp-for="DateOfBirth"
                            class="form-label">
+                           Date Of Birth
                     </label>
 
                     <input asp-for="DateOfBirth"
+                            name="DateOfBirth"
                            type="date"
                            class="form-control" />
 
@@ -151,9 +160,11 @@
 
                     <label asp-for="Gender"
                            class="form-label">
+                           Gender
                     </label>
 
                     <select asp-for="Gender"
+                            name="Gender"
                             class="form-select">
 
                         <option value="">
@@ -182,9 +193,11 @@
 
                     <label asp-for="CountryOfCitizenship"
                            class="form-label">
+                           Country of Citizenship
                     </label>
 
                     <input asp-for="CountryOfCitizenship"
+                            name="CountryOfCitizenship"
                            class="form-control"
                            placeholder="Optional" />
 
@@ -201,9 +214,11 @@
 
                     <label asp-for="Notes"
                            class="form-label">
+                           Any additional information...
                     </label>
 
                     <textarea asp-for="Notes"
+                                name="Notes"
                               class="form-control"
                               rows="4"
                               placeholder="Any additional information...">

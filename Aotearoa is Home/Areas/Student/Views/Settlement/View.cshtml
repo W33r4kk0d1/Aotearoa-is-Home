@@ -11,6 +11,10 @@
         TimeZoneInfo.ConvertTimeFromUtc(
             Model.UpdatedAt,
             nzTimeZone);
+
+    var imageName = Model.CategoryName
+        .ToLower()
+        .Replace(" ", "-") + ".jpg";
 }
 
 
@@ -36,13 +40,9 @@
 
     <section class="student-settlement-hero">
 
-        @if (Model.BackgroundImage != null &&
-             Model.BackgroundImage.Length > 0)
-        {
-            <img src="data:@Model.BackgroundImageContentType;base64,@Convert.ToBase64String(Model.BackgroundImage)"
-                 alt="@Model.CategoryName"
-                 class="student-settlement-hero-image" />
-        }
+        <img src="@Url.Content($"~/images/settlement/{imageName}")"
+            alt="@Model.CategoryName"
+            class="student-settlement-hero-image" />
 
         <div class="student-settlement-hero-overlay"></div>
 
@@ -64,7 +64,6 @@
         </div>
 
     </section>
-
 
     <!-- =====================================================
          LAST UPDATED
