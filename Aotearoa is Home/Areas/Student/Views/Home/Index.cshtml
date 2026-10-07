@@ -3,11 +3,23 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Student";
+
+    var displayedSettlementPages =
+        Model.SettlementPages.Take(3).ToList();
+
+    var recommendedPageId =
+        displayedSettlementPages
+            .Where(x =>
+                Model.ChecklistProgress.ContainsKey(x.Id) &&
+                Model.ChecklistProgress[x.Id].Total > 0 &&
+                Model.ChecklistProgress[x.Id].Completed <
+                Model.ChecklistProgress[x.Id].Total)
+            .Select(x => x.Id)
+            .FirstOrDefault();
 }
 
 <div class="student-home">
 
-    <!-- HERO -->
     <section class="student-home-hero">
 
         <div class="student-home-hero-content">
@@ -30,7 +42,6 @@
     </section>
 
 
-    <!-- SETTLEMENT INFORMATION -->
     <section class="student-home-section">
 
         <div class="student-section-title-row">
@@ -46,21 +57,35 @@
             </div>
 
             <a href="@Url.Action("Index", "Settlement", new { area = "Student" })"
-                class="student-view-all">
-                    View all →
+               class="student-view-all">
+                View all →
             </a>
 
         </div>
 
 
-        @if (Model.SettlementPages.Any())
+        @if (displayedSettlementPages.Any())
         {
             <div class="student-home-settlement-grid">
 
-                @foreach (var settlementPage in Model.SettlementPages.Take(3))
+                @foreach (var settlementPage in displayedSettlementPages)
                 {
+                    var hasProgress =
+                        Model.ChecklistProgress.ContainsKey(
+                            settlementPage.Id);
+
+                    var progress =
+                        hasProgress
+                            ? Model.ChecklistProgress[
+                                settlementPage.Id]
+                            : null;
+
+                    var isRecommended =
+                        settlementPage.Id ==
+                        recommendedPageId;
+
                     <a href="@Url.Action("View", "Settlement", new { area = "Student", id = settlementPage.Id })"
-                        class="student-home-settlement-card">
+                       class="student-home-settlement-card">
 
                         @if (settlementPage.BackgroundImage != null &&
                              settlementPage.BackgroundImage.Length > 0)
@@ -74,6 +99,40 @@
                         <div class="student-home-settlement-title">
                             @settlementPage.CategoryName
                         </div>
+
+                        @if (progress != null && progress.Total > 0)
+                        {
+                            <div class="student-home-settlement-progress">
+
+                                @if (isRecommended)
+                                {
+                                    <span class="student-recommended-badge">
+                                        Recommended for you
+                                    </span>
+                                }
+
+                                <div class="student-settlement-progress-info">
+
+                                    <span>
+                                        @progress.Status
+                                    </span>
+
+                                    <span>
+                                        @progress.Completed / @progress.Total tasks
+                                    </span>
+
+                                </div>
+
+                                <div class="student-settlement-progress-track">
+
+                                    <div class="student-settlement-progress-fill"
+                                         style="width: @progress.Percentage%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
 
                     </a>
                 }
@@ -90,7 +149,6 @@
     </section>
 
 
-    <!-- EVENTS -->
     <section class="student-home-section">
 
         <div class="student-section-title-row">
@@ -106,8 +164,8 @@
             </div>
 
             <a href="@Url.Action("Index", "Event", new { area = "Student" })"
-                class="student-view-all">
-                    View all →
+               class="student-view-all">
+                View all →
             </a>
 
         </div>
@@ -120,7 +178,7 @@
                 @foreach (var eventItem in Model.Events)
                 {
                     <a href="@Url.Action("Details", "Event", new { area = "Student", id = eventItem.Id })"
-                        class="student-home-event-card">
+                       class="student-home-event-card">
 
                         @if (eventItem.ImageData != null)
                         {

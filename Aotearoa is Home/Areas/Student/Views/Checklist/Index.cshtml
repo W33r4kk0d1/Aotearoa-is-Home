@@ -5,32 +5,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Settlement Checklist";
 
-    // ## Overall progress
+    var categories = Model
+        .Where(x => x.ChecklistTask?.SettlementPage != null)
+        .GroupBy(x => x.ChecklistTask!.SettlementPage!.Id)
+        .ToList();
+
     var totalCount = Model.Count;
     var completedCount = Model.Count(x => x.IsCompleted);
 
     var overallProgress = totalCount == 0
         ? 0
         : (completedCount * 100) / totalCount;
-
-    // ## Group checklist items by category
-    var categories = Model
-        .GroupBy(x => string.IsNullOrWhiteSpace(x.Category)
-            ? "Other"
-            : x.Category)
-        .ToList();
 }
-
 
 <div class="settlement-checklist">
 
-    @* ## Page heading *@
     <h1 class="checklist-title">
         Settlement Checklist
     </h1>
 
-
-    @* ## Overall progress *@
     <div class="overall-section">
 
         <div class="overall-label">
@@ -39,44 +32,45 @@
         </div>
 
         <div class="overall-track">
+
             <div class="overall-fill"
                  style="width: @overallProgress%">
             </div>
+
         </div>
 
     </div>
 
-
-    @* ## Checklist update form *@
     <form action="/Student/Checklist/Update" method="post">
 
         @Html.AntiForgeryToken()
 
-
-        @if (!Model.Any())
+        @if (!categories.Any())
         {
             <div class="empty-checklist">
-                No checklist items have been created yet.
+                No checklist tasks are currently available.
             </div>
         }
         else
         {
-            @* ## Create one card for each category *@
             foreach (var category in categories)
             {
                 var categoryItems = category.ToList();
 
-                var categoryTotal = categoryItems.Count;
+                var settlementPage =
+                    categoryItems.First().ChecklistTask!.SettlementPage!;
+
+                var categoryTotal =
+                    categoryItems.Count;
 
                 var categoryCompleted =
                     categoryItems.Count(x => x.IsCompleted);
 
-                var categoryProgress = categoryTotal == 0
-                    ? 0
-                    : (categoryCompleted * 100) / categoryTotal;
+                var categoryProgress =
+                    categoryTotal == 0
+                        ? 0
+                        : (categoryCompleted * 100) / categoryTotal;
 
-
-                // ## Determine category status
                 var status = "Not started";
                 var statusClass = "status-not-started";
 
@@ -92,15 +86,12 @@
                     statusClass = "status-progress";
                 }
 
-
-                @* ## Category card *@
                 <div class="category-card">
 
-                    @* ## Category heading *@
                     <div class="category-header">
 
                         <h2>
-                            @category.Key
+                            @settlementPage.CategoryName
                         </h2>
 
                         <span class="category-status @statusClass">
@@ -109,16 +100,13 @@
 
                     </div>
 
-
-                    @* ## Tasks inside category *@
                     <div class="category-tasks">
 
-                        @foreach (var item in categoryItems)
+                        @foreach (var item in categoryItems
+                            .OrderBy(x => x.ChecklistTask!.DisplayOrder))
                         {
                             <div class="task-row">
 
-
-                                @* ## Checkbox *@
                                 <div class="task-checkbox">
 
                                     @if (item.IsCompleted)
@@ -139,25 +127,21 @@
 
                                 </div>
 
-
-                                @* ## Task information *@
                                 <div class="task-information">
 
                                     <label for="item-@item.Id"
                                            class="task-title">
-                                        @item.Title
+                                        @item.ChecklistTask!.Title
                                     </label>
 
-
-                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        item.ChecklistTask.Description))
                                     {
                                         <div class="task-description">
-                                            @item.Description
+                                            @item.ChecklistTask.Description
                                         </div>
                                     }
 
-
-                                    @* ## Individual task progress *@
                                     <div class="task-progress-track">
 
                                         <div class="task-progress-fill"
@@ -173,8 +157,6 @@
 
                     </div>
 
-
-                    @* ## Arrow on right side *@
                     <div class="category-arrow">
                         →
                     </div>
@@ -183,17 +165,13 @@
             }
         }
 
-
-        @* ## Save button *@
         @if (Model.Any())
         {
             <div class="save-area">
 
                 <button type="submit"
                         class="save-progress-button">
-
                     Save Progress
-
                 </button>
 
             </div>

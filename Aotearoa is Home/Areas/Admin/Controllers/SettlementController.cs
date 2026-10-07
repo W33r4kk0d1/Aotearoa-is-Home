@@ -49,12 +49,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
         // CREATE - POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            SettlementPage page,
-            IFormFile? backgroundImage,
-            List<IFormFile>? contentImages)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(
+    SettlementPage page,
+    IFormFile? backgroundImage,
+    List<IFormFile>? contentImages)
         {
             if (string.IsNullOrWhiteSpace(page.CategoryName))
             {
@@ -62,12 +62,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     "CategoryName",
                     "Category Hub Name is required."
                 );
+
                 return View(page);
             }
 
             page.CategoryName = page.CategoryName.Trim();
 
-            // Check duplicate category
             bool categoryExists =
                 await _context.SettlementPages
                     .AnyAsync(p =>
@@ -82,9 +82,10 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     "CategoryName",
                     $"The settlement category \"{page.CategoryName}\" already exists."
                 );
+
                 return View(page);
             }
-            // Check duplicate topic headings
+
             if (page.ContentBlocks != null)
             {
                 var headings =
@@ -102,7 +103,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                         var heading =
                             block.Content?.Trim();
 
-
                         if (!string.IsNullOrWhiteSpace(heading))
                         {
                             if (!headings.Add(heading))
@@ -118,26 +118,61 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     }
                 }
             }
-            // Save category background image
-            if (backgroundImage != null && backgroundImage.Length > 0)
+
+            if (page.ChecklistTasks != null)
             {
-                using var memoryStream = new MemoryStream();
+                page.ChecklistTasks =
+                    page.ChecklistTasks
+                        .Where(x =>
+                            !string.IsNullOrWhiteSpace(x.Title))
+                        .OrderBy(x => x.DisplayOrder)
+                        .Select((x, index) =>
+                        {
+                            x.Id = 0;
+                            x.DisplayOrder = index;
+                            x.Title = x.Title.Trim();
 
-                await backgroundImage.CopyToAsync(memoryStream);
+                            if (!string.IsNullOrWhiteSpace(x.Description))
+                            {
+                                x.Description =
+                                    x.Description.Trim();
+                            }
 
-                page.BackgroundImage = memoryStream.ToArray();
-                page.BackgroundImageContentType = backgroundImage.ContentType;
+                            return x;
+                        })
+                        .ToList();
             }
 
-            page.CreatedAt = DateTime.UtcNow;
-            page.UpdatedAt = DateTime.UtcNow;
+            if (backgroundImage != null && backgroundImage.Length > 0)
+            {
+                using var memoryStream =
+                    new MemoryStream();
 
-            // Save settlement page
+                await backgroundImage.CopyToAsync(
+                    memoryStream
+                );
+
+                page.BackgroundImage =
+                    memoryStream.ToArray();
+
+                page.BackgroundImageContentType =
+                    backgroundImage.ContentType;
+            }
+
+            page.CreatedAt =
+                DateTime.UtcNow;
+
+            page.UpdatedAt =
+                DateTime.UtcNow;
+
             _context.SettlementPages.Add(page);
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Settlement");
+            return RedirectToAction(
+                "Index",
+                "Settlement"
+            );
         }
 
         // VIEW

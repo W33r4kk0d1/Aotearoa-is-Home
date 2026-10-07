@@ -22,8 +22,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             _userManager = userManager;
         }
 
-
-        // ## Display student settlement checklist
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
@@ -33,121 +31,44 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-
-            // ## Get current student's checklist items
-            var checklist = await _context.ChecklistItems
-                .Where(c => c.UserId == userId)
+            var tasks = await _context.ChecklistTasks
+                .Include(x => x.SettlementPage)
+                .OrderBy(x => x.SettlementPage!.CategoryName)
+                .ThenBy(x => x.DisplayOrder)
                 .ToListAsync();
 
+            var checklistItems = await _context.ChecklistItems
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
 
-            // ## Default settlement checklist
-            var defaultItems = new List<ChecklistItem>
+            foreach (var task in tasks)
             {
-                // ## Arrival and documents
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Arrival and documents",
-                    Title = "Enrolment",
-                    Description = "Confirm your enrolment and study details."
-                },
-
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Arrival and documents",
-                    Title = "Student Visa Status",
-                    Description = "Check that your student visa details are correct and current."
-                },
-
-
-                // ## Accommodation
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Accommodation",
-                    Title = "Find suitable accommodation",
-                    Description = "Find a suitable place to live in New Zealand."
-                },
-
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Accommodation",
-                    Title = "Complete accommodation arrangements",
-                    Description = "Complete the necessary arrangements for your accommodation."
-                },
-
-
-                // ## Find a University
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Find a University",
-                    Title = "Research universities",
-                    Description = "Research universities and study options in New Zealand."
-                },
-
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Find a University",
-                    Title = "Complete university application",
-                    Description = "Complete the required university application process."
-                },
-
-
-                // ## Banking
-                new ChecklistItem
-                {
-                    UserId = userId,
-                    Category = "Banking",
-                    Title = "Open a New Zealand bank account",
-                    Description = "Set up a local bank account for everyday transactions."
-                }
-            };
-
-
-            // ## Add checklist items that do not already exist
-            foreach (var defaultItem in defaultItems)
-            {
-                var existingItem = checklist
-                    .FirstOrDefault(c => c.Title == defaultItem.Title);
+                var existingItem = checklistItems
+                    .FirstOrDefault(x => x.ChecklistTaskId == task.Id);
 
                 if (existingItem == null)
                 {
-                    _context.ChecklistItems.Add(defaultItem);
-                }
-                else
-                {
-                    // ## Update old records that previously had no category
-                    existingItem.Category = defaultItem.Category;
-
-                    if (string.IsNullOrWhiteSpace(existingItem.Description))
-                    {
-                        existingItem.Description = defaultItem.Description;
-                    }
+                    _context.ChecklistItems.Add(
+                        new ChecklistItem
+                        {
+                            UserId = userId,
+                            ChecklistTaskId = task.Id,
+                            IsCompleted = false
+                        });
                 }
             }
 
-
-            // ## Save new items and category changes
             await _context.SaveChangesAsync();
 
-
-            // ## Reload checklist after changes
-            checklist = await _context.ChecklistItems
-                .Where(c => c.UserId == userId)
-                .OrderBy(c => c.Category)
-                .ThenBy(c => c.Id)
+            checklistItems = await _context.ChecklistItems
+                .Include(x => x.ChecklistTask)
+                .ThenInclude(x => x!.SettlementPage)
+                .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-
-            return View(checklist);
+            return View(checklistItems);
         }
 
-
-        // ## Update completed checklist items
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(List<int>? completedItems)
@@ -159,27 +80,18 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-
-            // ## Get current student's checklist items
             var checklistItems = await _context.ChecklistItems
-                .Where(c => c.UserId == userId)
+                .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-
-            // ## Empty list if no checkboxes were selected
             completedItems ??= new List<int>();
 
-
-            // ## Update completion status
             foreach (var item in checklistItems)
             {
                 item.IsCompleted = completedItems.Contains(item.Id);
             }
 
-
-            // ## Save checklist progress
             await _context.SaveChangesAsync();
-
 
             return RedirectToAction(nameof(Index));
         }
