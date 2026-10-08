@@ -120,6 +120,15 @@
                                         Favourites
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                    asp-area="Student"
+                                    asp-controller="Event"
+                                    asp-action="MyEvents">
+                                        I'm Going
+                                    </a>
+                                </li>
                             }
 
 
@@ -165,10 +174,37 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area=""
+                                       asp-area="Family"
+                                       asp-controller="Event"
+                                       asp-action="Index">
+                                        Event
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Family"
                                        asp-controller="Home"
                                        asp-action="Privacy">
                                         Posts
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-area="Family"
+                                       asp-controller="Event"
+                                       asp-action="Favourites">
+                                        Favourites
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                    asp-area="Family"
+                                    asp-controller="Event"
+                                    asp-action="MyEvents">
+                                        I'm Going
                                     </a>
                                 </li>
                             }
@@ -317,7 +353,7 @@
                                         {
                                             <a class="dropdown-item"
                                                asp-area="Family"
-                                               asp-controller="Home"
+                                               asp-controller="Profile"
                                                asp-action="Index">
                                                 Profile
                                             </a>
@@ -331,19 +367,15 @@
                                                 Profile
                                             </a>
                                         }
-else if (User.IsInRole("Service Provider"))
-{
-    <a class="dropdown-item"
-       asp-area="ServiceProvider"
-       asp-controller="Profile"
-       asp-action="Index">
-        Profile
-    </a>
-}
-
-
-
-
+                                        else if (User.IsInRole("Service Provider"))
+                                        {
+                                            <a class="dropdown-item"
+                                            asp-area="ServiceProvider"
+                                            asp-controller="Profile"
+                                            asp-action="Index">
+                                                Profile
+                                            </a>
+                                        }
 
                                     </li>
 

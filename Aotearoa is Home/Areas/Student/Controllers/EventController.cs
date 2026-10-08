@@ -309,5 +309,30 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             return View(favourites);
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> MyEvents()
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var events = await _context.EventResponses
+                .Include(r => r.Event)
+                .ThenInclude(e => e!.EventProviderProfile)
+                .Where(r =>
+                    r.UserId == userId &&
+                    r.Event != null)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => r.Event!)
+                .ToListAsync();
+
+            return View(events);
+        }
     }
 }
