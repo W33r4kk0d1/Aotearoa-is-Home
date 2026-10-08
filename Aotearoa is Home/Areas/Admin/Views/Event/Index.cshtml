@@ -47,26 +47,11 @@
                             {
                                 <tr>
 
-                                    <td>
-                                        <strong>@item.Title</strong>
-                                    </td>
-
-                                    <td>
-                                        @item.Category
-                                    </td>
-
-                                    <td>
-                                        @item.Location
-                                    </td>
-
-                                    <td>
-                                        @item.StartDate.ToString("dd/MM/yyyy HH:mm")
-                                    </td>
-
-                                    <td>
-                                        @item.EndDate.ToString("dd/MM/yyyy HH:mm")
-                                    </td>
-
+                                    <td> <strong>@item.Title</strong> </td>
+                                    <td> @item.Category </td>
+                                    <td> @item.Location </td>
+                                    <td> @item.StartDate.ToString("dd/MM/yyyy HH:mm") </td>
+                                    <td> @item.EndDate.ToString("dd/MM/yyyy HH:mm") </td>
                                     <td>
                                         @if (item.Status == "Approved")
                                         {
@@ -89,7 +74,6 @@
                                     </td>
 
                                     <td class="text-end">
-
                                         <a href="/Admin/Event/Edit/@item.Id"
                                            class="btn btn-primary btn-sm">
                                             Edit
@@ -110,20 +94,13 @@
 
                                             </form>
                                         }
-
                                     </td>
-
                                 </tr>
                             }
-
                         </tbody>
-
                     </table>
-
                 </div>
             }
-
         </div>
     </div>
-
 </div>

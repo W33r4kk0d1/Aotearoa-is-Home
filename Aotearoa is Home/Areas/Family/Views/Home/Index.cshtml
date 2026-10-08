@@ -1,29 +1,242 @@
-@model List<Aotearoa_is_Home.Models.SettlementPage>
+@model Aotearoa_is_Home.Models.ViewModels.StudentHomeViewModel
 
 @{
-    ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Family";
+
+    var displayedSettlementPages =
+        Model.SettlementPages.Take(3).ToList();
+
+    var recommendedPageId =
+        displayedSettlementPages
+            .Where(x =>
+                Model.ChecklistProgress.ContainsKey(x.Id) &&
+                Model.ChecklistProgress[x.Id].Total > 0 &&
+                Model.ChecklistProgress[x.Id].Completed <
+                Model.ChecklistProgress[x.Id].Total)
+            .Select(x => x.Id)
+            .FirstOrDefault();
 }
 
-<div class="container home-container">
+<div class="student-home">
 
-    <div class="category-grid">
+    <section class="student-home-hero">
 
-        @foreach (var settlementPage in Model)
-        {
-            <a asp-area="Family"
-               asp-controller="Settlement"
-               asp-action="View"
-               asp-route-id="@settlementPage.Id"
-               class="category-box">
+        <div class="student-home-hero-content">
 
-                <span>
-                    @settlementPage.CategoryName
+            <span class="student-eyebrow">
+                WELCOME
+            </span>
+
+            <h1>
+                Your Aotearoa journey starts here
+            </h1>
+
+            <p>
+                Find useful information, events, and resources
+                to help you settle into life in New Zealand.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         SETTLEMENT INFORMATION
+    ============================================================ -->
+
+    <section class="student-home-section">
+
+        <div class="student-section-title-row">
+
+            <div>
+
+                <span class="student-eyebrow">
+                    SETTLEMENT
                 </span>
 
+                <h2>
+                    Settlement Information
+                </h2>
+
+            </div>
+
+            <a href="@Url.Action("Index", "Settlement", new { area = "Family" })"
+               class="student-view-all">
+
+                View all →
+
             </a>
+
+        </div>
+
+
+        @if (displayedSettlementPages.Any())
+        {
+            <div class="student-home-settlement-grid">
+
+                @foreach (var settlementPage in displayedSettlementPages)
+                {
+                    var hasProgress =
+                        Model.ChecklistProgress.ContainsKey(
+                            settlementPage.Id);
+
+                    var progress =
+                        hasProgress
+                            ? Model.ChecklistProgress[
+                                settlementPage.Id]
+                            : null;
+
+                    var isRecommended =
+                        settlementPage.Id ==
+                        recommendedPageId;
+
+                    <a href="@Url.Action("View", "Settlement", new { area = "Family", id = settlementPage.Id })"
+                       class="student-home-settlement-card">
+
+                        @if (settlementPage.BackgroundImage != null &&
+                             settlementPage.BackgroundImage.Length > 0)
+                        {
+                            <img src="data:@settlementPage.BackgroundImageContentType;base64,@Convert.ToBase64String(settlementPage.BackgroundImage)"
+                                 alt="@settlementPage.CategoryName" />
+                        }
+
+                        <div class="student-home-settlement-overlay"></div>
+
+                        <div class="student-home-settlement-title">
+                            @settlementPage.CategoryName
+                        </div>
+
+                        @if (progress != null && progress.Total > 0)
+                        {
+                            <div class="student-home-settlement-progress">
+
+                                @if (isRecommended)
+                                {
+                                    <span class="student-recommended-badge">
+                                        Recommended for you
+                                    </span>
+                                }
+
+                                <div class="student-settlement-progress-info">
+
+                                    <span>
+                                        @progress.Status
+                                    </span>
+
+                                    <span>
+                                        @progress.Completed / @progress.Total tasks
+                                    </span>
+
+                                </div>
+
+                                <div class="student-settlement-progress-track">
+
+                                    <div class="student-settlement-progress-fill"
+                                         style="width: @progress.Percentage%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                No settlement information is currently available.
+            </div>
         }
 
-    </div>
+    </section>
+
+
+    <!-- ============================================================
+         UPCOMING EVENTS
+    ============================================================ -->
+
+    <section class="student-home-section">
+
+        <div class="student-section-title-row">
+
+            <div>
+
+                <span class="student-eyebrow">
+                    COMMUNITY
+                </span>
+
+                <h2>
+                    Upcoming Events
+                </h2>
+
+            </div>
+
+            <a href="@Url.Action("Index", "Event", new { area = "Family" })"
+               class="student-view-all">
+
+                View all →
+
+            </a>
+
+        </div>
+
+
+        @if (Model.Events.Any())
+        {
+            <div class="student-home-event-grid">
+
+                @foreach (var eventItem in Model.Events)
+                {
+                    <a href="@Url.Action("Details", "Event", new { area = "Family", id = eventItem.Id })"
+                       class="student-home-event-card">
+
+                        @if (eventItem.ImageData != null)
+                        {
+                            <img src="data:@eventItem.ImageContentType;base64,@Convert.ToBase64String(eventItem.ImageData)"
+                                 alt="@eventItem.Title" />
+                        }
+
+                        <div class="student-home-event-content">
+
+                            @if (!string.IsNullOrWhiteSpace(eventItem.Category))
+                            {
+                                <span class="student-event-category">
+                                    @eventItem.Category
+                                </span>
+                            }
+
+                            <h3>
+                                @eventItem.Title
+                            </h3>
+
+                            <p>
+                                @eventItem.Location
+                            </p>
+
+                            <small>
+                                @eventItem.StartDate.ToString("dd/MM/yyyy h:mm tt")
+                            </small>
+
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                No upcoming events are currently available.
+            </div>
+        }
+
+    </section>
 
 </div>

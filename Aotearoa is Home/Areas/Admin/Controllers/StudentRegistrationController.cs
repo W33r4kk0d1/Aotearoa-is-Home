@@ -253,8 +253,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     return View("Approve", model);
                 }
 
-                // Compare the registration email with BOTH
-                // possible university email fields.
+                // Compare the registration email with BOTH possible university email fields.
                 bool emailMatches =
                     string.Equals(
                         registration.Email?.Trim(),
@@ -342,11 +341,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
 
             // CREATE STUDENT PROFILE
-            //
-            // Only create a StudentProfile when a Student ID is available.
-            // A pre-arrival student may be approved without having a Student ID yet.
-            //
-
             if (!string.IsNullOrWhiteSpace(studentId))
             {
                 var studentProfile = new StudentProfile
@@ -357,7 +351,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
                 _context.StudentProfiles.Add(studentProfile);
             }
-
 
             // MARK REGISTRATION AS APPROVED
             registration.Status = "Approved";
@@ -380,16 +373,14 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 Console.WriteLine(ex.Message);
                 Console.WriteLine("========================================");
 
-                TempData["RegistrationWarning"] =
-                    $"The student account was approved successfully, but the email could not be sent. Error: {ex.Message}";
+                TempData["RegistrationWarning"] = $"The student account was approved successfully, but the email could not be sent. Error: {ex.Message}";
 
                 return RedirectToAction(nameof(Index));
             }
 
 
             // SUCCESS
-            TempData["RegistrationSuccess"] =
-                $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully, and the login details were emailed to {registration.Email}.";
+            TempData["RegistrationSuccess"] = $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully, and the login details were emailed to {registration.Email}.";
 
             return RedirectToAction(nameof(Index));
         }

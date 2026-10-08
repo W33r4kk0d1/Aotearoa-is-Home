@@ -200,14 +200,9 @@
                     class="pre-arrival-message"
                     style="display:none;">
 
-                    <p>
-                        You can register as a pre-arrival student if you have not received your Student ID yet.
-                    </p>
+                    <p> You can register as a pre-arrival student if you have not received your Student ID yet. </p>
 
-                    <p>
-                        Your registration will be reviewed by an administrator before your account is activated.
-                    </p>
-
+                    <p> Your registration will be reviewed by an administrator before your account is activated. </p>
                 </div>
 
 
@@ -268,8 +263,7 @@
 
                     <small class="form-text text-muted">
                         Enter the Employee ID provided by your organisation.
-                        Your name, email address and organisation will be retrieved
-                        automatically.
+                        Your name, email address and organisation will be retrieved automatically.
                     </small>
 
                     <span asp-validation-for="EmployeeId" class="text-danger"></span>
@@ -278,53 +272,28 @@
 
 
             <!-- FAMILY -->
-            <div id="familyFields" class="role-fields">
+           <div id="familyFields" class="role-fields">
 
-                <h3>Family details</h3>
+                <h3>Family Member Registration</h3>
 
-                <div class="form-group">
+                <div class="family-registration-info">
+                    <p>
+                        <strong>Important:</strong>
+                        You can only register as a family member if a student has already added your email address as a family member.
+                    </p>
 
-                    <label asp-for="RelationshipToStudent">
-                        Relationship to student
-                        <span class="required-star">*</span>
-                    </label>
-
-                    <select asp-for="RelationshipToStudent" class="form-control">
-                        <option value=""> Select relationship </option>
-                        <option value="Parent"> Parent </option>
-                        <option value="Spouse/Partner"> Spouse / Partner </option>
-                        <option value="Sibling"> Sibling </option>
-                        <option value="Child"> Child </option>
-                        <option value="Other"> Other </option>
-                    </select>
-
-                    <span asp-validation-for="RelationshipToStudent" class="text-danger"></span>
+                    <p> Please use the same email address that the student used when adding you as a family member. </p>
                 </div>
 
                 <div class="form-group">
-
-                    <label asp-for="StudentReference">
-                        Student ID / Student email
-                        <span class="required-star">*</span>
-                    </label>
-
-                    <input asp-for="StudentReference"
-                           class="form-control"
-                           placeholder="Student ID / Student email" />
-
-                    <span asp-validation-for="StudentReference" class="text-danger"></span>
-                </div>
-
-
-                <div class="form-group">
-
                     <label asp-for="LanguageId">
                         Preferred language
                     </label>
 
                     <select asp-for="LanguageId" class="form-control">
-
-                        <option value=""> Select preferred language </option>
+                        <option value="">
+                            Select preferred language
+                        </option>
 
                         @foreach (var language in ViewBag.Languages)
                         {
@@ -332,11 +301,9 @@
                                 @language.Name
                             </option>
                         }
-
                     </select>
                 </div>
             </div>
-
 
             <!-- Service PROVIDER -->
             <div id="eventProviderFields" class="role-fields">
@@ -346,7 +313,6 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-
                         <label asp-for="OrganisationName">
                             Organisation name
                             <span class="required-star">*</span>
@@ -355,13 +321,11 @@
                         <input asp-for="OrganisationName"
                                class="form-control"
                                placeholder="Organisation name" />
-
                         <span asp-validation-for="OrganisationName" class="text-danger"></span>
                     </div>
 
 
                     <div class="form-group">
-
                         <label asp-for="OrganisationType">
                             Organisation type
                             <span class="required-star">*</span>
@@ -372,13 +336,11 @@
                                placeholder="Organisation type" />
 
                         <span asp-validation-for="OrganisationType" class="text-danger"></span>
-
                     </div>
                 </div>
 
 
                 <div class="form-group">
-
                     <label asp-for="OrganisationDescription">
                         Organisation description
                     </label>
@@ -388,14 +350,12 @@
                               placeholder="Organisation description"></textarea>
 
                     <span asp-validation-for="OrganisationDescription" class="text-danger"></span>
-
                 </div>
 
 
                 <div class="form-grid">
 
                     <div class="form-group">
-
                         <label asp-for="OrganisationPhone">
                             Organisation phone
                             <span class="required-star">*</span>
@@ -406,12 +366,10 @@
                                placeholder="Organisation phone" />
 
                         <span asp-validation-for="OrganisationPhone" class="text-danger"></span>
-
                     </div>
 
 
                     <div class="form-group">
-
                         <label asp-for="Website"> Website </label>
 
                         <input asp-for="Website"
@@ -424,7 +382,6 @@
 
 
                 <div class="form-group">
-
                     <label asp-for="OfficeAddress">
                         Office address
                         <span class="required-star">*</span>
@@ -439,7 +396,6 @@
 
 
                 <div class="form-group">
-
                     <label asp-for="SupportingInformation">
                         Supporting information
                     </label>
@@ -449,7 +405,6 @@
                               placeholder="Supporting information"></textarea>
 
                     <span asp-validation-for="SupportingInformation" class="text-danger"></span>
-
                 </div>
             </div>
 
@@ -471,7 +426,6 @@
         </p>
 
     </div>
-
 </div>
 
 
@@ -481,23 +435,23 @@
 
     <script>
 
-        const accountType =
-            document.getElementById("accountType");
+        const accountType = document.getElementById("accountType");
 
-        const studentFields =
-            document.getElementById("studentFields");
+        const studentFields = document.getElementById("studentFields");
 
-        const adminFields =
-            document.getElementById("adminFields");
+        const adminFields = document.getElementById("adminFields");
 
-        const familyFields =
-            document.getElementById("familyFields");
+        const familyFields = document.getElementById("familyFields");
 
-        const eventProviderFields =
-            document.getElementById("eventProviderFields");
+        const eventProviderFields = document.getElementById("eventProviderFields");
 
-        const commonPersonalFields =
-            document.getElementById("commonPersonalFields");
+        const commonPersonalFields = document.getElementById("commonPersonalFields");
+
+        const firstNameField = document.getElementById("FirstName")?.closest(".form-group");
+
+        const lastNameField = document.getElementById("LastName")?.closest(".form-group");
+
+        const contactNumberField = document.getElementById("ContactNumber")?.closest(".form-group");
 
         function hideAllFields() {
 
@@ -505,18 +459,48 @@
             adminFields.style.display = "none";
             familyFields.style.display = "none";
             eventProviderFields.style.display = "none";
-
         }
 
 function updateFields() {
 
     hideAllFields();
 
-    // Show personal information for everyone except Admin
+    // Admin does not enter common personal information
     if (accountType.value === "Admin") {
         commonPersonalFields.style.display = "none";
     } else {
+
         commonPersonalFields.style.display = "block";
+
+        // Family Member already has these details from the student's family-member record.
+        if (accountType.value === "Family Member") {
+
+            if (firstNameField) {
+                firstNameField.style.display = "none";
+            }
+
+            if (lastNameField) {
+                lastNameField.style.display = "none";
+            }
+
+            if (contactNumberField) {
+                contactNumberField.style.display = "none";
+            }
+        } else {
+
+            // Show them for Student and Service Provider
+            if (firstNameField) {
+                firstNameField.style.display = "block";
+            }
+
+            if (lastNameField) {
+                lastNameField.style.display = "block";
+            }
+
+            if (contactNumberField) {
+                contactNumberField.style.display = "block";
+            }
+        }
     }
 
     switch (accountType.value) {

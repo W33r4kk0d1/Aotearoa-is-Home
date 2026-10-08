@@ -64,8 +64,7 @@
                            placeholder="e.g., Accommodation"
                            required />
 
-                    <span asp-validation-for="CategoryName"
-                          class="admin-field-error"></span>
+                    <span asp-validation-for="CategoryName" class="admin-field-error"></span>
 
                 </div>
 
@@ -116,9 +115,7 @@
                     </div>
 
                 </div>
-
             </div>
-
         </section>
 
         <section class="admin-create-section">
@@ -132,9 +129,7 @@
                     <div>
                         <h2>Topic Cards</h2>
 
-                        <p>
-                            Add sections of information that visitors can explore within this category.
-                        </p>
+                        <p> Add sections of information that visitors can explore within this category. </p>
                     </div>
 
                 </div>
@@ -160,9 +155,7 @@
 
                     <h3>No Topic Cards Yet</h3>
 
-                    <p>
-                        Add topic cards to organise the information visitors will see on this settlement page.
-                    </p>
+                    <p> Add topic cards to organise the information visitors will see on this settlement page. </p>
 
                 </div>
 
@@ -194,9 +187,7 @@
                     <div>
                         <h2>Checklist Tasks</h2>
 
-                        <p>
-                            Add tasks that students should complete for this settlement category.
-                        </p>
+                        <p>  Add tasks that students should complete for this settlement category. </p>
                     </div>
 
                 </div>
@@ -272,24 +263,19 @@
 
         function createNewTopicCard() {
 
-            const container =
-                document.getElementById("topicCardsContainer");
+            const container = document.getElementById("topicCardsContainer");
 
-            const emptyState =
-                document.getElementById("topicCardsEmptyState");
+            const emptyState = document.getElementById("topicCardsEmptyState");
 
             if (emptyState) {
                 emptyState.style.display = "none";
             }
 
-            const cardId =
-                `topic-card-${cardCount}`;
+            const cardId = `topic-card-${cardCount}`;
 
-            const topicCard =
-                document.createElement("div");
+            const topicCard = document.createElement("div");
 
-            topicCard.className =
-                "card border-start border-primary border-4 shadow-sm topic-card bg-white mb-3";
+            topicCard.className = "card border-start border-primary border-4 shadow-sm topic-card bg-white mb-3";
 
             topicCard.id = cardId;
 
@@ -373,30 +359,23 @@
 
         function addNestedElement(cardId) {
 
-            const card =
-                document.getElementById(cardId);
+            const card = document.getElementById(cardId);
 
-            const typeSelect =
-                card.querySelector(".nested-type-select");
+            const typeSelect = card.querySelector(".nested-type-select");
 
-            const selectedType =
-                typeSelect.value;
+            const selectedType = typeSelect.value;
 
             if (selectedType === "") {
-
                 alert("Please select a detail type to add.");
 
                 return;
             }
 
-            const nestedContainer =
-                card.querySelector(".nested-items-container");
+            const nestedContainer = card.querySelector(".nested-items-container");
 
-            const elementRow =
-                document.createElement("div");
+            const elementRow = document.createElement("div");
 
-            elementRow.className =
-                "nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1";
+            elementRow.className = "nested-item-row p-2 border rounded bg-white shadow-xs d-flex flex-column gap-1";
 
             elementRow.setAttribute(
                 "data-type",
@@ -585,14 +564,11 @@
                 emptyState.style.display = "none";
             }
 
-            const taskId =
-                `checklist-task-${checklistTaskCount}`;
+            const taskId = `checklist-task-${checklistTaskCount}`;
 
-            const taskRow =
-                document.createElement("div");
+            const taskRow = document.createElement("div");
 
-            taskRow.className =
-                "card border-start border-success border-4 shadow-sm bg-white mb-3 checklist-task-row";
+            taskRow.className = "card border-start border-success border-4 shadow-sm bg-white mb-3 checklist-task-row";
 
             taskRow.id = taskId;
 
@@ -687,17 +663,13 @@
                     task.appendChild(order);
                 }
 
-                title.name =
-                    `ChecklistTasks[${index}].Title`;
+                title.name = `ChecklistTasks[${index}].Title`;
 
-                description.name =
-                    `ChecklistTasks[${index}].Description`;
+                description.name = `ChecklistTasks[${index}].Description`;
 
-                order.name =
-                    `ChecklistTasks[${index}].DisplayOrder`;
+                order.name = `ChecklistTasks[${index}].DisplayOrder`;
 
-                order.value =
-                    index;
+                order.value = index;
             });
 
             const counter =
@@ -748,13 +720,10 @@
                 return;
             }
 
-            const file =
-                input.files[0];
+            const file = input.files[0];
 
             if (!file) {
-
-                previewContainer.style.display =
-                    "none";
+                previewContainer.style.display = "none";
 
                 previewImage.src = "";
 
@@ -763,8 +732,7 @@
 
             if (!file.type.startsWith("image/")) {
 
-                previewContainer.style.display =
-                    "none";
+                previewContainer.style.display = "none";
 
                 previewImage.src = "";
 
@@ -811,8 +779,7 @@
                     ".topic-image-error"
                 );
 
-            const imageUrl =
-                input.value.trim();
+            const imageUrl = input.value.trim();
 
             if (!imageUrl) {
 
