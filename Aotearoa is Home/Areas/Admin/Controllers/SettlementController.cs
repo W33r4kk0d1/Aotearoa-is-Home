@@ -49,157 +49,148 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
         // CREATE - POST
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Create(
-    SettlementPage page,
-    IFormFile? backgroundImage,
-    List<IFormFile>? contentImages)
-        {
-            if (string.IsNullOrWhiteSpace(page.CategoryName))
-            {
-                ModelState.AddModelError(
-                    "CategoryName",
-                    "Category Hub Name is required."
-                );
-
-                return View(page);
-            }
-
-            page.CategoryName = page.CategoryName.Trim();
-
-            bool categoryExists =
-                await _context.SettlementPages
-                    .AnyAsync(p =>
-                        p.CategoryName != null &&
-                        p.CategoryName.Trim().ToLower()
-                        == page.CategoryName.ToLower()
-                    );
-
-            if (categoryExists)
-            {
-                ModelState.AddModelError(
-                    "CategoryName",
-                    $"The settlement category \"{page.CategoryName}\" already exists."
-                );
-
-                return View(page);
-            }
-
-            if (page.ContentBlocks != null)
-            {
-                var headings =
-                    new HashSet<string>(
-                        StringComparer.OrdinalIgnoreCase
-                    );
-
-                foreach (var block in page.ContentBlocks)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            SettlementPage page,
+            IFormFile? backgroundImage,
+            List<IFormFile>? contentImages)
                 {
-                    if (string.Equals(
-                        block.Type,
-                        "heading",
-                        StringComparison.OrdinalIgnoreCase))
+                    if (string.IsNullOrWhiteSpace(page.CategoryName))
                     {
-                        var heading =
-                            block.Content?.Trim();
+                        ModelState.AddModelError(
+                            "CategoryName",
+                            "Category Hub Name is required."
+                        );
+                        return View(page);
+                    }
 
-                        if (!string.IsNullOrWhiteSpace(heading))
+                    page.CategoryName = page.CategoryName.Trim();
+
+                    bool categoryExists =
+                        await _context.SettlementPages
+                            .AnyAsync(p =>
+                                p.CategoryName != null &&
+                                p.CategoryName.Trim().ToLower()
+                                == page.CategoryName.ToLower()
+                            );
+
+                    if (categoryExists)
+                    {
+                        ModelState.AddModelError(
+                            "CategoryName",
+                            $"The settlement category \"{page.CategoryName}\" already exists."
+                        );
+                        return View(page);
+                    }
+
+                    if (page.ContentBlocks != null)
+                    {
+                        var headings =
+                            new HashSet<string>(
+                                StringComparer.OrdinalIgnoreCase
+                            );
+
+                        foreach (var block in page.ContentBlocks)
                         {
-                            if (!headings.Add(heading))
+                            if (string.Equals(
+                                block.Type,
+                                "heading",
+                                StringComparison.OrdinalIgnoreCase))
                             {
-                                ModelState.AddModelError(
-                                    "",
-                                    $"You cannot have the same Topic Card Heading twice: \"{heading}\""
-                                );
+                                var heading =
+                                    block.Content?.Trim();
 
-                                return View(page);
+                                if (!string.IsNullOrWhiteSpace(heading))
+                                {
+                                    if (!headings.Add(heading))
+                                    {
+                                        ModelState.AddModelError(
+                                            "",
+                                            $"You cannot have the same Topic Card Heading twice: \"{heading}\""
+                                        );
+                                        return View(page);
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            if (page.ChecklistTasks != null)
-            {
-                page.ChecklistTasks =
-                    page.ChecklistTasks
-                        .Where(x =>
-                            !string.IsNullOrWhiteSpace(x.Title))
-                        .OrderBy(x => x.DisplayOrder)
-                        .Select((x, index) =>
-                        {
-                            x.Id = 0;
-                            x.DisplayOrder = index;
-                            x.Title = x.Title.Trim();
+                    if (page.ChecklistTasks != null)
+                    {
+                        page.ChecklistTasks =
+                            page.ChecklistTasks
+                                .Where(x =>
+                                    !string.IsNullOrWhiteSpace(x.Title))
+                                .OrderBy(x => x.DisplayOrder)
+                                .Select((x, index) =>
+                                {
+                                    x.Id = 0;
+                                    x.DisplayOrder = index;
+                                    x.Title = x.Title.Trim();
 
-                            if (!string.IsNullOrWhiteSpace(x.Description))
-                            {
-                                x.Description =
-                                    x.Description.Trim();
-                            }
+                                    if (!string.IsNullOrWhiteSpace(x.Description))
+                                    {
+                                        x.Description =
+                                            x.Description.Trim();
+                                    }
+                                    return x;
+                                })
+                                .ToList();
+                    }
 
-                            return x;
-                        })
-                        .ToList();
-            }
+                    if (backgroundImage != null && backgroundImage.Length > 0)
+                    {
+                        using var memoryStream =
+                            new MemoryStream();
 
-            if (backgroundImage != null && backgroundImage.Length > 0)
-            {
-                using var memoryStream =
-                    new MemoryStream();
+                        await backgroundImage.CopyToAsync(
+                            memoryStream
+                        );
 
-                await backgroundImage.CopyToAsync(
-                    memoryStream
-                );
+                        page.BackgroundImage = memoryStream.ToArray();
 
-                page.BackgroundImage =
-                    memoryStream.ToArray();
+                        page.BackgroundImageContentType = backgroundImage.ContentType;
+                    }
 
-                page.BackgroundImageContentType =
-                    backgroundImage.ContentType;
-            }
+                    page.CreatedAt = DateTime.UtcNow;
 
-            page.CreatedAt =
-                DateTime.UtcNow;
+                    page.UpdatedAt = DateTime.UtcNow;
 
-            page.UpdatedAt =
-                DateTime.UtcNow;
+                    _context.SettlementPages.Add(page);
 
-            _context.SettlementPages.Add(page);
+                    await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(
-                "Index",
-                "Settlement"
-            );
-        }
-
-        // VIEW
-        [HttpGet]
-        public async Task<IActionResult> View(int id)
-        {
-            var page =
-                await _context.SettlementPages
-                    .Include(p => p.ContentBlocks)
-                    .FirstOrDefaultAsync(
-                        p => p.Id == id
+                    return RedirectToAction(
+                        "Index",
+                        "Settlement"
                     );
+                }
+
+                // VIEW
+                [HttpGet]
+                public async Task<IActionResult> View(int id)
+                {
+                    var page =
+                        await _context.SettlementPages
+                            .Include(p => p.ContentBlocks)
+                            .FirstOrDefaultAsync(
+                                p => p.Id == id
+                            );
 
 
-            if (page == null)
-            {
-                return NotFound();
-            }
+                    if (page == null)
+                    {
+                        return NotFound();
+                    }
 
-            page.ContentBlocks =
-                page.ContentBlocks
-                    .OrderBy(b => b.DisplayOrder)
-                    .ToList();
+                    page.ContentBlocks =
+                        page.ContentBlocks
+                            .OrderBy(b => b.DisplayOrder)
+                            .ToList();
 
-
-            return View(page);
-        }
+                    return View(page);
+                }
 
         // EDIT - GET
         [HttpGet]
@@ -302,11 +293,9 @@ public async Task<IActionResult> Create(
 
                 await backgroundImage.CopyToAsync(memoryStream);
 
-                existingPage.BackgroundImage =
-                    memoryStream.ToArray();
+                existingPage.BackgroundImage = memoryStream.ToArray();
 
-                existingPage.BackgroundImageContentType =
-                    backgroundImage.ContentType;
+                existingPage.BackgroundImageContentType = backgroundImage.ContentType;
             }
 
             // Delete old blocks
@@ -321,8 +310,7 @@ public async Task<IActionResult> Create(
                 {
                     block.Id = 0;
 
-                    block.SettlementPageId =
-                        existingPage.Id;
+                    block.SettlementPageId = existingPage.Id;
 
                     _context.ContentBlocks.Add(block);
                 }

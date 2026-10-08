@@ -17,12 +17,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             _context = context;
         }
 
-
-        // ============================================================
-        // INDEX
-        // Display all calendar information
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -34,23 +28,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View(information);
         }
 
-
-        // ============================================================
         // CREATE
-        // Display the Add Calendar Information form
-        // ============================================================
-
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
-
-
-        // ============================================================
-        // CREATE
-        // Save new calendar information
-        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -69,11 +52,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
 
-        // ============================================================
         // EDIT
-        // Display the Edit Calendar Information form
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -88,11 +67,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             return View(information);
         }
 
-
-        // ============================================================
-        // EDIT
-        // Save updated calendar information
-        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -130,11 +104,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
 
-        // ============================================================
         // DELETE
-        // Display the Delete confirmation page
-        // ============================================================
-
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -148,12 +118,6 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
 
             return View(information);
         }
-
-
-        // ============================================================
-        // DELETE
-        // Delete the selected calendar information
-        // ============================================================
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -173,15 +137,12 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         }
 
 
-        // ============================================================
         // CHECK WHETHER A RECORD EXISTS
-        // ============================================================
-
         private bool CalendarInformationExists(int id)
         {
             return _context.CalendarInformations
                 .Any(e => e.Id == id);
         }
 
-    }//End of CalendarInformationController
+    }
 }
