@@ -45,8 +45,7 @@ namespace Aotearoa_is_Home.Controllers
                 .OrderBy(e => e.StartDate)
                 .ToListAsync();
 
-            // Retrieve public holidays and important reminders
-            // for the selected calendar month.
+            // Retrieve public holidays and important reminders for the selected calendar month.
             var calendarInformation = await _context.CalendarInformations
                 .Where(c =>
                     c.Date.Year == selectedYear &&
@@ -61,7 +60,7 @@ namespace Aotearoa_is_Home.Controllers
 
             return View(events);
 
-        }//End of Task - Calendar
+        }
 
         // Display details for a selected approved event
         [HttpGet]
@@ -74,8 +73,7 @@ namespace Aotearoa_is_Home.Controllers
                     e.Id == id &&
                     e.Status == "Approved");
 
-            // If the event does not exist or has not been approved,
-            // return a Not Found page.
+            // If the event does not exist or has not been approved, return a Not Found page.
             if (eventItem == null)
             {
                 return NotFound();
@@ -83,7 +81,7 @@ namespace Aotearoa_is_Home.Controllers
 
             return View(eventItem);
 
-        }//End of Task - Details
+        }
 
          // Display details for a public holiday or important calendar reminder
         [HttpGet]
@@ -101,8 +99,8 @@ namespace Aotearoa_is_Home.Controllers
 
             return View(information);
 
-        }//End of Task - CalendarInformationDetails
+        }
 
-    }//End of class
+    }
 
-}//End of namespace
+}

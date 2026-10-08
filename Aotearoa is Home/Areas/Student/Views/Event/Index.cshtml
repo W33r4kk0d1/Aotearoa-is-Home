@@ -4,6 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Events";
 
+    var currentArea =
+        ViewContext.RouteData.Values["area"]?.ToString();
+
     var events = Model.ToList();
 
     var categories = events
@@ -23,10 +26,6 @@
 
 <div class="student-events-page">
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
     <section class="student-events-intro">
 
         <span class="student-eyebrow">
@@ -43,11 +42,6 @@
         </p>
 
     </section>
-
-
-    <!-- =====================================================
-         SEARCH & FILTERS
-         ===================================================== -->
 
     <div class="student-events-filters">
 
@@ -152,10 +146,6 @@
     </div>
 
 
-    <!-- =====================================================
-         EVENTS
-         ===================================================== -->
-
     @if (!events.Any())
     {
         <div class="student-empty-state">
@@ -182,7 +172,7 @@
                             "Event",
                             new
                             {
-                                area = "Student",
+                                area = currentArea,
                                 id = eventItem.Id
                             })"
                    class="student-event-card"
@@ -296,9 +286,7 @@
         </div>
 
 
-        <!-- =================================================
-             NO SEARCH / FILTER RESULTS
-             ================================================= -->
+        <!--  NO SEARCH / FILTER RESULTS -->
 
         <div id="eventNoResults"
              class="student-empty-state"
@@ -318,9 +306,7 @@
 </div>
 
 
-<!-- =========================================================
-     FILTER SCRIPT
-     ========================================================= -->
+<!-- FILTER SCRIPT -->
 
 <script>
 

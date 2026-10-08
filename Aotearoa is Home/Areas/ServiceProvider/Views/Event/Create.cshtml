@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Event";
 
-    // Current browser/server minimum date is also enforced
-    // by JavaScript below.
     var minimumDateTime =
         DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
@@ -52,7 +50,6 @@
 
 
         <div class="event-form-card">
-
 
             <!-- EVENT IMAGE -->
             <div class="event-form-group">
@@ -335,7 +332,6 @@
 
 
             <!-- OFFICIAL EVENT INFORMATION -->
-
             <div class="event-feature-section">
                 <div class="event-feature-header">
                     <span class="event-field-label">
@@ -388,7 +384,6 @@
 
 
                     <!-- Toggle -->
-
                     <label class="event-toggle">
 
                         <input type="checkbox"
@@ -406,13 +401,11 @@
 
 
                 <!-- Response Options -->
-
                 <div id="responseOptions"
                      class="event-response-options"
                      style="display: none;">
 
                     <!-- Record responses -->
-
                     <label class="event-checkbox-option">
 
                         <input type="checkbox"
@@ -437,7 +430,6 @@
 
                     <!-- Show count -->
                     <label class="event-checkbox-option">
-
                         <input type="checkbox"
                                id="ShowResponseCount"
                                name="ShowResponseCount"
@@ -459,7 +451,6 @@
 
                     <!-- Email -->
                     <label class="event-checkbox-option">
-
                         <input type="checkbox"
                                id="EmailOnResponse"
                                name="EmailOnResponse"
