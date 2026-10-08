@@ -23,10 +23,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
 
-        // ============================================================
-        // MY CHECKLISTS
-        // ============================================================
-
         // GET: /Student/Checklist
         public async Task<IActionResult> Index()
         {
@@ -46,11 +42,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             return View(checklists);
         }
 
-
-        // ============================================================
-        // CREATE CHECKLIST - DISPLAY PAGE
-        // ============================================================
-
         // GET: /Student/Checklist/Create
         [HttpGet]
         public IActionResult Create()
@@ -58,10 +49,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             return View();
         }
 
-
-        // ============================================================
-        // CREATE CHECKLIST - SAVE
-        // ============================================================
 
         // POST: /Student/Checklist/Create
         [HttpPost]
@@ -77,10 +64,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-            // --------------------------------------------------------
             // Validate checklist name
-            // --------------------------------------------------------
-
             if (string.IsNullOrWhiteSpace(name))
             {
                 ModelState.AddModelError(
@@ -93,9 +77,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return View();
             }
 
-            // --------------------------------------------------------
             // Create checklist journey
-            // --------------------------------------------------------
 
             var checklist = new StudentChecklist
             {
@@ -110,9 +92,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             await _context.SaveChangesAsync();
 
 
-            // --------------------------------------------------------
             // Create selected checklist items
-            // --------------------------------------------------------
 
             if (selectedTopics != null && selectedTopics.Any())
             {
@@ -136,7 +116,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
-
 
             // Open the newly created checklist
 
@@ -173,9 +152,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
-            // --------------------------------------------------------
+
             // Load settlement information for checklist topics
-            // --------------------------------------------------------
 
             var settlementPages = await _context.SettlementPages
                 .Include(p => p.ContentBlocks)
@@ -200,11 +178,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-            // --------------------------------------------------------
-            // Make sure this checklist belongs to the logged-in
-            // student
-            // --------------------------------------------------------
-
             var checklist = await _context.StudentChecklists
                 .FirstOrDefaultAsync(c =>
                     c.Id == checklistId &&
@@ -215,9 +188,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return NotFound();
             }
 
-            // --------------------------------------------------------
+
             // Get only items belonging to this checklist
-            // --------------------------------------------------------
 
             var checklistItems = await _context.ChecklistItems
                 .Where(c =>
@@ -227,9 +199,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             completedItems ??= new List<int>();
 
-            // --------------------------------------------------------
+
             // Update completion status
-            // --------------------------------------------------------
 
             foreach (var item in checklistItems)
             {
@@ -238,9 +209,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             await _context.SaveChangesAsync();
 
-            // --------------------------------------------------------
+
             // Return to checklist
-            // --------------------------------------------------------
 
             return RedirectToAction(
                 "ViewChecklist",
@@ -251,8 +221,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                     id = checklistId
                 });
         }
-
-            
 
         // GET: /Student/Checklist/Customize/1
         [HttpGet]
@@ -280,10 +248,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
 
-        // ============================================================
-        // CUSTOMIZE CHECKLIST - SAVE CHANGES
-        // ============================================================
-
         // POST: /Student/Checklist/Customize/1
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -299,9 +263,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-            // --------------------------------------------------------
             // Find checklist belonging to current student
-            // --------------------------------------------------------
 
             var checklist = await _context.StudentChecklists
                 .Include(c => c.Items)
@@ -315,9 +277,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             }
 
 
-            // --------------------------------------------------------
             // Validate checklist name
-            // --------------------------------------------------------
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -328,46 +288,17 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return View(checklist);
             }
 
-
-            // --------------------------------------------------------
-            // Update checklist name
-            // --------------------------------------------------------
-
             checklist.Name = name.Trim();
-
-
-            // --------------------------------------------------------
-            // Selected topics
-            // --------------------------------------------------------
 
             selectedTopics ??= new List<string>();
 
-
-            // --------------------------------------------------------
-            // Get all available topic definitions
-            // --------------------------------------------------------
-
             var availableTopics = GetChecklistTopics();
-
-
-            // --------------------------------------------------------
-            // Create a unique key for each topic
-            //
-            // Category + Title is used because "Transport" exists
-            // in both Before Coming and After Arriving.
-            // --------------------------------------------------------
 
             var selectedTopicKeys = selectedTopics
                 .ToHashSet();
 
 
-            // --------------------------------------------------------
             // Remove topics that the student no longer wants
-            //
-            // IMPORTANT:
-            // Existing items that remain selected are NOT recreated.
-            // Therefore their IsCompleted value is preserved.
-            // --------------------------------------------------------
 
             var itemsToRemove = checklist.Items
                 .Where(item =>
@@ -381,9 +312,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             }
 
 
-            // --------------------------------------------------------
             // Add newly selected topics
-            // --------------------------------------------------------
 
             var existingKeys = checklist.Items
                 .Where(item => !itemsToRemove.Contains(item))
@@ -415,17 +344,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 _context.ChecklistItems.AddRange(newItems);
             }
 
-
-            // --------------------------------------------------------
-            // Save changes
-            // --------------------------------------------------------
-
             await _context.SaveChangesAsync();
-
-
-            // --------------------------------------------------------
-            // Return to checklist
-            // --------------------------------------------------------
 
             return RedirectToAction(
                 "ViewChecklist",
@@ -437,18 +356,12 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 });
         }
 
-
-        // ============================================================
-        // CHECKLIST TOPIC DEFINITIONS
-        // ============================================================
-
         private List<ChecklistTopic> GetChecklistTopics()
         {
             return new List<ChecklistTopic>
             {
-                // ====================================================
+
                 // BEFORE COMING TO NEW ZEALAND
-                // ====================================================
 
                 new ChecklistTopic
                 {
@@ -521,9 +434,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 },
 
 
-                // ====================================================
                 // AFTER ARRIVING IN NEW ZEALAND
-                // ====================================================
 
                 new ChecklistTopic
                 {
@@ -603,9 +514,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 },
 
 
-                // ====================================================
                 // COMING WITH FAMILY
-                // ====================================================
 
                 new ChecklistTopic
                 {
@@ -652,9 +561,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
         }
 
 
-        // ============================================================
         // HELPER CLASS
-        // ============================================================
 
         private class ChecklistTopic
         {

@@ -32,18 +32,12 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
                 return Unauthorized();
             }
 
-            // ============================================================
             // SETTLEMENT PAGES + CHECKLIST TASKS
-            // ============================================================
-
             var settlementPages = await _context.SettlementPages
                 .Include(x => x.ChecklistTasks)
                 .ToListAsync();
 
-            // ============================================================
             // FAMILY MEMBER CHECKLIST ITEMS
-            // ============================================================
-
             var checklistItems = await _context.ChecklistItems
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
@@ -71,10 +65,8 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
 
             await _context.SaveChangesAsync();
 
-            // ============================================================
-            // CALCULATE CHECKLIST PROGRESS
-            // ============================================================
 
+            // CALCULATE CHECKLIST PROGRESS
             var progress =
                 new Dictionary<int, ChecklistProgressViewModel>();
 
@@ -134,10 +126,8 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
                 .Select(x => x.Page)
                 .ToList();
 
-            // ============================================================
-            // UPCOMING EVENTS
-            // ============================================================
 
+            // UPCOMING EVENTS
             var events = await _context.Events
                 .Include(x => x.EventProviderProfile)
                 .Where(x => x.Status == "Approved")
@@ -145,10 +135,8 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
                 .Take(3)
                 .ToListAsync();
 
-            // ============================================================
-            // HOME VIEW MODEL
-            // ============================================================
 
+            // HOME VIEW MODEL
             var model = new StudentHomeViewModel
             {
                 SettlementPages = settlementPages,

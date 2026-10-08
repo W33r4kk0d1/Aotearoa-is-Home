@@ -29,8 +29,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 return Unauthorized();
             }
 
-            // Allow a Service Provider to view any approved event.
-            // Their own events can also be viewed even if still pending approval.
+            // Allow a Service Provider to view any approved event. Their own events can also be viewed even if still pending approval.
             var eventItem = await _context.Events
                 .Include(e => e.EventProviderProfile)
                 .FirstOrDefaultAsync(e =>
@@ -74,7 +73,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
         }
 
 
-        // ## Display Service Provider events
+        // Display Service Provider events
         [HttpGet]
         public async Task<IActionResult> Index(
             string? search,
@@ -211,7 +210,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
         }
 
 
-        // ## Display Create Event page
+        // Display Create Event page
         [HttpGet]
         public IActionResult Create()
         {
@@ -219,7 +218,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
         }
 
 
-        // ## Create a new event
+        // Create a new event
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -239,7 +238,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // FIND SERVICE PROVIDER PROFILE
-
             var provider =
                 await _context.EventProviderProfiles
                     .FirstOrDefaultAsync(
@@ -256,7 +254,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // CONNECT EVENT TO PROVIDER
-
             eventItem.EventProviderProfileId =
                 provider.Id;
 
@@ -266,7 +263,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // NORMALISE USER INPUT
-
             eventItem.Title =
                 eventItem.Title?.Trim() ?? string.Empty;
 
@@ -284,7 +280,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // REGION VALIDATION
-
             if (string.IsNullOrWhiteSpace(eventItem.Region))
             {
                 ModelState.AddModelError(
@@ -295,7 +290,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // CATEGORY VALIDATION
-
             if (string.IsNullOrWhiteSpace(eventItem.Category))
             {
                 ModelState.AddModelError(
@@ -306,7 +300,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // RESPONSE SETTINGS
-
             if (!eventItem.EnableResponses)
             {
                 eventItem.RecordResponses = false;
@@ -325,7 +318,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // DUPLICATE EVENT CHECK
-
             if (!string.IsNullOrWhiteSpace(eventItem.Title) &&
                 eventItem.StartDate != default)
             {
@@ -357,7 +349,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // VALIDATE MODEL
-
             if (!ModelState.IsValid)
             {
                 return View(eventItem);
@@ -365,7 +356,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // SAVE EVENT IMAGE
-
             if (eventImage != null &&
                 eventImage.Length > 0)
             {
@@ -383,7 +373,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // SET EVENT INFORMATION
-
             eventItem.CreatedAt =
                 DateTime.UtcNow;
 
@@ -393,7 +382,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // SAVE EVENT
-
             try
             {
                 _context.Events.Add(eventItem);
@@ -412,14 +400,13 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             TempData["SuccessMessage"] = "Event successfully created.";
 
             // RETURN TO MANAGE EVENTS
-
             return RedirectToAction(
                 nameof(Index)
             );
         }
 
 
-        // ## Display Edit Event page
+        // Display Edit Event page
         [HttpGet]
         public async Task<IActionResult> Edit(
             int id)
@@ -449,12 +436,11 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 return NotFound();
             }
 
-
             return View(eventItem);
         }
 
 
-        // ## Update Event
+        // Update Event
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -492,9 +478,11 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
             // PROVIDER ID DOES NOT COME FROM THE EDIT FORM
             ModelState.Remove( nameof(Event.EventProviderProfileId));
+
             // IMAGE INFORMATION IS PRESERVED
             ModelState.Remove( nameof(Event.ImageData));
             ModelState.Remove( nameof(Event.ImageContentType));
+
             // NORMALISE USER INPUT
             eventItem.Title =
                 eventItem.Title?.Trim()
@@ -516,7 +504,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // REGION VALIDATION
-
             if (string.IsNullOrWhiteSpace(
                 eventItem.Region))
             {
@@ -528,7 +515,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // CATEGORY VALIDATION
-
             if (string.IsNullOrWhiteSpace(
                 eventItem.Category))
             {
@@ -540,7 +526,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // DATE VALIDATION
-
             var newZealandTimeZone =
                 TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
 
@@ -583,7 +568,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             }
 
             // RESPONSE SETTINGS
-
             if (!eventItem.EnableResponses)
             {
                 eventItem.RecordResponses = false;
@@ -604,7 +588,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // DUPLICATE EVENT CHECK
-
             if (
                 !string.IsNullOrWhiteSpace(eventItem.Title) &&
                 eventItem.StartDate != default)
@@ -641,7 +624,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // RETURN TO EDIT PAGE WHEN VALIDATION FAILS
-
             if (!ModelState.IsValid)
             {
                 eventItem.Id = existingEvent.Id;
@@ -654,7 +636,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // UPDATE EDITABLE EVENT INFORMATION
-
             existingEvent.Title = eventItem.Title;
 
             existingEvent.Description = eventItem.Description;
@@ -681,7 +662,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // REPLACE IMAGE ONLY WHEN A NEW IMAGE IS UPLOADED
-
             if (
                 eventImage != null &&
                 eventImage.Length > 0)
@@ -700,7 +680,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
 
             // SAVE UPDATED EVENT
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -717,14 +696,12 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
             TempData["SuccessMessage"] = "Event successfully updated.";
 
             // RETURN TO MANAGE EVENTS
-
             return RedirectToAction(
                 nameof(Index)
             );
         }
 
         // DELETE EVENT
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -750,8 +727,7 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                             .UserId == userId);
 
 
-            // Event does not exist
-            // or does not belong to this provider
+            // Event does not exist or does not belong to this provider
             if (eventItem == null)
             {
                 return NotFound();
@@ -766,7 +742,6 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
             // Success message
             TempData["SuccessMessage"] = "Event successfully deleted.";
-
 
             return RedirectToAction(nameof(Index));
         }

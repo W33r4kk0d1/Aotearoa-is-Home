@@ -3,11 +3,14 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Settlement Information";
+
+    // Get the current area (Student or Family)
+    var currentArea =
+        ViewContext.RouteData.Values["area"]?.ToString();
 }
 
 <div class="student-settlement-page">
 
-    <!-- INTRO -->
     <section class="student-settlement-intro">
 
         <span class="student-eyebrow">
@@ -26,6 +29,7 @@
 
     </section>
 
+
     <div class="student-settlement-search">
 
         <div class="student-search-wrapper">
@@ -35,17 +39,17 @@
             </span>
 
             <input type="text"
-                id="settlementSearch"
-                class="student-search-input"
-                placeholder="Search settlement information..."
-                autocomplete="off" />
+                   id="settlementSearch"
+                   class="student-search-input"
+                   placeholder="Search settlement information..."
+                   autocomplete="off" />
 
         </div>
 
     </div>
 
 
-    <!-- SETTLEMENT CATEGORIES -->
+    <!--  SETTLEMENT CATEGORIES -->
 
     @if (!Model.Any())
     {
@@ -63,7 +67,8 @@
     }
     else
     {
-        <div class="student-settlement-grid" id="settlementGrid">
+        <div class="student-settlement-grid"
+             id="settlementGrid">
 
             @foreach (var settlementPage in Model)
             {
@@ -72,18 +77,18 @@
                             "Settlement",
                             new
                             {
-                                area = "Student",
+                                area = currentArea,
                                 id = settlementPage.Id
                             })"
-                class="student-settlement-card"
-                data-category="@settlementPage.CategoryName">
+                   class="student-settlement-card"
+                   data-category="@settlementPage.CategoryName">
 
                     @if (settlementPage.BackgroundImage != null &&
-                        settlementPage.BackgroundImage.Length > 0)
+                         settlementPage.BackgroundImage.Length > 0)
                     {
                         <img src="data:@settlementPage.BackgroundImageContentType;base64,@Convert.ToBase64String(settlementPage.BackgroundImage)"
-                            alt="@settlementPage.CategoryName"
-                            class="student-settlement-card-image" />
+                             alt="@settlementPage.CategoryName"
+                             class="student-settlement-card-image" />
                     }
                     else
                     {
@@ -103,9 +108,12 @@
 
         </div>
 
+
+        <!-- NO SEARCH RESULTS -->
+
         <div id="settlementNoResults"
-            class="student-empty-state"
-            style="display: none;">
+             class="student-empty-state"
+             style="display: none;">
 
             <h2>
                 No settlement information found
@@ -120,7 +128,11 @@
 
 </div>
 
+
+<!-- SEARCH SCRIPT -->
+
 <script>
+
     document.addEventListener("DOMContentLoaded", function () {
 
         const searchInput =
@@ -132,12 +144,14 @@
         const noResults =
             document.getElementById("settlementNoResults");
 
+
         searchInput.addEventListener("input", function () {
 
             const searchText =
                 this.value.trim().toLowerCase();
 
             let visibleCount = 0;
+
 
             cards.forEach(function (card) {
 
@@ -158,6 +172,7 @@
 
             });
 
+
             if (visibleCount === 0 && searchText !== "") {
 
                 noResults.style.display = "block";
@@ -171,4 +186,5 @@
         });
 
     });
+
 </script>

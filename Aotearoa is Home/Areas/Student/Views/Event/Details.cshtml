@@ -2,6 +2,10 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var currentArea =
+    ViewContext.RouteData.Values["area"]?.ToString();
+
     ViewData["Title"] = Model.Title;
 
     var nzTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland");
@@ -17,7 +21,7 @@
         <a href="@Url.Action(
                     "Index",
                     "Event",
-                    new { area = "Student" })"
+                    new { area = currentArea })"
            class="student-back-button">
             ← Back to Events
         </a>
@@ -42,7 +46,7 @@
             {
                 @if (ViewBag.IsGoing == true)
                 {
-                    <form action="@Url.Action("CancelGoing", "Event", new { area = "Student", id = Model.Id })"
+                    <form action="@Url.Action("CancelGoing", "Event", new { area = currentArea, id = Model.Id })"
                         method="post">
                         @Html.AntiForgeryToken()
 
@@ -54,7 +58,7 @@
                 }
                 else
                 {
-                    <form action="@Url.Action("Going", "Event", new { area = "Student", id = Model.Id })"
+                    <form action="@Url.Action("Going", "Event", new { area = currentArea, id = Model.Id })"
                         method="post">
                         @Html.AntiForgeryToken()
 
@@ -68,7 +72,7 @@
 
             @if (ViewBag.IsFavourite == true)
             {
-                <form action="@Url.Action("RemoveFavourite", "Event", new { area = "Student", id = Model.Id })"
+                <form action="@Url.Action("RemoveFavourite", "Event", new { area = currentArea, id = Model.Id })"
                     method="post">
                     @Html.AntiForgeryToken()
 
@@ -80,7 +84,7 @@
             }
             else
             {
-                <form action="@Url.Action("SaveFavourite", "Event", new { area = "Student", id = Model.Id })"
+                <form action="@Url.Action("SaveFavourite", "Event", new { area = currentArea, id = Model.Id })"
                     method="post">
                     @Html.AntiForgeryToken()
 

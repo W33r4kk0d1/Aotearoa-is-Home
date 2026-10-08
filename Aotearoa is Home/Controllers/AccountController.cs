@@ -230,18 +230,12 @@ namespace Aotearoa_is_Home.Controllers
                     break;
 
                 case "Student":
-
-                    // Keep your existing Student validation here.
                     break;
 
                 case "Admin":
-
-                    // Keep your existing Admin/Employee validation here.
                     break;
 
                 case "Service Provider":
-
-                    // Keep your existing Service Provider validation here.
                     break;
             }
 
@@ -468,8 +462,7 @@ namespace Aotearoa_is_Home.Controllers
                     Console.WriteLine(ex.Message);
                     Console.WriteLine("========================================");
 
-                    TempData["RegistrationWarning"] =
-                        "Your account was created successfully, but the confirmation email could not be sent.";
+                    TempData["RegistrationWarning"] = "Your account was created successfully, but the confirmation email could not be sent.";
                 }
             }
             else if (model.AccountType == "Admin")
@@ -490,8 +483,7 @@ namespace Aotearoa_is_Home.Controllers
                     Console.WriteLine(ex.Message);
                     Console.WriteLine("========================================");
 
-                    TempData["RegistrationWarning"] =
-                        "Your administrator account was created successfully, but the confirmation email could not be sent.";
+                    TempData["RegistrationWarning"] = "Your administrator account was created successfully, but the confirmation email could not be sent.";
                 }
             }
 
@@ -501,13 +493,11 @@ namespace Aotearoa_is_Home.Controllers
             {
                 if (model.AccountType == "Service Provider")
                 {
-                    TempData["RegistrationSuccess"] =
-                        "Account created successfully. Your service provider account is awaiting administrator approval.";
+                    TempData["RegistrationSuccess"] = "Account created successfully. Your service provider account is awaiting administrator approval.";
                 }
                 else
                 {
-                    TempData["RegistrationSuccess"] =
-                        "Account created successfully! A confirmation email has been sent.";
+                    TempData["RegistrationSuccess"] = "Account created successfully! A confirmation email has been sent.";
                 }
             }
 

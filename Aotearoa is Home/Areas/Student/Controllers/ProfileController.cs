@@ -252,7 +252,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
 
         // EDIT FAMILY MEMBER
-
         [HttpGet]
         public async Task<IActionResult> EditFamilyMember(int id)
         {
@@ -316,10 +315,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             model.CountryOfCitizenship =
                 model.CountryOfCitizenship?.Trim();
             model.Notes = model.Notes?.Trim();
-
-            // --------------------------------------------------
-            // VALIDATION
-            // --------------------------------------------------
 
             // Student cannot add themselves as a family member
             if (string.Equals(
@@ -414,9 +409,8 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             Console.WriteLine(
                 $"MODEL STATE VALID: {ModelState.IsValid}");
 
-            // --------------------------------------------------
+  
             // STOP IF VALIDATION FAILED
-            // --------------------------------------------------
 
             if (!ModelState.IsValid)
             {
@@ -428,10 +422,6 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
                 return View(model);
             }
-
-            // --------------------------------------------------
-            // UPDATE DATABASE ENTITY
-            // --------------------------------------------------
 
             familyMember.FullName = model.FullName;
 
@@ -506,8 +496,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             // Registered family members cannot be deleted
             if (familyMember.RegisteredUserId != null)
             {
-                TempData["FamilyError"] =
-                    "This family member cannot be deleted because they already have an existing user account. Please contact an administrator for assistance.";
+                TempData["FamilyError"] = "This family member cannot be deleted because they already have an existing user account. Please contact an administrator for assistance.";
 
                 return RedirectToAction(nameof(Index));
             }

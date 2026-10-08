@@ -3,6 +3,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "My Favourites";
+
+    var currentArea =
+        ViewContext.RouteData.Values["area"]?.ToString();
 }
 
 <div class="container my-5">
@@ -26,7 +29,7 @@
                 Save an event to find it here later.
             </p>
 
-            <a href="@Url.Action("Index", "Event", new { area = "Student" })"
+            <a href="@Url.Action("Index", "Event", new { area = currentArea })"
                class="btn btn-primary">
                 Browse Events
             </a>
@@ -50,7 +53,7 @@
                     "Event",
                     new
                     {
-                        area = "Student",
+                        area = currentArea,
                         id = eventItem.Id
                     })"
                    class="student-home-event-card">
