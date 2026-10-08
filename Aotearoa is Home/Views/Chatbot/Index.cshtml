@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Aotearoa is Home Assistant";
+}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        Aotearoa is Home Assistant
+                    </h4>
+                </div>
+
+                <div id="chatMessages"
+                     class="card-body"
+                     style="height: 450px; overflow-y: auto;">
+
+                    <div class="mb-3">
+                        <strong>Assistant:</strong>
+
+                        <div class="alert alert-light mt-1">
+                            Kia ora! How can I help you today?
+                            You can ask me about accommodation,
+                            healthcare, education, employment,
+                            transport, emergency support and family services.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer">
+
+                    <form id="chatForm">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="input-group">
+
+                            <input type="text"
+                                   id="messageInput"
+                                   class="form-control"
+                                   placeholder="Ask a question..."
+                                   autocomplete="off" />
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Send
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    document.getElementById("chatForm")
+        .addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const input =
+                document.getElementById("messageInput");
+
+            const message =
+                input.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            const chatMessages =
+                document.getElementById("chatMessages");
+
+            // Display the user's question.
+            chatMessages.innerHTML += `
+                <div class="mb-3 text-end">
+                    <strong>You:</strong>
+
+                    <div class="alert alert-primary mt-1">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+
+            input.value = "";
+
+            // Get the anti-forgery token.
+            const token =
+                document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value;
+
+            // Send the question to the chatbot controller.
+            const response = await fetch(
+                '@Url.Action("GetResponse", "Chatbot")',
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded",
+
+                        "RequestVerificationToken":
+                            token
+                    },
+
+                    body:
+                        new URLSearchParams({
+                            message: message
+                        })
+                }
+            );
+
+            const data = await response.json();
+
+            // Display the chatbot response.
+            chatMessages.innerHTML += `
+                <div class="mb-3">
+                    <strong>Assistant:</strong>
+
+                    <div class="alert alert-light mt-1">
+                        ${escapeHtml(data.response)}
+                    </div>
+                </div>
+            `;
+
+            // Scroll to the newest message.
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+
+        });
+
+
+    // Prevent user input from being interpreted as HTML.
+    function escapeHtml(text)
+    {
+        const div = document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+
+</script>
