@@ -83,15 +83,13 @@ namespace Aotearoa_is_Home.Models
 
 
         /// <summary>
-        /// Determines whether the public can see the
-        /// number of people interested.
+        /// Determines whether the public can see the number of people interested.
         /// </summary>
         public bool ShowResponseCount { get; set; }
 
 
         /// <summary>
-        /// Sends an email to the provider when someone
-        /// expresses interest.
+        /// Sends an email to the provider when someone expresses interest.
         /// </summary>
         public bool EmailOnResponse { get; set; }
 
