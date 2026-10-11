@@ -1,0 +1,188 @@
+﻿@model List<Aotearoa_is_Home.Models.CommunityPost>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Manage Community Posts";
+
+    var pendingCount = Model.Count(p => p.Status == "Pending");
+    var approvedCount = Model.Count(p => p.Status == "Approved");
+    var rejectedCount = Model.Count(p => p.Status == "Rejected");
+}
+
+<link rel="stylesheet" href="/css/AdminPosts.css?v=3" />
+
+
+
+
+<div class="admin-posts-page">
+
+    <!-- HEADER -->
+    <section class="admin-posts-header">
+
+        <span class="admin-posts-eyebrow">
+            ADMINISTRATION & MODERATION
+        </span>
+
+        <h1>Manage Community Posts</h1>
+
+        <p>
+            Review student submissions, approve
+            community posts, and manage published content.
+        </p>
+
+    </section>
+
+    <!-- STATISTICS -->
+    <div class="admin-post-stats">
+
+        <div class="admin-stat-card">
+            <span>Pending Review</span>
+            <strong>@pendingCount</strong>
+        </div>
+
+        <div class="admin-stat-card">
+            <span>Approved Posts</span>
+            <strong>@approvedCount</strong>
+        </div>
+
+        <div class="admin-stat-card">
+            <span>Rejected Posts</span>
+            <strong>@rejectedCount</strong>
+        </div>
+
+    </div>
+
+    <!-- SUCCESS AND ERROR MESSAGES -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="status">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- POST LIST -->
+    <section class="admin-posts-section">
+
+        <div class="admin-posts-section-header">
+            <h2>Student Submissions</h2>
+            <span>@Model.Count posts</span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="admin-post-empty">
+                <div class="admin-post-empty-icon">📝</div>
+                <h3>No posts submitted yet</h3>
+                <p>
+                    Student posts will appear here
+                    when they are submitted for review.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="admin-posts-list">
+
+                @foreach (var post in Model)
+                {
+                    <article class="admin-post-card">
+
+                        <div class="admin-post-top">
+
+                            <span class="admin-post-category">
+                                @post.Category
+                            </span>
+
+                            <span class="admin-post-status
+                                @(post.Status == "Approved"
+                                    ? "approved"
+                                    : post.Status == "Rejected"
+                                        ? "rejected"
+                                        : "pending")">
+                                @post.Status
+                            </span>
+
+                        </div>
+
+                        <h3>@post.Title</h3>
+
+                        <p class="admin-post-description">
+                            @post.Description
+                        </p>
+
+                        @if (post.ImageData != null &&
+                             post.ImageContentType != null)
+                        {
+                            var imageSource =
+                                $"data:{post.ImageContentType};base64," +
+                                Convert.ToBase64String(post.ImageData);
+
+                            <img src="@imageSource"
+                                 alt="Image attached to @post.Title"
+                                 class="admin-post-image" />
+                        }
+
+                        <div class="admin-post-meta">
+                            <span>
+                                Submitted:
+                                @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                            </span>
+
+                            <span>Post ID: #@post.Id</span>
+                        </div>
+
+                        @if (post.Status == "Pending")
+                        {
+                            <div class="admin-post-actions">
+
+                                <form action="/Admin/Post/Approve"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@post.Id" />
+
+                                    <button type="submit"
+                                            class="admin-approve-btn">
+                                        ✓ Approve Post
+                                    </button>
+
+                                </form>
+
+                                <form action="/Admin/Post/Reject"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@post.Id" />
+
+                                    <button type="submit"
+                                            class="admin-reject-btn">
+                                        ✕ Reject Post
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        }
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    </section>
+
+</div>

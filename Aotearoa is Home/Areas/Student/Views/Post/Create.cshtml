@@ -1,0 +1,222 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create New Post";
+
+    var title = ViewData.ModelState.TryGetValue("Title", out var titleState)
+        ? titleState.AttemptedValue : "";
+
+    var category = ViewData.ModelState.TryGetValue("Category", out var categoryState)
+        ? categoryState.AttemptedValue : "";
+
+    var description = ViewData.ModelState.TryGetValue("Description", out var descriptionState)
+        ? descriptionState.AttemptedValue : "";
+}
+
+<link rel="stylesheet"
+      href="~/css/student-posts.css"
+      asp-append-version="true" />
+
+<div class="student-create-post-page">
+
+    <!-- BACK BUTTON -->
+    <a href="/Student/Post/Index"
+       class="post-back-link">
+        ← Back to Community Posts
+    </a>
+
+    <!-- PAGE HEADER -->
+    <section class="student-create-post-header">
+
+        <span class="student-eyebrow">
+            COMMUNITY & CONNECTIONS
+        </span>
+
+        <h1>Create New Post</h1>
+
+        <p>
+            Share your experiences, ask questions,
+            or help others settle into life in New Zealand.
+        </p>
+
+    </section>
+
+    <!-- CREATE POST FORM -->
+    <div class="student-create-post-card">
+
+        <div class="post-form-heading">
+
+            <h2>Share with the Community</h2>
+
+            <p>
+                Complete the form below to submit
+                your community post.
+            </p>
+
+        </div>
+
+        <form action="/Student/Post/Create"
+              method="post"
+              enctype="multipart/form-data"
+              id="createPostForm">
+
+            @Html.AntiForgeryToken()
+
+            <!-- VALIDATION ERRORS -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger"
+                     role="alert">
+
+                    @Html.ValidationSummary(false,
+                        "Please correct the following errors:")
+
+                </div>
+            }
+
+            <!-- POST TITLE -->
+            <div class="post-form-group">
+
+                <label for="postTitle">
+                    Post Title *
+                </label>
+
+                <input type="text"
+                       id="postTitle"
+                       name="Title"
+                       value="@title"
+                       maxlength="150"
+                       required
+                       placeholder="Enter a title for your post" />
+
+            </div>
+
+            <!-- POST CATEGORY -->
+            <div class="post-form-group">
+
+                <label for="postCategory">
+                    Category *
+                </label>
+
+                <select id="postCategory"
+                        name="Category"
+                        required>
+
+                    <option value="">
+                        Select a category
+                    </option>
+
+                    @foreach (var item in new[]
+                    {
+                        "Accommodation",
+                        "Education",
+                        "Employment",
+                        "Healthcare",
+                        "General"
+                    })
+                    {
+                        if (category == item)
+                        {
+                            <option value="@item" selected>
+                                @item
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@item">
+                                @item
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </div>
+
+            <!-- POST DESCRIPTION -->
+            <div class="post-form-group">
+
+                <label for="postDescription">
+                    Description *
+                </label>
+
+                <textarea id="postDescription"
+                          name="Description"
+                          rows="7"
+                          maxlength="5000"
+                          required
+                          placeholder="Write your post here...">@description</textarea>
+
+                <span class="post-field-hint">
+                    Share useful information,
+                    ask questions, or help
+                    others in the community.
+                </span>
+
+            </div>
+
+            <!-- IMAGE UPLOAD -->
+            <div class="post-form-group">
+
+                <label for="postImage">
+                    Add an Image (Optional)
+                </label>
+
+                <input type="file"
+                       id="postImage"
+                       name="Image"
+                       accept="image/jpeg,image/png,image/webp" />
+
+                <span class="post-field-hint">
+                    Supported formats: JPG, PNG and WebP.
+                    Maximum file size: 5 MB.
+                </span>
+
+            </div>
+
+            <!-- ADMIN APPROVAL NOTICE -->
+            <div class="post-approval-notice">
+
+                <span class="post-notice-icon">
+                    ⓘ
+                </span>
+
+                <div>
+
+                    <strong>
+                        Administrator Approval Required
+                    </strong>
+
+                    <p>
+                        Your post will be submitted
+                        for administrator review.
+
+                        Once approved, it will
+                        become visible to the community.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="post-form-actions">
+
+                <a href="/Student/Post/Index"
+                   class="post-cancel-button">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="post-submit-button">
+                    Submit Post
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+

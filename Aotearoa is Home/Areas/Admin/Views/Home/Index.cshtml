@@ -1,3 +1,4 @@
+
 @model Aotearoa_is_Home.Models.ViewModels.AdminDashboardViewModel
 
 @{
@@ -7,23 +8,33 @@
 
 <div class="container-fluid py-4">
 
-    <!-- Page Header -->
+    <!-- PAGE HEADER -->
     <div class="mb-4">
-        <h2 class="fw-bold mb-1">Admin Dashboard</h2>
+
+        <h2 class="fw-bold mb-1">
+            Admin Dashboard
+        </h2>
+
         <p class="text-muted mb-0">
             Overview of the Aotearoa is Home platform
         </p>
+
     </div>
 
 
-    <!-- Dashboard Statistics -->
+    <!-- DASHBOARD STATISTICS -->
     <div class="row g-4 mb-4">
 
-        <!-- Total Accounts -->
+        <!-- TOTAL ACCOUNTS -->
         <div class="col-md-6 col-xl-3">
+
             <div class="card border-0 shadow-sm h-100">
+
                 <div class="card-body">
-                    <p class="text-muted mb-2">Total Accounts</p>
+
+                    <p class="text-muted mb-2">
+                        Total Accounts
+                    </p>
 
                     <h2 class="fw-bold mb-1">
                         @Model.TotalAccounts
@@ -32,16 +43,24 @@
                     <small class="text-muted">
                         Registered users
                     </small>
+
                 </div>
+
             </div>
+
         </div>
 
 
-        <!-- Pending Verifications -->
+        <!-- PENDING VERIFICATIONS -->
         <div class="col-md-6 col-xl-3">
+
             <div class="card border-0 shadow-sm h-100">
+
                 <div class="card-body">
-                    <p class="text-muted mb-2">Pending Verifications</p>
+
+                    <p class="text-muted mb-2">
+                        Pending Verifications
+                    </p>
 
                     <h2 class="fw-bold mb-1">
                         @Model.PendingVerifications
@@ -50,16 +69,24 @@
                     <small class="text-muted">
                         Awaiting approval
                     </small>
+
                 </div>
+
             </div>
+
         </div>
 
 
-        <!-- Service Providers -->
+        <!-- SERVICE PROVIDERS -->
         <div class="col-md-6 col-xl-3">
+
             <div class="card border-0 shadow-sm h-100">
+
                 <div class="card-body">
-                    <p class="text-muted mb-2">Service Providers</p>
+
+                    <p class="text-muted mb-2">
+                        Service Providers
+                    </p>
 
                     <h2 class="fw-bold mb-1">
                         @Model.ServiceProviders
@@ -68,16 +95,24 @@
                     <small class="text-muted">
                         Registered providers
                     </small>
+
                 </div>
+
             </div>
+
         </div>
 
 
-        <!-- New This Week -->
+        <!-- NEW THIS WEEK -->
         <div class="col-md-6 col-xl-3">
+
             <div class="card border-0 shadow-sm h-100">
+
                 <div class="card-body">
-                    <p class="text-muted mb-2">New This Week</p>
+
+                    <p class="text-muted mb-2">
+                        New This Week
+                    </p>
 
                     <h2 class="fw-bold mb-1">
                         @Model.NewThisWeek
@@ -86,22 +121,78 @@
                     <small class="text-muted">
                         New accounts
                     </small>
+
                 </div>
+
             </div>
+
         </div>
 
     </div>
 
 
-    <!-- Recent Users -->
+    <!-- COMMUNITY POST MANAGEMENT -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex flex-wrap
+                        justify-content-between
+                        align-items-center gap-3">
+
+                <div>
+
+                    <span class="text-uppercase fw-bold"
+                          style="font-size:12px;
+                                 letter-spacing:2px;
+                                 color:#688365;">
+
+                        COMMUNITY MODERATION
+
+                    </span>
+
+                    <h4 class="fw-bold mt-2 mb-2">
+                        Manage Community Posts
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Review student submissions,
+                        approve or reject posts,
+                        and manage community content.
+                    </p>
+
+                </div>
+
+                <a href="/Admin/Post/Index"
+                   class="btn text-white fw-semibold"
+                   style="background:#688365;
+                          border-radius:10px;
+                          padding:13px 24px;">
+
+                    Manage Posts →
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECENT USERS -->
     <div class="card border-0 shadow-sm">
 
         <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="fw-bold mb-1">Recent</h5>
+
+            <h5 class="fw-bold mb-1">
+                Recent
+            </h5>
 
             <p class="text-muted mb-0">
                 Recently registered accounts
             </p>
+
         </div>
 
 
@@ -128,15 +219,19 @@
                             {
                                 <tr>
 
+                                    <!-- USER NAME -->
                                     <td class="fw-semibold">
                                         @user.FullName
                                     </td>
 
+                                    <!-- EMAIL -->
                                     <td>
                                         @user.Email
                                     </td>
 
+                                    <!-- ROLE -->
                                     <td>
+
                                         @if (!string.IsNullOrWhiteSpace(user.Role))
                                         {
                                             <span class="badge bg-light text-dark">
@@ -149,35 +244,47 @@
                                                 No Role
                                             </span>
                                         }
+
                                     </td>
 
+                                    <!-- REGISTERED DATE -->
                                     <td>
+
                                         @if (user.CreatedAt.HasValue)
                                         {
-                                            @user.CreatedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                                            @(user.CreatedAt.Value.ToLocalTime().ToString("dd MMM yyyy"))
                                         }
                                         else
                                         {
-                                            <span class="text-muted">—</span>
+                                            <span class="text-muted">
+                                                —
+                                            </span>
                                         }
+
                                     </td>
 
                                 </tr>
                             }
 
                         </tbody>
+
                     </table>
+
                 </div>
             }
             else
             {
                 <div class="text-center py-5">
+
                     <p class="text-muted mb-0">
                         No recent accounts found.
                     </p>
+
                 </div>
             }
 
         </div>
+
     </div>
+
 </div>

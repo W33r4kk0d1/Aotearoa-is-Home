@@ -1,0 +1,219 @@
+﻿
+
+
+@model List<Aotearoa_is_Home.Models.CommunityPost>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Community Posts";
+}
+
+<link rel="stylesheet"
+      href="~/css/student-posts.css"
+      asp-append-version="true" />
+
+<div class="student-posts-page">
+
+    <section class="student-posts-intro">
+
+        <span class="student-eyebrow">
+            COMMUNITY & CONNECTIONS
+        </span>
+
+        <h1>Community Posts</h1>
+
+        <p>
+            Share your experiences, ask questions, and
+            connect with others settling into New Zealand.
+        </p>
+
+        <div class="student-posts-actions">
+
+            <a href="/Student/Post/MyPosts"
+               class="student-posts-secondary">
+                My Posts
+            </a>
+
+            <a href="/Student/Post/Create"
+               class="student-posts-primary">
+                + Create New Post
+            </a>
+
+        </div>
+
+    </section>
+
+    <section class="student-posts-filters">
+
+        <div class="student-posts-search">
+            <span aria-hidden="true">🔍</span>
+
+            <input type="search"
+                   id="postSearch"
+                   placeholder="Search community posts..."
+                   aria-label="Search community posts" />
+        </div>
+
+        <div class="student-posts-categories">
+
+            <button type="button"
+                    class="active"
+                    data-category="all">All Posts</button>
+
+            <button type="button"
+                    data-category="accommodation">Accommodation</button>
+
+            <button type="button"
+                    data-category="education">Education</button>
+
+            <button type="button"
+                    data-category="employment">Employment</button>
+
+            <button type="button"
+                    data-category="healthcare">Healthcare</button>
+
+            <button type="button"
+                    data-category="general">General</button>
+
+        </div>
+
+    </section>
+
+    <section class="student-posts-content">
+
+        <h2>Recent Posts</h2>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="student-posts-empty">
+
+                <div class="student-posts-empty-icon">
+                    💬
+                </div>
+
+                <h3>No community posts yet</h3>
+
+                <p>
+                    Be the first to share your experience
+                    with the community.
+                </p>
+
+                <a href="/Student/Post/Create"
+                   class="student-posts-primary">
+                    Create Your First Post
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <div class="my-posts-list" id="communityPostList">
+
+                @foreach (var post in Model)
+                {
+                    <article class="my-post-card community-post-card"
+                             data-category="@post.Category.ToLowerInvariant()">
+
+                        <div class="my-post-card-header">
+                            <span class="my-post-category">
+                                @post.Category
+                            </span>
+                        </div>
+
+                        <h3>@post.Title</h3>
+
+                        <p class="my-post-description">
+                            @post.Description
+                        </p>
+
+                        @if (post.ImageData != null &&
+                             post.ImageContentType != null)
+                        {
+                            var imageSource =
+                                $"data:{post.ImageContentType};base64," +
+                                Convert.ToBase64String(post.ImageData);
+
+                            <img src="@imageSource"
+                                 alt="Image attached to @post.Title"
+                                 class="my-post-image" />
+                        }
+
+                        <div class="my-post-footer">
+                            Posted on
+                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+
+            <div class="student-posts-empty"
+                 id="noMatchingPosts"
+                 style="display:none;">
+                <h3>No matching posts found</h3>
+                <p>Try another search or category.</p>
+            </div>
+        }
+
+    </section>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const search = document.getElementById("postSearch");
+        const buttons = document.querySelectorAll(
+            ".student-posts-categories button"
+        );
+        const cards = document.querySelectorAll(
+            ".community-post-card"
+        );
+        const noMatches = document.getElementById(
+            "noMatchingPosts"
+        );
+
+        let selectedCategory = "all";
+
+        function filterPosts() {
+            const term = search.value.trim().toLowerCase();
+            let visible = 0;
+
+            cards.forEach(function (card) {
+                const matchesCategory =
+                    selectedCategory === "all" ||
+                    card.dataset.category === selectedCategory;
+
+                const matchesSearch =
+                    card.textContent.toLowerCase().includes(term);
+
+                const show = matchesCategory && matchesSearch;
+
+                card.style.display = show ? "" : "none";
+
+                if (show) visible++;
+            });
+
+            if (noMatches) {
+                noMatches.style.display =
+                    visible === 0 ? "block" : "none";
+            }
+        }
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                buttons.forEach(function (b) {
+                    b.classList.remove("active");
+                });
+
+                button.classList.add("active");
+                selectedCategory = button.dataset.category;
+                filterPosts();
+            });
+        });
+
+        search.addEventListener("input", filterPosts);
+    });
+</script>
+

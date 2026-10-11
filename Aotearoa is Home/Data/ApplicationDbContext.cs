@@ -49,6 +49,9 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<StudentFamilyMember> StudentFamilyMembers { get; set; }
 
+        public DbSet<CommunityPost> CommunityPosts { get; set; }
+
+
         protected override void OnModelCreating(
             ModelBuilder builder)
         {

@@ -1,0 +1,133 @@
+﻿
+@model List<Aotearoa_is_Home.Models.CommunityPost>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Posts";
+}
+
+<link rel="stylesheet"
+      href="~/css/student-posts.css"
+      asp-append-version="true" />
+
+<div class="student-posts-page">
+
+    <section class="student-posts-intro">
+
+        <span class="student-eyebrow">
+            COMMUNITY & CONNECTIONS
+        </span>
+
+        <h1>My Posts</h1>
+
+        <p>
+            View your submitted posts and
+            track their approval status.
+        </p>
+
+        <div class="student-posts-actions">
+
+            <a href="/Student/Post/Index"
+               class="student-posts-secondary">
+                ← Back to Community
+            </a>
+
+            <a href="/Student/Post/Create"
+               class="student-posts-primary">
+                + Create New Post
+            </a>
+
+        </div>
+
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="status">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <section class="student-posts-content">
+
+        <h2>Your Posts</h2>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="student-posts-empty">
+
+                <div class="student-posts-empty-icon">
+                    📝
+                </div>
+
+                <h3>No posts created yet</h3>
+
+                <p>
+                    Create your first community post
+                    and share it with others.
+                </p>
+
+                <a href="/Student/Post/Create"
+                   class="student-posts-primary">
+                    Create Your First Post
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <div class="my-posts-list">
+
+                @foreach (var post in Model)
+                {
+                    <article class="my-post-card">
+
+                        <div class="my-post-card-header">
+
+                            <span class="my-post-category">
+                                @post.Category
+                            </span>
+
+                            <span class="my-post-status
+                                @(post.Status == "Approved"
+                                    ? "status-approved"
+                                    : post.Status == "Rejected"
+                                        ? "status-rejected"
+                                        : "status-pending")">
+                                @post.Status
+                            </span>
+
+                        </div>
+
+                        <h3>@post.Title</h3>
+
+                        <p class="my-post-description">
+                            @post.Description
+                        </p>
+
+                        @if (post.ImageData != null &&
+                             post.ImageContentType != null)
+                        {
+                            var imageSource =
+                                $"data:{post.ImageContentType};base64," +
+                                Convert.ToBase64String(post.ImageData);
+
+                            <img src="@imageSource"
+                                 alt="Image attached to @post.Title"
+                                 class="my-post-image" />
+                        }
+
+                        <div class="my-post-footer">
+                            Submitted on
+                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    </section>
+
+</div>
