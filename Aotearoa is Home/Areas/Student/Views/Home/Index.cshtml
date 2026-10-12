@@ -87,12 +87,21 @@
                     <a href="@Url.Action("View", "Settlement", new { area = "Student", id = settlementPage.Id })"
                        class="student-home-settlement-card">
 
+                        
                         @if (settlementPage.BackgroundImage != null &&
-                             settlementPage.BackgroundImage.Length > 0)
+                            settlementPage.BackgroundImage.Length > 0)
                         {
                             <img src="data:@settlementPage.BackgroundImageContentType;base64,@Convert.ToBase64String(settlementPage.BackgroundImage)"
-                                 alt="@settlementPage.CategoryName" />
+                                alt="@settlementPage.CategoryName" />
                         }
+                        else
+                        {
+                            <div class="student-home-settlement-placeholder"
+                                aria-hidden="true">
+                                <i class="bi bi-house-heart"></i>
+                            </div>
+                        }
+
 
                         <div class="student-home-settlement-overlay"></div>
 
