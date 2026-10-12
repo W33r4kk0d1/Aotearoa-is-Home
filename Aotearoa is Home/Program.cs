@@ -70,12 +70,18 @@ using (var scope = app.Services.CreateScope())
 
     await DbInitializer.InitializeAsync(services);
 
-    // Seed Settlement information
-    var context = services.GetRequiredService<ApplicationDbContext>();
+    var context =
+        services.GetRequiredService<ApplicationDbContext>();
 
-    await ApplicationDbContext.SeedSettlementData(context);
+    // Seed settlement categories and their background images.
+    var environment =
+        services.GetRequiredService<IWebHostEnvironment>();
 
-    // Initialize the university/student database
+    await SettlementDataSeeder.SeedAsync(
+        context,
+        environment.WebRootPath);
+
+    // Initialize the university/student database.
     await UniversityDbInitializer.InitializeAsync(services);
 }
 

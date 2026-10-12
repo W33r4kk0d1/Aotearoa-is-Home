@@ -135,17 +135,21 @@
             else if (block.Type == "image")
             {
                 <div class="student-content-image searchable-content">
-
-                    @if (block.ImageData != null &&
-                        block.ImageData.Length > 0)
+                    
+                    @if (Model.BackgroundImage != null &&
+                        Model.BackgroundImage.Length > 0 &&
+                        !string.IsNullOrWhiteSpace(Model.BackgroundImageContentType))
                     {
-                        <img src="data:@block.ImageContentType;base64,@Convert.ToBase64String(block.ImageData)"
-                            alt="@Model.CategoryName" />
+                        <img src="data:@Model.BackgroundImageContentType;base64,@Convert.ToBase64String(Model.BackgroundImage)"
+                            alt="@Model.CategoryName"
+                            class="student-settlement-hero-image" />
                     }
-                    else if (!string.IsNullOrWhiteSpace(block.Content))
+                    else
                     {
-                        <img src="@block.Content"
-                            alt="@Model.CategoryName" />
+                        <div class="student-settlement-hero-placeholder"
+                            role="img"
+                            aria-label="@Model.CategoryName">
+                        </div>
                     }
 
                 </div>
