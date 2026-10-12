@@ -14,17 +14,86 @@
         </p>
     </div>
 
+    <form method="get"
+        asp-area="Admin"
+        asp-controller="Event"
+        asp-action="Index"
+        class="event-filter-form mb-4">
+
+        <div class="event-search-field">
+            <label for="searchString">Search events</label>
+            <input type="search"
+                id="searchString"
+                name="searchString"
+                value="@ViewBag.SearchString"
+                placeholder="Search title, description, or location..." />
+        </div>
+
+        <div class="event-filter-field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="">All statuses</option>
+
+                <option value="Pending Approval"
+                        selected="@(ViewBag.Status == "Pending Approval")">
+                    Pending Approval
+                </option>
+
+                <option value="Approved"
+                        selected="@(ViewBag.Status == "Approved")">
+                    Approved
+                </option>
+
+                <option value="Rejected"
+                        selected="@(ViewBag.Status == "Rejected")">
+                    Rejected
+                </option>
+            </select>
+        </div>
+
+        <div class="event-filter-field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All categories</option>
+
+                @foreach (var item in (List<string>)ViewBag.Categories)
+                {
+                    <option value="@item"
+                            selected="@(ViewBag.Category == item)">
+                        @item
+                    </option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Search &amp; Filter
+        </button>
+
+        <a asp-area="Admin"
+        asp-controller="Event"
+        asp-action="Index"
+        class="btn btn-outline-secondary">
+            Clear
+        </a>
+
+    </form>
+
     <div class="card shadow-sm">
         <div class="card-body">
 
             @if (!Model.Any())
             {
                 <p class="text-muted mb-0">
-                    No events have been submitted.
+                    No events match your search or filter criteria.
                 </p>
             }
             else
             {
+                <p class="text-muted mb-3">
+                        Showing @ViewBag.TotalEvents event(s)
+                </p>
+                
                 <div class="table-responsive">
 
                     <table class="table table-hover align-middle">
@@ -36,6 +105,7 @@
                                 <th>Location</th>
                                 <th>Start</th>
                                 <th>End</th>
+                                <th>Registered Attendees</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -52,6 +122,19 @@
                                     <td> @item.Location </td>
                                     <td> @item.StartDate.ToString("dd/MM/yyyy HH:mm") </td>
                                     <td> @item.EndDate.ToString("dd/MM/yyyy HH:mm") </td>
+                                    <td>
+                                        @{
+                                            var attendeeCounts =
+                                                (Dictionary<int, int>)ViewBag.AttendeeCounts;
+
+                                            var attendeeCount = attendeeCounts.TryGetValue(
+                                                item.Id, out var count) ? count : 0;
+                                        }
+
+                                        <span class="badge bg-info text-dark">
+                                            @attendeeCount
+                                        </span>
+                                    </td>
                                     <td>
                                         @if (item.Status == "Approved")
                                         {
@@ -73,33 +156,139 @@
                                         }
                                     </td>
 
+                                    
                                     <td class="text-end">
-                                        <a href="/Admin/Event/Edit/@item.Id"
-                                           class="btn btn-primary btn-sm">
-                                            Edit
-                                        </a>
+                                        <div class="d-flex gap-2 justify-content-end">
 
-                                        @if (item.Status == "Pending Approval")
-                                        {
-                                            <form action="@Url.Action("Approve", "Event", new { area = "Admin", id = item.Id })"
-                                                    method="post"
-                                                    class="d-inline">
+                                            <a asp-area="Admin"
+                                            asp-controller="Event"
+                                            asp-action="Details"
+                                            asp-route-id="@item.Id"
+                                            class="btn btn-info btn-sm">
+                                                View
+                                            </a>
 
-                                                @Html.AntiForgeryToken()
+                                            <a asp-area="Admin"
+                                            asp-controller="Event"
+                                            asp-action="Edit"
+                                            asp-route-id="@item.Id"
+                                            class="btn btn-primary btn-sm">
+                                                Edit
+                                            </a>
 
-                                                <button type="submit"
-                                                        class="btn btn-success btn-sm">
-                                                    Approve
-                                                </button>
+                                            @if (User.IsInRole("Super Admin"))
+                                            {
+                                                @if (item.Status == "Pending Approval")
+                                                {
+                                                    <form asp-area="Admin"
+                                                        asp-controller="Event"
+                                                        asp-action="Approve"
+                                                        asp-route-id="@item.Id"
+                                                        method="post"
+                                                        class="d-inline">
 
-                                            </form>
-                                        }
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit"
+                                                                class="btn btn-success btn-sm"
+                                                                onclick="return confirm('Are you sure you want to approve this event?');">
+                                                            Approve
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                @if (item.Status != "Rejected")
+                                                {
+                                                    <form asp-area="Admin"
+                                                        asp-controller="Event"
+                                                        asp-action="Reject"
+                                                        asp-route-id="@item.Id"
+                                                        method="post"
+                                                        class="d-inline">
+
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit"
+                                                                class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Reject this event immediately? It will no longer be approved.');">
+                                                            Reject
+                                                        </button>
+                                                    </form>
+                                                }
+                                            }
+
+                                        </div>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
+
+                @if ((int)ViewBag.TotalPages > 1)
+                {
+                    <nav class="event-pagination"
+                        aria-label="Events pagination">
+
+                        <span class="event-pagination-info">
+                            Showing @(((int)ViewBag.CurrentPage - 1) * (int)ViewBag.PageSize + 1)
+                            –
+                            @Math.Min(
+                                (int)ViewBag.CurrentPage * (int)ViewBag.PageSize,
+                                (int)ViewBag.TotalEvents)
+                            of @ViewBag.TotalEvents events
+                        </span>
+
+                        <div class="event-pagination-links">
+
+                            @if ((int)ViewBag.CurrentPage > 1)
+                            {
+                                <a asp-area="Admin"
+                                asp-controller="Event"
+                                asp-action="Index"
+                                asp-route-searchString="@ViewBag.SearchString"
+                                asp-route-status="@ViewBag.Status"
+                                asp-route-category="@ViewBag.Category"
+                                asp-route-page="@((int)ViewBag.CurrentPage - 1)">
+                                    &laquo; Previous
+                                </a>
+                            }
+
+                            @for (int i = 1;
+                                i <= (int)ViewBag.TotalPages; i++)
+                            {
+                                <a asp-area="Admin"
+                                asp-controller="Event"
+                                asp-action="Index"
+                                asp-route-searchString="@ViewBag.SearchString"
+                                asp-route-status="@ViewBag.Status"
+                                asp-route-category="@ViewBag.Category"
+                                asp-route-page="@i"
+                                class="@(i == (int)ViewBag.CurrentPage
+                                    ? "active" : "")"
+                                aria-current="@(i == (int)ViewBag.CurrentPage
+                                    ? "page" : null)">
+                                    @i
+                                </a>
+                            }
+
+                            @if ((int)ViewBag.CurrentPage <
+                                (int)ViewBag.TotalPages)
+                            {
+                                <a asp-area="Admin"
+                                asp-controller="Event"
+                                asp-action="Index"
+                                asp-route-searchString="@ViewBag.SearchString"
+                                asp-route-status="@ViewBag.Status"
+                                asp-route-category="@ViewBag.Category"
+                                asp-route-page="@((int)ViewBag.CurrentPage + 1)">
+                                    Next &raquo;
+                                </a>
+                            }
+
+                        </div>
+                    </nav>
+                }
             }
         </div>
     </div>

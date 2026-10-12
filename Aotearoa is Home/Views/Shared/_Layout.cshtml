@@ -88,13 +88,13 @@
 
                                 
                                 <li class="nav-item">
-    <a class="nav-link text-dark"
-       asp-area="Student"
-       asp-controller="Post"
-       asp-action="Index">
-        Posts
-    </a>
-</li>
+                                    <a class="nav-link text-dark"
+                                    asp-area="Student"
+                                    asp-controller="Post"
+                                    asp-action="Index">
+                                        Posts
+                                    </a>
+                                </li>
 
 
                                 <li class="nav-item">
@@ -134,15 +134,15 @@
                                 </li>
 
                                 <li class="nav-item">
-    <a class="nav-link chatbot-nav-icon"
-       asp-area=""
-       asp-controller="Chatbot"
-       asp-action="Index"
-       title="Chat with us"
-       aria-label="Open chatbot">
-        <i class="bi bi-chat-dots-fill"></i>
-    </a>
-</li>
+                                    <a class="nav-link chatbot-nav-icon"
+                                    asp-area=""
+                                    asp-controller="Chatbot"
+                                    asp-action="Index"
+                                    title="Chat with us"
+                                    aria-label="Open chatbot">
+                                        <i class="bi bi-chat-dots-fill"></i>
+                                    </a>
+                                </li>
 
                             }
 
@@ -224,89 +224,126 @@
                                 </li>
 
                                 <li class="nav-item">
-    <a class="nav-link chatbot-nav-icon"
-       asp-area=""
-       asp-controller="Chatbot"
-       asp-action="Index"
-       title="Chat with us"
-       aria-label="Open chatbot">
-        <i class="bi bi-chat-dots-fill"></i>
-    </a>
-</li>
-                                                   
-                                
+                                    <a class="nav-link chatbot-nav-icon"
+                                    asp-area=""
+                                    asp-controller="Chatbot"
+                                    asp-action="Index"
+                                    title="Chat with us"
+                                    aria-label="Open chatbot">
+                                        <i class="bi bi-chat-dots-fill"></i>
+                                    </a>
+                                </li>    
                             }
 
 
                             <!-- ADMIN NAVIGATION -->
-
                             @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="Home"
-                                       asp-action="Index">
+                                    asp-area="Admin"
+                                    asp-controller="Home"
+                                    asp-action="Index">
                                         Dashboard
                                     </a>
                                 </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-area="Users"
-                                       asp-controller="Users"
-                                       asp-action="Index">
-                                        Users
+                                @* CONTENT MANAGEMENT DROPDOWN *@
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark"
+                                    href="#"
+                                    id="contentManagementDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                        Content Management
                                     </a>
+
+                                    <ul class="dropdown-menu"
+                                        aria-labelledby="contentManagementDropdown">
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Admin"
+                                            asp-controller="Settlement"
+                                            asp-action="Index">
+                                                Settlement Content
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Admin"
+                                            asp-controller="Event"
+                                            asp-action="Index">
+                                                Events
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Admin"
+                                            asp-controller="Post"
+                                            asp-action="Index">
+                                                Community Posts
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="Settlement"
-                                       asp-action="Index">
-                                        Settlement Content
+                                @* USER MANAGEMENT DROPDOWN *@
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark"
+                                    href="#"
+                                    id="userManagementDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                        User Management
                                     </a>
+
+                                    <ul class="dropdown-menu"
+                                        aria-labelledby="userManagementDropdown">
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Users"
+                                            asp-controller="Users"
+                                            asp-action="Index">
+                                                Users
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Admin"
+                                            asp-controller="StudentRegistration"
+                                            asp-action="Index">
+                                                Student Requests
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-area="Admin"
+                                            asp-controller="ServiceProvider"
+                                            asp-action="Index">
+                                                Verify Service Providers
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="Event"
-                                       asp-action="Index">
-                                        Events
-                                    </a>
-                                </li>
-
+                                @* CALENDAR INFORMATION *@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
                                     asp-area="Admin"
                                     asp-controller="CalendarInformation"
                                     asp-action="Index">
-                                    Calendar Information
-                                </a>
-                                </li>
-
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="StudentRegistration"
-                                       asp-action="Index">
-                                        Student Request
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-area="Admin"
-                                       asp-controller="ServiceProvider"
-                                       asp-action="Index">
-                                        Verify Service Providers
+                                        Calendar Information
                                     </a>
                                 </li>
                             }
-
 
                             <!-- SERVICE PROVIDER NAVIGATION -->
 
