@@ -7759,3 +7759,124 @@ SMALL MOBILE
         min-width: 0;
     }
 }
+
+
+.event-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e2e8e3;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.event-search-field {
+    flex: 1 1 280px;
+}
+
+.event-filter-field {
+    flex: 0 1 180px;
+}
+
+.event-search-field label,
+.event-filter-field label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #435548;
+}
+
+.event-search-field input,
+.event-filter-field select {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #ced8d0;
+    border-radius: 6px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.event-search-field input:focus,
+.event-filter-field select:focus {
+    outline: 2px solid #55765d;
+    outline-offset: 1px;
+}
+
+.event-filter-form button,
+.event-filter-form > a {
+    min-height: 40px;
+}
+
+@media (max-width: 768px) {
+    .event-filter-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .event-search-field,
+    .event-filter-field {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+}
+
+.event-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8e3;
+}
+
+.event-pagination-info {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.event-pagination-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.event-pagination-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0 10px;
+    color: #1769e0;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.event-pagination-links a:hover {
+    background: #eef4ff;
+}
+
+.event-pagination-links a.active {
+    color: #fff;
+    background: #1769e0;
+    border-color: #1769e0;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .event-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

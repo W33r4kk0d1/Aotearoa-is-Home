@@ -12,6 +12,15 @@ namespace Aotearoa_is_Home.Models.ViewModels
 
         public List<RecentUserViewModel> RecentUsers { get; set; }
             = new List<RecentUserViewModel>();
+
+        public int PendingCommunityPosts { get; set; }
+
+        public int PendingEvents { get; set; }
+
+        public int PublishedEvents { get; set; }
+
+        public int UpcomingEventAttendees { get; set; }
+
     }
 
     public class RecentUserViewModel

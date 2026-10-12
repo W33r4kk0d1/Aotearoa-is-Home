@@ -67,12 +67,76 @@
         </div>
     }
 
+
+    <form method="get"
+        asp-area="Admin"
+        asp-controller="Post"
+        asp-action="Index"
+        class="post-filter-form">
+
+        <div class="filter-search">
+            <label for="searchString">Search posts</label>
+            <input type="search"
+                id="searchString"
+                name="searchString"
+                value="@ViewBag.SearchString"
+                placeholder="Search by title or description..." />
+        </div>
+
+        <div class="filter-field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="">All statuses</option>
+                <option value="Pending"
+                        selected="@(ViewBag.Status == "Pending")">
+                    Pending
+                </option>
+                <option value="Approved"
+                        selected="@(ViewBag.Status == "Approved")">
+                    Approved
+                </option>
+                <option value="Rejected"
+                        selected="@(ViewBag.Status == "Rejected")">
+                    Rejected
+                </option>
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All categories</option>
+
+                @foreach (var item in
+                    (List<string>)ViewBag.Categories)
+                {
+                    <option value="@item"
+                            selected="@(ViewBag.Category == item)">
+                        @item
+                    </option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="filter-button">
+            Search &amp; Filter
+        </button>
+
+        <a asp-area="Admin"
+        asp-controller="Post"
+        asp-action="Index"
+        class="reset-button">
+            Clear
+        </a>
+    </form>
+
+
     <!-- POST LIST -->
     <section class="admin-posts-section">
 
         <div class="admin-posts-section-header">
             <h2>Student Submissions</h2>
-            <span>@Model.Count posts</span>
+            <span>@ViewBag.TotalPosts posts</span>
         </div>
 
         @if (!Model.Any())
@@ -180,9 +244,70 @@
                     </article>
                 }
 
-            </div>
-        }
 
+            </div>
+
+            @* PAGINATION *@
+            @if ((int)ViewBag.TotalPages > 1)
+            {
+                <nav class="pagination"
+                     aria-label="Community posts pagination">
+
+                    <span class="pagination-info">
+                        Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                        (@ViewBag.TotalPosts posts)
+                    </span>
+
+                    <div class="pagination-links">
+
+                        @if ((int)ViewBag.CurrentPage > 1)
+                        {
+                            <a asp-area="Admin"
+                               asp-controller="Post"
+                               asp-action="Index"
+                               asp-route-searchString="@ViewBag.SearchString"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-category="@ViewBag.Category"
+                               asp-route-page="@((int)ViewBag.CurrentPage - 1)">
+                                &laquo; Previous
+                            </a>
+                        }
+
+                        @for (int i = 1;
+                              i <= (int)ViewBag.TotalPages; i++)
+                        {
+                            <a asp-area="Admin"
+                               asp-controller="Post"
+                               asp-action="Index"
+                               asp-route-searchString="@ViewBag.SearchString"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-category="@ViewBag.Category"
+                               asp-route-page="@i"
+                               class="@(i == (int)ViewBag.CurrentPage
+                                   ? "active" : "")">
+                                @i
+                            </a>
+                        }
+
+                        @if ((int)ViewBag.CurrentPage <
+                             (int)ViewBag.TotalPages)
+                        {
+                            <a asp-area="Admin"
+                               asp-controller="Post"
+                               asp-action="Index"
+                               asp-route-searchString="@ViewBag.SearchString"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-category="@ViewBag.Category"
+                               asp-route-page="@((int)ViewBag.CurrentPage + 1)">
+                                Next &raquo;
+                            </a>
+                        }
+
+                    </div>
+                </nav>
+            }
+        }
     </section>
 
 </div>
+

@@ -128,55 +128,115 @@
 
         </div>
 
+
+        @* PENDING COMMUNITY POSTS *@
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Pending Community Posts</p>
+                    <h2 class="fw-bold mb-1">@Model.PendingCommunityPosts</h2>
+                    <a asp-area="Admin"
+                    asp-controller="Post"
+                    asp-action="Index"
+                    asp-route-status="Pending"
+                    class="small text-decoration-none">
+                        Review submissions →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @* PENDING EVENTS *@
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Pending Events</p>
+                    <h2 class="fw-bold mb-1">@Model.PendingEvents</h2>
+                    <a asp-area="Admin"
+                    asp-controller="Event"
+                    asp-action="Index"
+                    asp-route-status="Pending Approval"
+                    class="small text-decoration-none">
+                        Review events →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @* PUBLISHED EVENTS *@
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Published Events</p>
+                    <h2 class="fw-bold mb-1">@Model.PublishedEvents</h2>
+                    <a asp-area="Admin"
+                    asp-controller="Event"
+                    asp-action="Index"
+                    asp-route-status="Approved"
+                    class="small text-decoration-none">
+                        Manage events →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @* UPCOMING EVENT ATTENDEES *@
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Upcoming Event Attendees</p>
+                    <h2 class="fw-bold mb-1">@Model.UpcomingEventAttendees</h2>
+                    <small class="text-muted">
+                        Total registered attendance responses
+                    </small>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 
-    <!-- COMMUNITY POST MANAGEMENT -->
+    @* QUICK ACTIONS *@
     <div class="card border-0 shadow-sm mb-4">
-
         <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Quick Actions</h5>
 
-            <div class="d-flex flex-wrap
-                        justify-content-between
-                        align-items-center gap-3">
+            <div class="d-flex flex-wrap gap-2">
 
-                <div>
+                <a asp-area="Admin"
+                asp-controller="StudentRegistration"
+                asp-action="Index"
+                class="btn btn-outline-primary">
+                    <i class="bi bi-person-check me-1"></i>
+                    Student Requests
+                </a>
 
-                    <span class="text-uppercase fw-bold"
-                          style="font-size:12px;
-                                 letter-spacing:2px;
-                                 color:#688365;">
+                <a asp-area="Admin"
+                asp-controller="ServiceProvider"
+                asp-action="Index"
+                class="btn btn-outline-primary">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Verify Service Providers
+                </a>
 
-                        COMMUNITY MODERATION
+                <a asp-area="Admin"
+                asp-controller="Event"
+                asp-action="Index"
+                class="btn btn-outline-primary">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    Manage Events
+                </a>
 
-                    </span>
-
-                    <h4 class="fw-bold mt-2 mb-2">
-                        Manage Community Posts
-                    </h4>
-
-                    <p class="text-muted mb-0">
-                        Review student submissions,
-                        approve or reject posts,
-                        and manage community content.
-                    </p>
-
-                </div>
-
-                <a href="/Admin/Post/Index"
-                   class="btn text-white fw-semibold"
-                   style="background:#688365;
-                          border-radius:10px;
-                          padding:13px 24px;">
-
-                    Manage Posts →
-
+                <a asp-area="Admin"
+                asp-controller="Post"
+                asp-action="Index"
+                class="btn btn-outline-primary">
+                    <i class="bi bi-chat-square-text me-1"></i>
+                    Community Posts
                 </a>
 
             </div>
-
         </div>
-
     </div>
 
 

@@ -1,0 +1,176 @@
+
+@model Aotearoa_is_Home.Models.Event
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Event Details</h1>
+            <p class="text-muted">
+                Review the complete event information.
+            </p>
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="Event"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Events
+        </a>
+    </div>
+
+        @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="status">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-start flex-wrap mb-3">
+                <h2>@Model.Title</h2>
+
+                @if (Model.Status == "Approved")
+                {
+                    <span class="badge bg-success">Approved</span>
+                }
+                else if (Model.Status == "Pending Approval")
+                {
+                    <span class="badge bg-warning text-dark">
+                        Pending Approval
+                    </span>
+                }
+                else if (Model.Status == "Rejected")
+                {
+                    <span class="badge bg-danger">Rejected</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">
+                        @(string.IsNullOrWhiteSpace(Model.Status)
+                            ? "Unknown status"
+                            : Model.Status)
+                    </span>
+                }
+            </div>
+
+            @if (Model.ImageData != null &&
+                 Model.ImageContentType != null)
+            {
+                var imageSource =
+                    $"data:{Model.ImageContentType};base64," +
+                    Convert.ToBase64String(Model.ImageData);
+
+                <img src="@imageSource"
+                     alt="Image attached to @Model.Title"
+                     class="img-fluid rounded mb-4"
+                     style="max-height: 400px; object-fit: contain;" />
+            }
+
+            <hr />
+
+            <h5>Description</h5>
+            <p style="white-space: pre-wrap;">@Model.Description</p>
+
+            <hr />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Category</strong>
+                    <p>@(Model.Category ?? "Not specified")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Location</strong>
+                    <p>@Model.Location</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Region</strong>
+                    <p>@(Model.Region ?? "Not specified")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Start Date</strong>
+                    <p>@Model.StartDate.ToString("dd MMM yyyy, HH:mm")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>End Date</strong>
+                    <p>@Model.EndDate.ToString("dd MMM yyyy, HH:mm")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Event ID</strong>
+                    <p>#@Model.Id</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-area="Admin"
+                   asp-controller="Event"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-primary">
+                    Edit Event
+                </a>
+
+                @if (User.IsInRole("Super Admin"))
+                {
+                    @if (Model.Status == "Pending Approval")
+                    {
+                        <form asp-area="Admin"
+                              asp-controller="Event"
+                              asp-action="Approve"
+                              asp-route-id="@Model.Id"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="btn btn-success"
+                                    onclick="return confirm('Approve this event?');">
+                                Approve Event
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.Status != "Rejected")
+                    {
+                        <form asp-area="Admin"
+                              asp-controller="Event"
+                              asp-action="Reject"
+                              asp-route-id="@Model.Id"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Reject this event immediately?');">
+                                Reject Event
+                            </button>
+                        </form>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

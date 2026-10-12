@@ -94,16 +94,49 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 }
             }
 
+
+            var pendingCommunityPosts = await _context.CommunityPosts
+                .CountAsync(p => p.Status == "Pending");
+
+            var pendingEvents = await _context.Events
+                .CountAsync(e => e.Status == "Pending Approval");
+
+            var publishedEvents = await _context.Events
+                .CountAsync(e =>
+                    e.Status == "Approved" &&
+                    e.EndDate >= DateTime.UtcNow);
+
+            var now = DateTime.UtcNow;
+
+            var upcomingEventIds = await _context.Events
+                .Where(e =>
+                    e.Status == "Approved" &&
+                    e.StartDate >= now &&
+                    e.EnableResponses &&
+                    e.RecordResponses)
+                .Select(e => e.Id)
+                .ToListAsync();
+
+            var upcomingEventAttendees = await _context.EventResponses
+                .CountAsync(r => upcomingEventIds.Contains(r.EventId));
+
+            
             var model = new AdminDashboardViewModel
             {
                 TotalAccounts = totalAccounts,
                 PendingVerifications = pendingVerifications,
                 ServiceProviders = serviceProviderCount,
                 NewThisWeek = newThisWeek,
-                RecentUsers = recentUsers
+                RecentUsers = recentUsers,
+
+                PendingCommunityPosts = pendingCommunityPosts,
+                PendingEvents = pendingEvents,
+                PublishedEvents = publishedEvents,
+                UpcomingEventAttendees = upcomingEventAttendees
             };
 
-            return View(model);
+
+            return View("Index", model);
         }
     }
 }
