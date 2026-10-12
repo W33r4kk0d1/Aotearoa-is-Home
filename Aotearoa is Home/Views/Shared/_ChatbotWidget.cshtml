@@ -1,0 +1,118 @@
+@{
+    var chatbotResponseUrl = Url.Action(
+        "GetResponse",
+        "Chatbot"
+    );
+}
+
+<div id="chatbotWidget"
+     class="chatbot-widget"
+     data-response-url="@chatbotResponseUrl">
+
+    <!-- Floating chatbot button -->
+    <button type="button"
+            id="chatbotToggle"
+            class="chatbot-toggle"
+            aria-label="Open Aotearoa is Home Assistant"
+            aria-controls="chatbotPanel"
+            aria-expanded="false"
+            title="Chat with Aotearoa is Home">
+
+        <i class="bi bi-chat-dots-fill"
+           aria-hidden="true"></i>
+    </button>
+
+    <!-- Chat window -->
+    <section id="chatbotPanel"
+             class="chatbot-panel"
+             role="dialog"
+             aria-labelledby="chatbotTitle"
+             aria-hidden="true"
+             hidden>
+
+        <!-- Header -->
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <div class="chatbot-avatar">
+                    <i class="bi bi-chat-dots-fill"
+                       aria-hidden="true"></i>
+                </div>
+
+                <div>
+                    <h2 id="chatbotTitle">
+                        Aotearoa is Home Assistant
+                    </h2>
+                    <span class="chatbot-status">
+                        Here to help you settle in
+                    </span>
+                </div>
+            </div>
+
+            <button type="button"
+                    id="chatbotClose"
+                    class="chatbot-close"
+                    aria-label="Close chatbot">
+                &times;
+            </button>
+        </div>
+
+        <!-- Conversation -->
+        <div id="chatMessages"
+             class="chatbot-messages"
+             role="log"
+             aria-live="polite"
+             aria-relevant="additions text"
+             aria-label="Chat conversation">
+
+            <div class="chat-message assistant-message">
+                <div class="chat-message-label">
+                    Assistant
+                </div>
+
+                <div class="chat-message-bubble">
+                    Kia ora! How can I help you today?
+
+                    You can ask me about accommodation,
+                    healthcare, education, employment,
+                    transport, emergency support and
+                    family services.
+                </div>
+            </div>
+        </div>
+
+        <!-- Question form -->
+        <div class="chatbot-footer">
+            <form id="chatForm"
+                  method="post"
+                  action="@chatbotResponseUrl">
+
+                @Html.AntiForgeryToken()
+
+                <div class="chatbot-input-group">
+                    <input type="text"
+                           id="messageInput"
+                           name="message"
+                           class="chatbot-input"
+                           placeholder="Ask a question..."
+                           autocomplete="off"
+                           aria-label="Your question"
+                           maxlength="2000"
+                           required />
+
+                    <button type="submit"
+                            id="chatSendButton"
+                            class="chatbot-send">
+                        <i class="bi bi-send-fill"
+                           aria-hidden="true"></i>
+                        <span>Send</span>
+                    </button>
+                </div>
+
+                <div id="chatStatus"
+                     class="chatbot-status-message"
+                     role="status"
+                     aria-live="polite"></div>
+            </form>
+        </div>
+    </section>
+</div>
