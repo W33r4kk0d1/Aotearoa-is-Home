@@ -20,6 +20,9 @@
               href="~/css/student.css"
               asp-append-version="true" />
     }
+
+@await RenderSectionAsync("Styles", required: false)
+
 </head>
 
 @{

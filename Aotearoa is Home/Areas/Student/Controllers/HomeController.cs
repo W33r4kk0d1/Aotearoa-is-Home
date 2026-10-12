@@ -32,31 +32,63 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
+            var checklist = await context.StudentChecklists
+                .Where(x => x.UserId == userId && !x.IsArchived)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (checklist == null)
+            {
+                checklist = new StudentChecklist
+                {
+                    UserId = userId,
+                    Name = "Settlement Checklist",
+                    CreatedAt = DateTime.UtcNow,
+                    IsArchived = false
+                };
+
+                context.StudentChecklists.Add(checklist);
+                await context.SaveChangesAsync();
+            }
+
             var settlementPages = await context.SettlementPages
                 .Include(x => x.ChecklistTasks)
                 .ToListAsync();
 
             var checklistItems = await context.ChecklistItems
-                .Where(x => x.UserId == userId)
+                .Where(x =>
+                    x.UserId == userId &&
+                    x.StudentChecklistId == checklist.Id)
                 .ToListAsync();
+
+            var existingTaskIds = checklistItems
+                .Where(x => x.ChecklistTaskId.HasValue)
+                .Select(x => x.ChecklistTaskId!.Value)
+                .ToHashSet();
 
             foreach (var page in settlementPages)
             {
                 foreach (var task in page.ChecklistTasks)
                 {
-                    if (!checklistItems.Any(x =>
-                        x.ChecklistTaskId == task.Id))
+                    if (existingTaskIds.Contains(task.Id))
                     {
-                        var item = new ChecklistItem
-                        {
-                            UserId = userId,
-                            ChecklistTaskId = task.Id,
-                            IsCompleted = false
-                        };
-
-                        context.ChecklistItems.Add(item);
-                        checklistItems.Add(item);
+                        continue;
                     }
+
+                    var item = new ChecklistItem
+                    {
+                        UserId = userId,
+                        StudentChecklistId = checklist.Id,
+                        ChecklistTaskId = task.Id,
+                        Category = page.CategoryName,
+                        Title = task.Title,
+                        Description = task.Description,
+                        IsCompleted = false
+                    };
+
+                    context.ChecklistItems.Add(item);
+                    checklistItems.Add(item);
+                    existingTaskIds.Add(task.Id);
                 }
             }
 
@@ -76,45 +108,51 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
                 var total = tasks.Count;
 
-                var completed = tasks.Count(task =>
-                    checklistItems.Any(item =>
-                        item.ChecklistTaskId == task.Id &&
-                        item.IsCompleted));
+                var taskIds = tasks
+                    .Select(x => x.Id)
+                    .ToHashSet();
 
+                var pageItems = checklistItems
+                    .Where(x =>
+                        x.ChecklistTaskId.HasValue &&
+                        taskIds.Contains(x.ChecklistTaskId.Value))
+                    .GroupBy(x => x.ChecklistTaskId!.Value)
+                    .Select(x => x.First())
+                    .ToList();
+
+                var completed = pageItems.Count(x => x.IsCompleted);
                 var remaining = total - completed;
 
-                progress[page.Id] =
-                    new ChecklistProgressViewModel
-                    {
-                        Total = total,
-                        Completed = completed
-                    };
+                progress[page.Id] = new ChecklistProgressViewModel
+                {
+                    Total = total,
+                    Completed = completed
+                };
 
                 int priority;
 
                 if (total == 0)
                 {
-                    priority = 0;
+                    priority = 3;
                 }
-                else if (completed == total)
+                else if (completed > 0 && completed < total)
                 {
-                    priority = -100;
+                    priority = 0;
                 }
                 else if (completed == 0)
                 {
-                    priority = 0;
+                    priority = 1;
                 }
                 else
                 {
-                    priority = 100 + remaining;
+                    priority = 2;
                 }
 
-                priorityPages.Add(
-                    (page, priority, remaining));
+                priorityPages.Add((page, priority, remaining));
             }
 
             settlementPages = priorityPages
-                .OrderByDescending(x => x.Priority)
+                .OrderBy(x => x.Priority)
                 .ThenByDescending(x => x.Remaining)
                 .ThenBy(x => x.Page.CategoryName)
                 .Select(x => x.Page)
