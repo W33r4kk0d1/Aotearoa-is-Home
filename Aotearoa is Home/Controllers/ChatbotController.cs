@@ -782,8 +782,10 @@ namespace Aotearoa_is_Home.Controllers
             else if (IsAny(question, "doctor", "gp", "health", "healthcare", "pharmacy", "pharmacist"))
             {
                 response =
-                    "Find a local GP and ask about enrolment and appointments. You can also call Healthline " +
-                    "free on 0800 611 116, 24 hours a day, 7 days a week.";
+                    "For healthcare in New Zealand, you can find a local GP " +
+                    "(General Practitioner) and ask about enrolment and appointments. " +
+                    "You can also call Healthline free on 0800 611 116, " +
+                    "24 hours a day, 7 days a week.";
             }
 
             else if (IsAny(question, "housing", "house", "accommodation", "rent", "rental"))
@@ -859,18 +861,46 @@ namespace Aotearoa_is_Home.Controllers
             return input.Trim();
         }
 
+        
         private static bool IsAny(string question, params string[] keywords)
         {
+            var words = question.Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries
+            );
+
             foreach (var keyword in keywords)
             {
-                if (question == keyword ||
-                    question.Contains(" " + keyword + " "))
+                var keywordWords = keyword.Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries
+                );
+
+                for (int i = 0; i <= words.Length - keywordWords.Length; i++)
                 {
-                    return true;
+                    bool matches = true;
+
+                    for (int j = 0; j < keywordWords.Length; j++)
+                    {
+                        if (!string.Equals(
+                            words[i + j],
+                            keywordWords[j],
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            matches = false;
+                            break;
+                        }
+                    }
+
+                    if (matches)
+                    {
+                        return true;
+                    }
                 }
             }
 
             return false;
         }
+
     }
 }

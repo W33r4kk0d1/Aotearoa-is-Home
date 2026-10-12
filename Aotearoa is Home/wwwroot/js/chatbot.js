@@ -136,14 +136,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
             });
 
+            
             if (!response.ok) {
+                const errorDetails = await response.text();
+
+                console.error("Chatbot request failed:", {
+                    url: response.url,
+                    status: response.status,
+                    statusText: response.statusText,
+                    responseBody: errorDetails
+                });
+
                 throw new Error(
-                    response.status === 401 ||
-                    response.status === 403
-                        ? "You may not have permission to use the chatbot. Please sign in again if necessary."
-                        : "The chatbot could not process your question. Please try again."
+                    `Chatbot request failed (${response.status}). ` +
+                    "Please check the browser console for details."
                 );
             }
+
 
             const data = await response.json();
 
