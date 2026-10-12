@@ -4,19 +4,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aotearoa_is_Home.Data
 {
-    /// <summary>
-    /// Seeds the initial settlement pages and content blocks.
-    /// Keep this separate from ApplicationDbContext so the context remains focused on database configuration and entity relationships.
-    /// </summary>
     public static class SettlementDataSeeder
     {
-        private sealed record SeedBlock(string Type, string Content, string Details = "");
+        private sealed record SeedBlock(
+            string Type,
+            string Content,
+            string Details = "");
 
-        private sealed record SeedPage(string CategoryName, IReadOnlyList<SeedBlock> Blocks);
+        private sealed record SeedPage(
+            string CategoryName,
+            IReadOnlyList<SeedBlock> Blocks);
 
-        public static async Task SeedAsync(ApplicationDbContext context, string webRootPath)
+        private sealed record SeedTask(
+            string Title,
+            string Description);
+
+        public static async Task SeedAsync(
+            ApplicationDbContext context,
+            string webRootPath)
         {
-            // Seed each category independently. Existing pages and their content are preserved; blocks are added only when that category currently has none.
             var pages = GetSeedPages();
 
             var categoryImages = new Dictionary<string, string>
@@ -35,7 +41,8 @@ namespace Aotearoa_is_Home.Data
             foreach (var seedPage in pages)
             {
                 var page = await context.SettlementPages
-                    .FirstOrDefaultAsync(p => p.CategoryName == seedPage.CategoryName);
+                    .FirstOrDefaultAsync(
+                        p => p.CategoryName == seedPage.CategoryName);
 
                 if (page == null)
                 {
@@ -51,8 +58,8 @@ namespace Aotearoa_is_Home.Data
                 }
 
                 if (categoryImages.TryGetValue(
-                        page.CategoryName,
-                        out var imageFileName))
+                    page.CategoryName,
+                    out var imageFileName))
                 {
                     page.BackgroundImage = LoadCategoryImage(
                         webRootPath,
@@ -61,31 +68,256 @@ namespace Aotearoa_is_Home.Data
                     page.BackgroundImageContentType = "image/jpeg";
                     page.UpdatedAt = DateTime.UtcNow;
                 }
+
                 await context.SaveChangesAsync();
 
                 var hasBlocks = await context.ContentBlocks
                     .AnyAsync(b => b.SettlementPageId == page.Id);
 
-                if (hasBlocks || seedPage.Blocks.Count == 0)
-                    continue;
+                if (!hasBlocks && seedPage.Blocks.Count > 0)
+                {
+                    var blocks = seedPage.Blocks
+                        .Select((block, index) => new ContentBlock
+                        {
+                            SettlementPageId = page.Id,
+                            Type = block.Type,
+                            Content = block.Content,
+                            Details = block.Details,
+                            DisplayOrder = index + 1
+                        })
+                        .ToList();
 
-                var blocks = seedPage.Blocks
-                    .Select((block, index) => new ContentBlock
-                    {
-                        SettlementPageId = page.Id,
-                        Type = block.Type,
-                        Content = block.Content,
-                        Details = block.Details,
-                        DisplayOrder = index + 1
-                    })
-                    .ToList();
+                    context.ContentBlocks.AddRange(blocks);
+                    page.UpdatedAt = DateTime.UtcNow;
+                    await context.SaveChangesAsync();
+                }
 
-                context.ContentBlocks.AddRange(blocks);
-                page.UpdatedAt = DateTime.UtcNow;
-                await context.SaveChangesAsync();
+                await SeedChecklistTasksAsync(context, page);
             }
         }
 
+        private static async Task SeedChecklistTasksAsync(
+            ApplicationDbContext context,
+            SettlementPage page)
+        {
+            var hasTasks = await context.ChecklistTasks
+                .AnyAsync(t => t.SettlementPageId == page.Id);
+
+            if (hasTasks)
+                return;
+
+            var tasks = GetChecklistTasks(page.CategoryName);
+
+            if (tasks.Count == 0)
+                return;
+
+            var checklistTasks = tasks
+                .Select((task, index) => new ChecklistTask
+                {
+                    SettlementPageId = page.Id,
+                    Title = task.Title,
+                    Description = task.Description,
+                    DisplayOrder = index + 1
+                })
+                .ToList();
+
+            context.ChecklistTasks.AddRange(checklistTasks);
+            page.UpdatedAt = DateTime.UtcNow;
+
+            await context.SaveChangesAsync();
+        }
+
+        private static IReadOnlyList<SeedTask> GetChecklistTasks(
+            string categoryName)
+        {
+            return categoryName switch
+            {
+                "Accomodation" =>
+                [
+                    new("Research accommodation options",
+                        "Compare rental properties, locations and prices."),
+
+                    new("Understand tenancy requirements",
+                        "Learn about tenancy agreements, bond payments and your responsibilities as a tenant."),
+
+                    new("Prepare identification documents",
+                        "Gather identification and any documents landlords may request."),
+
+                    new("Arrange a place to stay",
+                        "Confirm your accommodation and move-in arrangements."),
+
+                    new("Set up utilities and internet",
+                        "Check electricity, water, internet and other services required at your accommodation."),
+
+                    new("Record important tenancy information",
+                        "Keep a copy of your tenancy agreement, payment records and landlord contact details.")
+                ],
+
+                "Community" =>
+                [
+                    new("Explore your local area",
+                        "Find nearby shops, libraries, parks, public facilities and community centres."),
+
+                    new("Find local community groups",
+                        "Research community groups and activities that match your interests."),
+
+                    new("Learn how to use public transport",
+                        "Find local bus, train or other public transport options and check how to pay for fares."),
+
+                    new("Find useful local services",
+                        "Identify nearby supermarkets, pharmacies, libraries and other services you may need."),
+
+                    new("Connect with your community",
+                        "Attend a community activity, event or group to meet people and build connections.")
+                ],
+
+                "Language" =>
+                [
+                    new("Assess your English language needs",
+                        "Identify the English language skills you want to improve."),
+
+                    new("Find English language learning resources",
+                        "Research classes, online resources and language support services."),
+
+                    new("Practise everyday English",
+                        "Practise conversations used in shops, workplaces, healthcare services and everyday situations."),
+
+                    new("Learn useful New Zealand expressions",
+                        "Become familiar with common local expressions and communication styles."),
+
+                    new("Explore English language support",
+                        "Find out whether local organisations or education providers offer language assistance.")
+                ],
+
+                "Healthcare" =>
+                [
+                    new("Check your healthcare eligibility",
+                        "Confirm which publicly funded healthcare services you may be eligible to access."),
+
+                    new("Review your medical insurance",
+                        "Understand your insurance coverage, exclusions, excesses and claim requirements."),
+
+                    new("Find a local GP or medical centre",
+                        "Research nearby general practices and check whether they are accepting new patients."),
+
+                    new("Save important healthcare contacts",
+                        "Keep the contact details for your GP, pharmacy and Healthline accessible."),
+
+                    new("Understand prescription medication",
+                        "Learn how to obtain prescriptions and ask a pharmacist about medication instructions."),
+
+                    new("Learn how to access mental health support",
+                        "Find available wellbeing services and remember that you can call or text 1737 for support.")
+                ],
+
+                "Childcare" =>
+                [
+                    new("Research childcare options",
+                        "Compare early childhood education services and childcare options in your area."),
+
+                    new("Check childcare availability",
+                        "Contact services to ask about vacancies, waiting lists and enrolment timelines."),
+
+                    new("Compare childcare fees",
+                        "Ask about fees, minimum hours, additional charges and available financial assistance."),
+
+                    new("Prepare enrolment documents",
+                        "Gather the identity and other information required by your chosen childcare service."),
+
+                    new("Check available childcare assistance",
+                        "Research current eligibility requirements for relevant childcare subsidies and support."),
+
+                    new("Confirm childcare arrangements",
+                        "Confirm the start date, hours, contact details and drop-off and pick-up arrangements.")
+                ],
+
+                "Emergency" =>
+                [
+                    new("Learn New Zealand's emergency number",
+                        "Call 111 for urgent police, fire or ambulance assistance."),
+
+                    new("Save important emergency contacts",
+                        "Keep emergency contacts and relevant support numbers accessible."),
+
+                    new("Learn when to call 111",
+                        "Understand the difference between an emergency and a non-urgent situation."),
+
+                    new("Know where to find urgent healthcare",
+                        "Identify your nearest emergency department and suitable urgent care services."),
+
+                    new("Prepare an emergency plan",
+                        "Consider how you would contact family, leave an unsafe location and get help during an emergency."),
+
+                    new("Keep important documents accessible",
+                        "Store essential identification, insurance information and emergency contact details securely.")
+                ],
+
+                "Employment" =>
+                [
+                    new("Prepare or update your CV",
+                        "Include your relevant skills, education, experience and contact details."),
+
+                    new("Check your work eligibility",
+                        "Confirm the work conditions and restrictions that apply to your visa or employment situation."),
+
+                    new("Research job opportunities",
+                        "Find vacancies that match your skills, experience and availability."),
+
+                    new("Prepare for job interviews",
+                        "Practise answering common interview questions and prepare examples of your experience."),
+
+                    new("Understand your employment agreement",
+                        "Review your pay, hours, duties, leave entitlements and other employment conditions."),
+
+                    new("Learn your employment rights",
+                        "Understand minimum employment rights, workplace safety and how to seek help if needed.")
+                ],
+
+                "Family Support" =>
+                [
+                    new("Identify your family's support needs",
+                        "Consider your family's financial, childcare, education, housing and wellbeing needs."),
+
+                    new("Research family support services",
+                        "Find official organisations that provide relevant information and assistance."),
+
+                    new("Check eligibility for financial assistance",
+                        "Review current eligibility requirements for any benefits, subsidies or family support payments."),
+
+                    new("Find parenting and child wellbeing resources",
+                        "Explore reliable services and resources that support children's health and development."),
+
+                    new("Save useful family support contacts",
+                        "Keep the contact details of relevant support organisations and service providers."),
+
+                    new("Contact a relevant support service",
+                        "Ask a suitable organisation about available assistance and the application process.")
+                ],
+
+                "Education" =>
+                [
+                    new("Research education options",
+                        "Compare schools, tertiary programmes, training providers or other learning opportunities."),
+
+                    new("Check enrolment eligibility",
+                        "Confirm the relevant entry requirements and whether your circumstances affect eligibility."),
+
+                    new("Prepare enrolment documents",
+                        "Gather identification, academic records and other documents required by the education provider."),
+
+                    new("Understand education costs",
+                        "Check tuition fees, learning materials, transport costs and any available financial support."),
+
+                    new("Confirm enrolment dates and deadlines",
+                        "Check application deadlines, term dates, orientation dates and other important dates."),
+
+                    new("Find student support services",
+                        "Research academic support, wellbeing services, student advisers and other available assistance.")
+                ],
+
+                _ => Array.Empty<SeedTask>()
+            };
+        }
 
         private static byte[] LoadCategoryImage(
             string webRootPath,
@@ -110,18 +342,14 @@ namespace Aotearoa_is_Home.Data
         [
             new("Accomodation",
             [
-                // Add your approved Accommodation source content here.
-                // The page is created, but no placeholder advice is inserted.
             ]),
 
             new("Community",
             [
-                // Add your approved Community source content here.
             ]),
 
             new("Language",
             [
-                // Add your approved Language source content here.
             ]),
 
             new("Healthcare",
@@ -174,7 +402,7 @@ namespace Aotearoa_is_Home.Data
                 new("paragraph", "Moving to another country can involve changes in study, work, relationships, culture and daily life. Maintaining social connections, getting enough rest, staying active and seeking help when needed can support mental wellbeing."),
                 new("subheading", "1737 Mental Health Support"),
                 new("paragraph", "If you need to talk to someone about mental health or emotional distress, call or text 1737 to access free support."),
-                new("link", "Mental health support – Health New Zealand||https://www.healthnz.govt.nz/"),
+                new("link", "Mental health support – Health New Zealand||https://www.healthnz.govt.nz/")
             ]),
 
             new("Childcare",
@@ -214,7 +442,7 @@ namespace Aotearoa_is_Home.Data
                 new("link", "Plunket New Zealand||https://www.plunket.org.nz/"),
                 new("subheading", "Child Health Information"),
                 new("paragraph", "KidsHealth provides New Zealand-focused information about children's health, illnesses, medicines, development and wellbeing."),
-                new("link", "KidsHealth New Zealand||https://www.kidshealth.org.nz/"),
+                new("link", "KidsHealth New Zealand||https://www.kidshealth.org.nz/")
             ]),
 
             new("Emergency",
@@ -238,7 +466,7 @@ namespace Aotearoa_is_Home.Data
                 new("subheading", "Ambulance Costs and Insurance"),
                 new("paragraph", "Ambulance services and healthcare costs can depend on the circumstances and eligibility. International students should understand how emergency and ambulance costs are handled under their insurance policy."),
                 new("subheading", "Mental Health Emergency"),
-                new("paragraph", "A mental health crisis can be an emergency. If someone is in immediate danger or is experiencing a serious mental health crisis, call 111 or go to an Emergency Department. For non-immediate mental health support, call or text 1737."),
+                new("paragraph", "A mental health crisis can be an emergency. If someone is in immediate danger or is experiencing a serious mental health crisis, call 111 or go to an Emergency Department. For non-immediate mental health support, call or text 1737.")
             ]),
 
             new("Employment",
@@ -268,7 +496,7 @@ namespace Aotearoa_is_Home.Data
                 new("subheading", "Prepare for Your Interview"),
                 new("paragraph", "Research the organisation, prepare anything you need to bring, plan suitable clothing and your journey, and check whether the interview includes tests, presentations or group activities."),
                 new("subheading", "Answering Interview Questions"),
-                new("paragraph", "Review the job description, practise explaining your skills and experience, speak clearly, ask for clarification when needed, and provide concise examples of how you have applied your skills."),
+                new("paragraph", "Review the job description, practise explaining your skills and experience, speak clearly, ask for clarification when needed, and provide concise examples of how you have applied your skills.")
             ]),
 
             new("Family Support",
@@ -298,7 +526,7 @@ namespace Aotearoa_is_Home.Data
                 new("subheading", "Choosing When to Get Paid"),
                 new("paragraph", "Depending on the payment and your circumstances, payments may be available weekly, fortnightly or as a lump sum after the tax year. Consider whether your income and family circumstances are likely to change, and check current Inland Revenue guidance."),
                 new("subheading", "What to Do if Something Changes"),
-                new("paragraph", "Changes to family circumstances or income can affect entitlement. Notify Inland Revenue promptly when relevant details change."),
+                new("paragraph", "Changes to family circumstances or income can affect entitlement. Notify Inland Revenue promptly when relevant details change.")
             ]),
 
             new("Education",
@@ -328,7 +556,7 @@ namespace Aotearoa_is_Home.Data
                 new("heading", "Choosing a School"),
                 new("subheading", "School Zones and Enrolment Schemes"),
                 new("paragraph", "State schools may use enrolment schemes or home zones. Children who live in a school's zone may have priority for enrolment. Families should check the school's current enrolment scheme and requirements."),
-                new("link", "School zones and enrolment schemes – Ministry of Education||https://www.education.govt.nz/parents-and-caregivers/schools-year-0-13/starting-school/school-zones-and-enrolment-schemes"),
+                new("link", "School zones and enrolment schemes – Ministry of Education||https://www.education.govt.nz/parents-and-caregivers/schools-year-0-13/starting-school/school-zones-and-enrolment-schemes")
             ])
         ];
     }
