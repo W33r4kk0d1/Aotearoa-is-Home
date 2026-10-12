@@ -52,9 +52,12 @@
 
 
         <!-- PENDING VERIFICATIONS -->
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-xl-3"> 
 
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100
+                    @(Model.PendingVerifications > 0
+                        ? "border-start border-warning border-4"
+                        : "")">
 
                 <div class="card-body">
 
@@ -80,7 +83,7 @@
         <!-- SERVICE PROVIDERS -->
         <div class="col-md-6 col-xl-3">
 
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100"> 
 
                 <div class="card-body">
 
@@ -131,7 +134,10 @@
 
         @* PENDING COMMUNITY POSTS *@
         <div class="col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100
+                        @(Model.PendingCommunityPosts > 0
+                            ? "border-start border-warning border-4"
+                            : "")">
                 <div class="card-body">
                     <p class="text-muted mb-2">Pending Community Posts</p>
                     <h2 class="fw-bold mb-1">@Model.PendingCommunityPosts</h2>
@@ -148,7 +154,10 @@
 
         @* PENDING EVENTS *@
         <div class="col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100
+                        @(Model.PendingEvents > 0
+                            ? "border-start border-warning border-4"
+                            : "")">
                 <div class="card-body">
                     <p class="text-muted mb-2">Pending Events</p>
                     <h2 class="fw-bold mb-1">@Model.PendingEvents</h2>
@@ -187,7 +196,7 @@
                     <p class="text-muted mb-2">Upcoming Event Attendees</p>
                     <h2 class="fw-bold mb-1">@Model.UpcomingEventAttendees</h2>
                     <small class="text-muted">
-                        Total registered attendance responses
+                        Registrations for upcoming events
                     </small>
                 </div>
             </div>
@@ -195,45 +204,136 @@
 
     </div>
 
-
-    @* QUICK ACTIONS *@
-    <div class="card border-0 shadow-sm mb-4">
+    <!-- QUICK ACTIONS -->
+    <div class="card border-0 shadow-sm mb-4 quick-actions-section">
         <div class="card-body p-4">
-            <h5 class="fw-bold mb-3">Quick Actions</h5>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex align-items-center mb-4">
+                <div class="quick-actions-heading-icon me-3">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
 
-                <a asp-area="Admin"
-                asp-controller="StudentRegistration"
-                asp-action="Index"
-                class="btn btn-outline-primary">
-                    <i class="bi bi-person-check me-1"></i>
-                    Student Requests
-                </a>
+                <div>
+                    <h5 class="fw-bold mb-1">Quick Actions</h5>
+                    <p class="text-muted small mb-0">
+                        Access your most-used administration tasks
+                    </p>
+                </div>
+            </div>
 
-                <a asp-area="Admin"
-                asp-controller="ServiceProvider"
-                asp-action="Index"
-                class="btn btn-outline-primary">
-                    <i class="bi bi-shield-check me-1"></i>
-                    Verify Service Providers
-                </a>
+            <div class="row g-3">
 
-                <a asp-area="Admin"
-                asp-controller="Event"
-                asp-action="Index"
-                class="btn btn-outline-primary">
-                    <i class="bi bi-calendar-event me-1"></i>
-                    Manage Events
-                </a>
+                <!-- STUDENT REQUESTS -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <a asp-area="Admin"
+                    asp-controller="StudentRegistration"
+                    asp-action="Index"
+                    class="quick-action-card quick-action-blue">
 
-                <a asp-area="Admin"
-                asp-controller="Post"
-                asp-action="Index"
-                class="btn btn-outline-primary">
-                    <i class="bi bi-chat-square-text me-1"></i>
-                    Community Posts
-                </a>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right quick-action-arrow"></i>
+                        </div>
+
+                        <h6 class="fw-bold mt-3 mb-2">
+                            Student Requests
+                        </h6>
+
+                        <p class="text-muted small mb-3">
+                            Review and process student registration requests.
+                        </p>
+
+                        <span class="quick-action-link">
+                            Review requests <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- VERIFY SERVICE PROVIDERS -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <a asp-area="Admin"
+                    asp-controller="ServiceProvider"
+                    asp-action="Index"
+                    class="quick-action-card quick-action-green">
+
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right quick-action-arrow"></i>
+                        </div>
+
+                        <h6 class="fw-bold mt-3 mb-2">
+                            Verify Service Providers
+                        </h6>
+
+                        <p class="text-muted small mb-3">
+                            Review provider details and verification status.
+                        </p>
+
+                        <span class="quick-action-link">
+                            Verify providers <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- MANAGE EVENTS -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <a asp-area="Admin"
+                    asp-controller="Event"
+                    asp-action="Index"
+                    class="quick-action-card quick-action-amber">
+
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right quick-action-arrow"></i>
+                        </div>
+
+                        <h6 class="fw-bold mt-3 mb-2">
+                            Manage Events
+                        </h6>
+
+                        <p class="text-muted small mb-3">
+                            Review event submissions and manage published events.
+                        </p>
+
+                        <span class="quick-action-link">
+                            Manage events <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- COMMUNITY POSTS -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <a asp-area="Admin"
+                    asp-controller="Post"
+                    asp-action="Index"
+                    class="quick-action-card quick-action-purple">
+
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-chat-square-text"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right quick-action-arrow"></i>
+                        </div>
+
+                        <h6 class="fw-bold mt-3 mb-2">
+                            Community Posts
+                        </h6>
+
+                        <p class="text-muted small mb-3">
+                            Review and moderate community submissions.
+                        </p>
+
+                        <span class="quick-action-link">
+                            Manage posts <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+                    </a>
+                </div>
 
             </div>
         </div>

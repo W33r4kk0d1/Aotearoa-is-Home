@@ -106,6 +106,7 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     e.Status == "Approved" &&
                     e.EndDate >= DateTime.UtcNow);
 
+            
             var now = DateTime.UtcNow;
 
             var upcomingEventIds = await _context.Events
@@ -118,7 +119,11 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 .ToListAsync();
 
             var upcomingEventAttendees = await _context.EventResponses
-                .CountAsync(r => upcomingEventIds.Contains(r.EventId));
+                .AsNoTracking()
+                .Where(r => upcomingEventIds.Contains(r.EventId))
+                .Select(r => new { r.EventId, r.UserId })
+                .Distinct()
+                .CountAsync();
 
             
             var model = new AdminDashboardViewModel

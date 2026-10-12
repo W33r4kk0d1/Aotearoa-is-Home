@@ -62,7 +62,11 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                     eventItem.RecordResponses)
                 {
                     peopleGoing = await _context.EventResponses
-                        .CountAsync(r => r.EventId == id);
+                                    .AsNoTracking()
+                                    .Where(r => r.EventId == id)
+                                    .Select(r => r.UserId)
+                                    .Distinct()
+                                    .CountAsync();
                 }
 
                 ViewBag.EventViews = eventViews;
@@ -161,15 +165,20 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
                 })
                 .ToDictionaryAsync(x => x.EventId, x => x.Count);
 
-            var responseCounts = await _context.EventResponses
-                .Where(r => eventIds.Contains(r.EventId))
-                .GroupBy(r => r.EventId)
-                .Select(g => new
-                {
-                    EventId = g.Key,
-                    Count = g.Count()
-                })
-                .ToDictionaryAsync(x => x.EventId, x => x.Count);
+            var responseCounts = await _context.Events
+                            .Where(e => eventIds.Contains(e.Id)
+                                        && e.EnableResponses
+                                        && e.RecordResponses)
+                            .Select(e => new
+                            {
+                                EventId = e.Id,
+                                Count = _context.EventResponses
+                                    .Where(r => r.EventId == e.Id)
+                                    .Select(r => r.UserId)
+                                    .Distinct()
+                                    .Count()
+                            })
+                            .ToDictionaryAsync(x => x.EventId, x => x.Count);
 
             ViewBag.EventViewCounts = viewCounts;
             ViewBag.EventResponseCounts = responseCounts;

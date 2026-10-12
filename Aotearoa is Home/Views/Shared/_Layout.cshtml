@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/chatbot.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Aotearoa_is_Home.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
@@ -134,16 +135,15 @@
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link chatbot-nav-icon"
-                                    asp-area=""
-                                    asp-controller="Chatbot"
-                                    asp-action="Index"
+                                    <a href="#"
+                                    class="nav-link chatbot-nav-icon"
+                                    data-chatbot-toggle
                                     title="Chat with us"
                                     aria-label="Open chatbot">
-                                        <i class="bi bi-chat-dots-fill"></i>
+
+                                        <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
                                     </a>
                                 </li>
-
                             }
 
 
@@ -224,15 +224,15 @@
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link chatbot-nav-icon"
-                                    asp-area=""
-                                    asp-controller="Chatbot"
-                                    asp-action="Index"
+                                    <a href="#"
+                                    class="nav-link chatbot-nav-icon"
+                                    data-chatbot-toggle
                                     title="Chat with us"
                                     aria-label="Open chatbot">
-                                        <i class="bi bi-chat-dots-fill"></i>
+
+                                        <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
                                     </a>
-                                </li>    
+                                </li>
                             }
 
 
@@ -643,14 +643,34 @@
 </div>
 
 
+@{
+    var controllerName =
+        ViewContext.RouteData.Values["controller"]?.ToString();
+
+    var actionName =
+        ViewContext.RouteData.Values["action"]?.ToString();
+
+    var isStandaloneChatbotPage =
+        controllerName == "Chatbot" && actionName == "Index";
+}
+
+@if (User.Identity?.IsAuthenticated == true &&
+     (User.IsInRole("Student") ||
+      User.IsInRole("Family Member")) &&
+     !isStandaloneChatbotPage)
+{
+    <partial name="_ChatbotWidget" />
+}
+
 <!-- Scripts -->
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="~/js/site.js"
-        asp-append-version="true"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+<script src="~/js/chatbot.js" asp-append-version="true"></script>
 
 <script>
     function confirmLogout() {
