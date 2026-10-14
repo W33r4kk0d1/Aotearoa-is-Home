@@ -327,34 +327,59 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
             );
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var page =
-                await _context.SettlementPages
-                    .Include(p => p.ContentBlocks)
-                    .FirstOrDefaultAsync(
-                        p => p.Id == id
-                    );
+            var page = await _context.SettlementPages
+                .Include(p => p.ContentBlocks)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (page == null)
-            {
                 return NotFound();
+
+            // Find the tasks belonging to this category.
+            var tasks = await _context.ChecklistTasks
+                .Where(t => t.SettlementPageId == id)
+                .ToListAsync();
+
+            var taskIds = tasks.Select(t => t.Id).ToList();
+            var categoryName = page.CategoryName ?? "Other";
+
+            // Preserve historical checklist entries before deleting tasks.
+            var historicalItems = await _context.ChecklistItems
+                .Where(i =>
+                    i.ChecklistTaskId.HasValue &&
+                    taskIds.Contains(i.ChecklistTaskId.Value))
+                .ToListAsync();
+
+            foreach (var item in historicalItems)
+            {
+                var task = tasks.First(t => t.Id == item.ChecklistTaskId);
+
+                item.Title = task.Title;
+                item.Description = task.Description;
+                item.Category = categoryName;
+
+                // Keep the checklist item and its completion status.
+                // Detach it from the task that is about to be deleted.
+                item.ChecklistTaskId = null;
             }
 
-            _context.ContentBlocks.RemoveRange(
-                page.ContentBlocks
-            );
+            // Persist the detached historical records first.
+            await _context.SaveChangesAsync();
 
+            // Remove the category's tasks and content blocks.
+            _context.ChecklistTasks.RemoveRange(tasks);
+            _context.ContentBlocks.RemoveRange(page.ContentBlocks);
             _context.SettlementPages.Remove(page);
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(
-                "Index",
-                "Settlement"
-            );
+            return RedirectToAction("Index", "Settlement",
+                new { area = "Admin" });
         }
+
     }
 }
