@@ -20,14 +20,14 @@
                      class="card-body"
                      style="height: 450px; overflow-y: auto;">
 
-                    <div class="mb-3">
-                        <strong>Assistant:</strong>
-
-                        <div class="alert alert-light mt-1">
-                            Kia ora! How can I help you today?
-                            You can ask me about accommodation,
-                            healthcare, education, employment,
-                            transport, emergency support and family services.
+                    <div class="chat-message assistant-message">
+                        <strong>Assistant</strong>
+                        <div class="chat-message-bubble">
+                            <p>Kia ora! How can I help you today?</p>
+                            <p>
+                                You can ask me about accommodation, healthcare, education,
+                                employment, transport, emergency support and family services.
+                            </p>
                         </div>
                     </div>
 
@@ -126,18 +126,23 @@
                 }
             );
 
+            if (!response.ok) {
+                throw new Error("Unable to get a response from the assistant.");
+            }
+
             const data = await response.json();
 
-            // Display the chatbot response.
-            chatMessages.innerHTML += `
-                <div class="mb-3">
-                    <strong>Assistant:</strong>
+            if (!data.response) {
+                throw new Error("The assistant returned an empty response.");
+            }
 
-                    <div class="alert alert-light mt-1">
-                        ${escapeHtml(data.response)}
-                    </div>
+            // Display the chatbot response.
+            chatMessages.insertAdjacentHTML("beforeend", `
+                <div class="chat-message user-message">
+                    <div class="chat-message-label">You</div>
+                    <div class="chat-message-bubble">${escapeHtml(message)}</div>
                 </div>
-            `;
+            `);
 
             // Scroll to the newest message.
             chatMessages.scrollTop =

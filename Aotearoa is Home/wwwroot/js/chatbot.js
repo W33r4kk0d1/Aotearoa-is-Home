@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const responseUrl = widget.dataset.responseUrl;
 
+    const settlementUrl = widget.dataset.settlementUrl;
+
     function openChat() {
         panel.hidden = false;
         panel.setAttribute("aria-hidden", "false");
@@ -75,8 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Add a message without interpreting it as HTML.
-    function addMessage(sender, text, isUser) {
+    
+    function addMessage(sender, text, isUser, showSettlementLink = false) {
         const message = document.createElement("div");
+
         message.className = isUser
             ? "chat-message user-message"
             : "chat-message assistant-message";
@@ -89,12 +93,28 @@ document.addEventListener("DOMContentLoaded", function () {
         bubble.className = "chat-message-bubble";
         bubble.textContent = text;
 
+        // Add a clickable Settlement page link when requested by the controller.
+        if (!isUser && showSettlementLink && settlementUrl) {
+            const linkParagraph = document.createElement("p");
+            linkParagraph.style.marginTop = "10px";
+            linkParagraph.style.marginBottom = "0";
+
+            const link = document.createElement("a");
+            link.href = settlementUrl;
+            link.className = "chatbot-settlement-link";
+            link.textContent = "Explore Settlement Services";
+
+            linkParagraph.appendChild(link);
+            bubble.appendChild(linkParagraph);
+        }
+
         message.appendChild(label);
         message.appendChild(bubble);
         messages.appendChild(message);
 
         messages.scrollTop = messages.scrollHeight;
     }
+
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -160,7 +180,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error("The chatbot returned an unexpected response.");
             }
 
-            addMessage("Assistant", data.response, false);
+            addMessage(
+                "Assistant",
+                data.response,
+                false,
+                data.showSettlementLink === true
+            );
             status.textContent = "";
 
         } catch (error) {

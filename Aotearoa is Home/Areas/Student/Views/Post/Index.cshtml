@@ -8,11 +8,20 @@
     ViewData["Title"] = "Community Posts";
 }
 
+@{
+    var savedPostIds =
+        ViewBag.SavedPostIds as List<int> ?? new List<int>();
+}
+
 <link rel="stylesheet"
       href="~/css/student-posts.css"
       asp-append-version="true" />
 
 <div class="student-posts-page">
+
+    <form id="postFavouriteTokenForm" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
 
     <section class="student-posts-intro">
 
@@ -37,6 +46,11 @@
             <a href="/Student/Post/Create"
                class="student-posts-primary">
                 + Create New Post
+            </a>
+
+            <a href="/Student/Post/Saved"
+            class="student-posts-secondary">
+                ★ Saved Posts
             </a>
 
         </div>
@@ -113,18 +127,25 @@
                 {
                     <article class="my-post-card community-post-card"
                              data-category="@post.Category.ToLowerInvariant()">
-
+  
                         <div class="my-post-card-header">
                             <span class="my-post-category">
                                 @post.Category
                             </span>
+
+                            <button type="button"
+                                    class="post-favourite-btn @(savedPostIds.Contains(post.Id) ? "saved" : "")"
+                                    data-post-id="@post.Id"
+                                    aria-label="@(savedPostIds.Contains(post.Id) ? "Remove from saved posts" : "Save post")"
+                                    aria-pressed="@(savedPostIds.Contains(post.Id) ? "true" : "false")"
+                                    title="Save or remove from saved posts">
+                                @(savedPostIds.Contains(post.Id) ? "★" : "☆")
+                            </button>
                         </div>
 
                         <h3>@post.Title</h3>
 
-                        <p class="my-post-description">
-                            @post.Description
-                        </p>
+                        <p class="my-post-description">@((post.Description ?? "").TrimStart())</p>
 
                         @if (post.ImageData != null &&
                              post.ImageContentType != null)
@@ -145,7 +166,6 @@
 
                     </article>
                 }
-
             </div>
 
             <div class="student-posts-empty"
@@ -214,6 +234,63 @@
         });
 
         search.addEventListener("input", filterPosts);
+    });
+
+
+document.querySelectorAll(".post-favourite-btn")
+    .forEach(button => {
+        button.addEventListener("click", async function () {
+            if (button.disabled) return;
+
+            button.disabled = true;
+
+            const postId = button.dataset.postId;
+
+            const token = document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            )?.value;
+
+            try {
+                const response = await fetch(
+                    "/Student/Post/ToggleFavourite",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+                        body: new URLSearchParams({
+                            id: postId,
+                            __RequestVerificationToken: token
+                        })
+                    }
+                );
+
+                if (!response.ok)
+                    throw new Error("Unable to save post.");
+
+                const result = await response.json();
+
+                button.classList.toggle("saved", result.isSaved);
+                button.textContent = result.isSaved ? "★" : "☆";
+
+                button.setAttribute(
+                    "aria-pressed",
+                    String(result.isSaved)
+                );
+
+                button.setAttribute(
+                    "aria-label",
+                    result.isSaved ? "Remove from saved posts" : "Save post"
+                );
+            }
+            catch (error) {
+                alert("Could not update saved posts. Please try again.");
+            }
+            finally {
+                button.disabled = false;
+            }
+        });
     });
 </script>
 
