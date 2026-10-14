@@ -1,21 +1,18 @@
-using Aotearoa_is_Home.Data;
+
 using Aotearoa_is_Home.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Aotearoa_is_Home.Areas.Family.Controllers
 {
     [Area("Family")]
-    [Authorize(Roles = "Family")]
+    [Authorize(Roles = "Family Member")]
     public class ProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProfileController(
-            UserManager<ApplicationUser> userManager)
+        public ProfileController(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -26,13 +23,9 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
-            return View(
-                "~/Areas/Student/Views/Profile/Index.cshtml",
-                user);
+            return View("~/Areas/Student/Views/Profile/Index.cshtml", user);
         }
 
         [HttpGet]
@@ -41,13 +34,9 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
-            return View(
-                "~/Areas/Student/Views/Profile/Edit.cshtml",
-                user);
+            return View("~/Areas/Student/Views/Profile/Edit.cshtml", user);
         }
     }
 }

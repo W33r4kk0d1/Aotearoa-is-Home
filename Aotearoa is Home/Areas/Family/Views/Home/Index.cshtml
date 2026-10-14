@@ -89,7 +89,8 @@
                         {
                             <div class="student-home-settlement-progress">
 
-                                @if (isRecommended)
+                                @if (isRecommended &&
+                                    progress.Completed < progress.Total)
                                 {
                                     <span class="student-recommended-badge">
                                         Recommended for you
@@ -97,7 +98,6 @@
                                 }
 
                                 <div class="student-settlement-progress-info">
-
                                     <span>
                                         @progress.Status
                                     </span>
@@ -105,15 +105,12 @@
                                     <span>
                                         @progress.Completed / @progress.Total tasks
                                     </span>
-
                                 </div>
 
                                 <div class="student-settlement-progress-track">
-
                                     <div class="student-settlement-progress-fill"
-                                         style="width: @progress.Percentage%">
+                                        style="width: @progress.Percentage%">
                                     </div>
-
                                 </div>
 
                             </div>
