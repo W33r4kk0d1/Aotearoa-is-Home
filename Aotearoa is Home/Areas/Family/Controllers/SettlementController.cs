@@ -1,10 +1,13 @@
+
 using Aotearoa_is_Home.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aotearoa_is_Home.Areas.Family.Controllers
 {
     [Area("Family")]
+    [Authorize(Roles = "Family Member")]
     public class SettlementController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,10 +17,12 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             _context = context;
         }
 
+        // GET: /Family/Settlement
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var pages = await _context.SettlementPages
+                .AsNoTracking()
                 .OrderBy(p => p.CategoryName)
                 .ToListAsync();
 
@@ -26,10 +31,12 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
                 pages);
         }
 
+        // GET: /Family/Settlement/View/1
         [HttpGet]
         public async Task<IActionResult> View(int id)
         {
             var page = await _context.SettlementPages
+                .AsNoTracking()
                 .Include(p => p.ContentBlocks)
                 .FirstOrDefaultAsync(p => p.Id == id);
 

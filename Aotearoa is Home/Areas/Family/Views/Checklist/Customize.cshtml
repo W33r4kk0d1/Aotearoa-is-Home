@@ -1,0 +1,77 @@
+
+@model Aotearoa_is_Home.Models.StudentChecklist
+
+@{
+    ViewData["Title"] = "Customize Checklist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var tasks = ViewBag.AvailableTasks
+        as List<Aotearoa_is_Home.Models.ChecklistTask>
+        ?? new List<Aotearoa_is_Home.Models.ChecklistTask>();
+
+    var selectedIds = ViewBag.SelectedTaskIds as HashSet<int>
+        ?? new HashSet<int>();
+}
+
+<div class="container py-4">
+    <h1>Customize Checklist</h1>
+    <p>Change the name or select different tasks.</p>
+
+    <form asp-area="Family" asp-controller="Checklist"
+          asp-action="Customize" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Checklist name</label>
+            <input id="name" name="name" class="form-control"
+                   value="@Model.Name" maxlength="150" required />
+        </div>
+
+        @foreach (var category in tasks.GroupBy(
+            t => t.SettlementPage?.CategoryName ?? "Other"))
+        {
+            <fieldset class="card mb-3">
+                <div class="card-header">
+                    <strong>@category.Key</strong>
+                </div>
+                <div class="card-body">
+                    @foreach (var task in category)
+                    {
+                        <div class="form-check mb-2">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="taskIds"
+                                   value="@task.Id"
+                                   id="task-@task.Id"
+                                   checked="@selectedIds.Contains(task.Id)" />
+
+                            <label class="form-check-label"
+                                   for="task-@task.Id">
+                                <strong>@task.Title</strong>
+                                @if (!string.IsNullOrWhiteSpace(task.Description))
+                                {
+                                    <span class="d-block text-muted">
+                                        @task.Description
+                                    </span>
+                                }
+                            </label>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+        }
+
+        <button type="submit" class="btn btn-primary">
+            Save Changes
+        </button>
+
+        <a asp-area="Family" asp-controller="Checklist"
+           asp-action="ViewChecklist" asp-route-id="@Model.Id"
+           class="btn btn-outline-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
