@@ -1,10 +1,14 @@
-﻿
-using Aotearoa_is_Home.Data;
+﻿using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Aotearoa_is_Home.Areas.Student.Controllers
 {
@@ -31,6 +35,16 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 .Where(p => p.Status == "Approved")
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
+
+            var userId = _userManager.GetUserId(User);
+
+            var savedIds = await _context.CommunityPostFavourites
+                .AsNoTracking()
+                .Where(f => f.UserId == userId)
+                .Select(f => f.CommunityPostId)
+                .ToListAsync();
+
+            ViewBag.SavedPostIds = savedIds;
 
             return View(posts);
         }
@@ -185,5 +199,74 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
 
             return View(posts);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleFavourite(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            var postExists = await _context.CommunityPosts
+                .AnyAsync(p => p.Id == id && p.Status == "Approved");
+
+            if (!postExists)
+                return NotFound();
+
+            var favourite = await _context.CommunityPostFavourites
+                .FirstOrDefaultAsync(f =>
+                    f.CommunityPostId == id &&
+                    f.UserId == userId);
+
+            bool isSaved;
+
+            if (favourite == null)
+            {
+                _context.CommunityPostFavourites.Add(
+                    new CommunityPostFavourite
+                    {
+                        CommunityPostId = id,
+                        UserId = userId,
+                        CreatedAt = DateTime.UtcNow
+                    });
+
+                isSaved = true;
+            }
+            else
+            {
+                _context.CommunityPostFavourites.Remove(favourite);
+                isSaved = false;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, isSaved });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Saved()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            var posts = await _context.CommunityPostFavourites
+                .AsNoTracking()
+                .Where(f => f.UserId == userId &&
+                            f.CommunityPost != null &&
+                            f.CommunityPost.Status == "Approved")
+                .OrderByDescending(f => f.CreatedAt)
+                .Select(f => f.CommunityPost!)
+                .ToListAsync();
+
+            ViewBag.SavedPostIds = posts.Select(p => p.Id).ToList();
+
+            return View(posts);
+        }
+
     }
 }

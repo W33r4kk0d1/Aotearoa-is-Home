@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Create Checklist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     var tasks = ViewBag.AvailableTasks
         as List<Aotearoa_is_Home.Models.ChecklistTask>
         ?? new List<Aotearoa_is_Home.Models.ChecklistTask>();
@@ -62,7 +63,9 @@
         <button type="submit" class="btn btn-primary">
             Create Checklist
         </button>
-        <a asp-action="Index" class="btn btn-outline-secondary">
+
+        <a href="/Student/Checklist"
+        class="btn btn-outline-secondary">
             Cancel
         </a>
     </form>

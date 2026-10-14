@@ -6,17 +6,67 @@
     ViewData["Title"] = "My Checklists";
 }
 
-<div class="container py-4">
-    <div class="mb-4">
-        <h1>My Checklists</h1>
-        <p class="text-muted">
-            Track your progress towards settling into New Zealand.
-        </p>
+<div class="container checklist-page">
+
+    <div class="checklist-page-header">
+        <div class="checklist-heading-content">
+            <span class="checklist-eyebrow">
+                YOUR SETTLEMENT JOURNEY
+            </span>
+            <h1 class="checklist-heading">My Checklists</h1>
+            <p class="checklist-subtitle">
+                Every small step brings you closer to feeling at home in New Zealand.
+            </p>
+        </div>
+
+        <a href="/Student/Checklist/Create"
+           class="btn btn-create-checklist">
+            <i class="bi bi-plus-circle me-2"></i>
+            Create Checklist
+        </a>
     </div>
 
-    <a asp-action="Create" class="btn btn-primary mb-4">
-        <i class="bi bi-plus-lg"></i> Create Checklist
-    </a>
+        @{
+            var totalChecklists = Model?.Count ?? 0;
+            var totalTasks = Model?.Sum(c => c.Items?.Count ?? 0) ?? 0;
+            var completedTasks = Model?.Sum(c =>
+                c.Items?.Count(i => i.IsCompleted) ?? 0) ?? 0;
+            var overallProgress = totalTasks == 0
+                ? 0
+                : (int)Math.Round(completedTasks * 100.0 / totalTasks);
+        }
+    
+        <div class="checklist-summary">
+            <div class="summary-item">
+                <div class="summary-icon summary-icon-green">
+                    <i class="bi bi-journal-check"></i>
+                </div>
+                <div>
+                    <span class="summary-label">My checklists</span>
+                    <h3>@totalChecklists</h3>
+                </div>
+            </div>
+
+            <div class="summary-item">
+                <div class="summary-icon summary-icon-blue">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div>
+                    <span class="summary-label">Tasks completed</span>
+                    <h3>@completedTasks <small>of @totalTasks</small></h3>
+                </div>
+            </div>
+
+            <div class="summary-item">
+                <div class="summary-icon summary-icon-purple">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div>
+                    <span class="summary-label">Overall progress</span>
+                    <h3>@overallProgress%</h3>
+                </div>
+            </div>
+        </div>
 
     @if (Model == null || !Model.Any())
     {
@@ -27,7 +77,7 @@
     }
     else
     {
-        <div class="row g-4">
+        <div class="row g-4 checklist-grid">
             @foreach (var checklist in Model)
             {
                 var totalCount = checklist.Items?.Count ?? 0;
@@ -40,7 +90,7 @@
                     : (completedCount * 100) / totalCount;
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm checklist-card">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">
                                 @checklist.Name
@@ -50,7 +100,7 @@
                                 @completedCount of @totalCount tasks completed
                             </p>
 
-                            <div class="progress mb-3"
+                            <div class="progress mb-3 checklist-progress"
                                  role="progressbar"
                                  aria-label="Checklist progress"
                                  aria-valuenow="@progress"
@@ -69,28 +119,84 @@
                             </p>
 
                             <div class="d-flex flex-wrap gap-2 mt-3">
-                                <a asp-action="ViewChecklist"
-                                asp-route-id="@checklist.Id"
+                                <a href="/Student/Checklist/ViewChecklist?id=@checklist.Id"
                                 class="btn btn-primary">
                                     View
                                 </a>
 
-                                <a asp-action="Customize"
-                                asp-route-id="@checklist.Id"
+                                <a href="/Student/Checklist/Customize?id=@checklist.Id"
                                 class="btn btn-outline-primary">
                                     Customize
                                 </a>
 
-                                <a asp-action="Delete"
-                                asp-route-id="@checklist.Id"
-                                class="btn btn-outline-danger">
+                                <button type="button"
+                                        class="btn btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal-@checklist.Id">
                                     Delete
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
+                    <div class="modal fade"
+                        id="deleteModal-@checklist.Id"
+                        tabindex="-1"
+                        aria-labelledby="deleteModalLabel-@checklist.Id"
+                        aria-hidden="true">
+
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title"
+                                        id="deleteModalLabel-@checklist.Id">
+                                            Confirm deletion
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+
+                                 <div class="modal-body">
+                                                Are you sure you want to delete
+                                    <strong>@checklist.Name</strong>?
+
+                                    <p class="text-danger mb-0 mt-2">
+                                                    This will permanently delete this checklist and its saved progress.
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                    Cancel
+                                    </button>
+
+                                    <form action="/Student/Checklist/DeleteConfirmed"
+                                                    method="post">
+                                                    @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                                        name="id"
+                                                        value="@checklist.Id" />
+
+                                        <button type="submit"
+                                                            class="btn btn-danger">
+                                                        Yes, Delete
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                   </div>
                 </div>
             }
         </div>
     }
+</div>
 </div>

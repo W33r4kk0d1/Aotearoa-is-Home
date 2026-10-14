@@ -51,6 +51,7 @@ namespace Aotearoa_is_Home.Data
 
         public DbSet<CommunityPost> CommunityPosts { get; set; }
 
+        public DbSet<CommunityPostFavourite> CommunityPostFavourites { get; set; }
 
         protected override void OnModelCreating(
             ModelBuilder builder)
@@ -168,6 +169,23 @@ namespace Aotearoa_is_Home.Data
             .WithMany()
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        // COMMUNITY POST FAVOURITES
+        builder.Entity<CommunityPostFavourite>()
+            .HasOne(f => f.CommunityPost)
+            .WithMany()
+            .HasForeignKey(f => f.CommunityPostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<CommunityPostFavourite>()
+            .HasOne(f => f.User)
+            .WithMany()
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<CommunityPostFavourite>()
+            .HasIndex(f => new { f.CommunityPostId, f.UserId })
+            .IsUnique();
     }
 
     }

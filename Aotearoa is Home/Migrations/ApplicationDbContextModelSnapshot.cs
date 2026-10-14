@@ -294,6 +294,34 @@ namespace Aotearoa_is_Home.Migrations
                     b.ToTable("CommunityPosts");
                 });
 
+            modelBuilder.Entity("Aotearoa_is_Home.Models.CommunityPostFavourite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommunityPostId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CommunityPostId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("CommunityPostFavourites");
+                });
+
             modelBuilder.Entity("Aotearoa_is_Home.Models.ContentBlock", b =>
                 {
                     b.Property<int>("Id")
@@ -1042,6 +1070,25 @@ namespace Aotearoa_is_Home.Migrations
                         .IsRequired();
 
                     b.Navigation("SettlementPage");
+                });
+
+            modelBuilder.Entity("Aotearoa_is_Home.Models.CommunityPostFavourite", b =>
+                {
+                    b.HasOne("Aotearoa_is_Home.Models.CommunityPost", "CommunityPost")
+                        .WithMany()
+                        .HasForeignKey("CommunityPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aotearoa_is_Home.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CommunityPost");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Aotearoa_is_Home.Models.ContentBlock", b =>

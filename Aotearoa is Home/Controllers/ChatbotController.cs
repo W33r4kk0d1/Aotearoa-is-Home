@@ -34,6 +34,7 @@ namespace Aotearoa_is_Home.Controllers
             var question = Normalize(message);
 
             string response;
+            bool showSettlementLink = false;
 
             // =========================================================
             // 1. EMERGENCY & SAFETY
@@ -838,9 +839,44 @@ namespace Aotearoa_is_Home.Controllers
                     "accommodation, waste, shopping, driving, employment or family services.";
             }
 
+            showSettlementLink =
+                        IsAny(question,
+                            "healthcare",
+                            "health care",
+                            "health",
+                            "doctor",
+                            "gp",
+                            "pharmacy",
+                            "pharmacist",
+                            "education",
+                            "school",
+                            "childcare",
+                            "child care",
+                            "employment",
+                            "job",
+                            "jobs",
+                            "work",
+                            "career",
+                            "transport",
+                            "transportation",
+                            "bus",
+                            "train",
+                            "emergency",
+                            "emergency support",
+                            "family services",
+                            "family",
+                            "settlement",
+                            "settling in",
+                            "settle in",
+                            "accommodation",
+                            "housing",
+                            "rental",
+                            "community");
+
             return Json(new
             {
-                response = response
+                response = response,
+                showSettlementLink = showSettlementLink
             });
         }
 

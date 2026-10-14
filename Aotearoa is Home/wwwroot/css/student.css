@@ -1410,20 +1410,20 @@
 .chatbot-nav-icon {
     width: 42px;
     height: 42px;
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 8px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0d6efd, #20c997);
-    color: white !important;
+    color: white;
     font-size: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
     transition: all 0.25s ease;
 }
 
     .chatbot-nav-icon:hover {
-        color: white !important;
+        color: white;
         transform: translateY(-2px) scale(1.08);
         box-shadow: 0 7px 18px rgba(0, 0, 0, 0.25);
     }
@@ -1432,7 +1432,7 @@
 .student-posts-page {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 50px 40px 90px;
+    padding: 0px 40px 90px;
     color: #222925;
 }
 
@@ -1828,6 +1828,10 @@
     line-height: 1.7;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+    text-align: left;
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .my-post-image {
@@ -1926,4 +1930,112 @@
     border-radius: 16px;
     background: #ffffff;
     color: #626a65;
+}
+
+/* =========================================================
+   COMMUNITY POSTS PAGE — LAYOUT FIXES
+   ========================================================= */
+
+.student-posts-page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 35px 40px 90px;
+    box-sizing: border-box;
+    color: #222925;
+}
+
+/* Keep the entire page introduction visible below the navbar */
+.student-posts-intro {
+    display: flow-root;
+    margin-bottom: 0;
+}
+
+.student-posts-intro .student-eyebrow {
+    display: inline-block;
+    margin: 0 0 10px;
+}
+
+.student-posts-intro h1 {
+    margin: 0 0 14px;
+    line-height: 1.15;
+}
+
+.student-posts-intro p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   COMMUNITY POST CARD — DESCRIPTION ALIGNMENT FIX
+   ========================================================= */
+
+.community-post-card {
+    text-align: left;
+}
+
+.community-post-card .my-post-card-header {
+    justify-content: flex-start;
+    margin-bottom: 14px;
+}
+
+.community-post-card h3 {
+    margin: 0 0 14px;
+    text-align: left;
+}
+
+.community-post-card .my-post-description {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .student-posts-page {
+        padding: 30px 20px 60px;
+    }
+
+    .student-posts-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .community-post-card {
+        padding: 22px;
+    }
+}
+
+
+.post-favourite-btn {
+    border: none;
+    background: transparent;
+    color: #9aa79a;
+    font-size: 30px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.post-favourite-btn:hover {
+    color: #688365;
+    transform: scale(1.12);
+}
+
+.post-favourite-btn.saved {
+    color: #e0a526;
+}
+
+.post-favourite-btn:focus-visible {
+    outline: 2px solid #688365;
+    outline-offset: 3px;
+    border-radius: 6px;
 }

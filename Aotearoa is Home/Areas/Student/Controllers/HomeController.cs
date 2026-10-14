@@ -1,4 +1,5 @@
-﻿using Aotearoa_is_Home.Data;
+﻿
+using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -32,14 +33,17 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 return Unauthorized();
             }
 
-            var checklist = await context.StudentChecklists
-                .Where(x => x.UserId == userId && !x.IsArchived)
-                .OrderByDescending(x => x.CreatedAt)
-                .FirstOrDefaultAsync();
+            // 1. Get all active checklists belonging to this student.
+            var activeChecklists = await context.StudentChecklists
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived)
+                .ToListAsync();
 
-            if (checklist == null)
+            // 2. Create the default checklist if the student does not have any active checklist.
+            if (!activeChecklists.Any())
             {
-                checklist = new StudentChecklist
+                var checklist = new StudentChecklist
                 {
                     UserId = userId,
                     Name = "Settlement Checklist",
@@ -48,52 +52,32 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 };
 
                 context.StudentChecklists.Add(checklist);
+
                 await context.SaveChangesAsync();
+
+                activeChecklists.Add(checklist);
             }
 
+            // 3. Get the IDs of all active checklists.
+            var activeChecklistIds = activeChecklists
+                .Select(x => x.Id)
+                .ToList();
+
+            // 4. Retrieve items from all active checklists belonging to the logged-in student.
+            var checklistItems = await context.ChecklistItems
+                .Where(x =>
+                    x.UserId == userId &&
+                    x.StudentChecklistId.HasValue &&
+                    activeChecklistIds.Contains(x.StudentChecklistId.Value))
+                .ToListAsync();
+
+
+            // 5. Load all settlement categories and their tasks.
             var settlementPages = await context.SettlementPages
                 .Include(x => x.ChecklistTasks)
                 .ToListAsync();
 
-            var checklistItems = await context.ChecklistItems
-                .Where(x =>
-                    x.UserId == userId &&
-                    x.StudentChecklistId == checklist.Id)
-                .ToListAsync();
-
-            var existingTaskIds = checklistItems
-                .Where(x => x.ChecklistTaskId.HasValue)
-                .Select(x => x.ChecklistTaskId!.Value)
-                .ToHashSet();
-
-            foreach (var page in settlementPages)
-            {
-                foreach (var task in page.ChecklistTasks)
-                {
-                    if (existingTaskIds.Contains(task.Id))
-                    {
-                        continue;
-                    }
-
-                    var item = new ChecklistItem
-                    {
-                        UserId = userId,
-                        StudentChecklistId = checklist.Id,
-                        ChecklistTaskId = task.Id,
-                        Category = page.CategoryName,
-                        Title = task.Title,
-                        Description = task.Description,
-                        IsCompleted = false
-                    };
-
-                    context.ChecklistItems.Add(item);
-                    checklistItems.Add(item);
-                    existingTaskIds.Add(task.Id);
-                }
-            }
-
-            await context.SaveChangesAsync();
-
+            // 6. Calculate progress and recommendation priority separately for each settlement category.
             var progress =
                 new Dictionary<int, ChecklistProgressViewModel>();
 
@@ -101,27 +85,28 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 new List<(SettlementPage Page, int Priority, int Remaining)>();
 
             foreach (var page in settlementPages)
-            {
+            {  
                 var tasks = page.ChecklistTasks
                     .OrderBy(x => x.DisplayOrder)
                     .ToList();
 
-                var total = tasks.Count;
+                int total = tasks.Count;
 
                 var taskIds = tasks
                     .Select(x => x.Id)
                     .ToHashSet();
 
-                var pageItems = checklistItems
+                // A task counts as completed if completed in any active checklist.
+                var completedTaskIds = checklistItems
                     .Where(x =>
                         x.ChecklistTaskId.HasValue &&
+                        x.IsCompleted &&
                         taskIds.Contains(x.ChecklistTaskId.Value))
-                    .GroupBy(x => x.ChecklistTaskId!.Value)
-                    .Select(x => x.First())
-                    .ToList();
+                    .Select(x => x.ChecklistTaskId.Value)
+                    .ToHashSet();
 
-                var completed = pageItems.Count(x => x.IsCompleted);
-                var remaining = total - completed;
+                int completed = completedTaskIds.Count;
+                int remaining = total - completed;
 
                 progress[page.Id] = new ChecklistProgressViewModel
                 {
@@ -149,8 +134,11 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 }
 
                 priorityPages.Add((page, priority, remaining));
+
             }
 
+            // 7. Sort recommendations by priority.
+            // Partially completed categories appear first, followed by unstarted categories and completed ones.
             settlementPages = priorityPages
                 .OrderBy(x => x.Priority)
                 .ThenByDescending(x => x.Remaining)
@@ -158,6 +146,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 .Select(x => x.Page)
                 .ToList();
 
+            // 8. Load the three earliest approved events.
             var events = await context.Events
                 .Include(x => x.EventProviderProfile)
                 .Where(x => x.Status == "Approved")
@@ -165,6 +154,7 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
                 .Take(3)
                 .ToListAsync();
 
+            // 9. Build the Home page view model.
             var model = new StudentHomeViewModel
             {
                 SettlementPages = settlementPages,

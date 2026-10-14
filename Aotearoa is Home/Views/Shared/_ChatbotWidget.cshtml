@@ -4,11 +4,18 @@
         "Chatbot",
         new { area = "" }
     );
+
+    var settlementUrl = Url.Action(
+        "Index",
+        "Settlement",
+        new { area = "Admin" }
+    );
 }
 
 <div id="chatbotWidget"
      class="chatbot-widget"
-     data-response-url="@chatbotResponseUrl">
+     data-response-url="@chatbotResponseUrl"
+     data-settlement-url="@settlementUrl">
 
     <!-- Floating chatbot button -->
     <button type="button"
