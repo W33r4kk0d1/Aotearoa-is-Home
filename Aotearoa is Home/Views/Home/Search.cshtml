@@ -10,25 +10,17 @@
 <div class="public-search-page">
 
     <div class="public-search-page-header">
+        <span>SEARCH AOTEAROA IS HOME</span>
 
-        <span>
-            SEARCH AOTEAROA IS HOME
-        </span>
-
-        <h1>
-            Search Results
-        </h1>
+        <h1>Settlement Information</h1>
 
         @if (!string.IsNullOrWhiteSpace(searchString))
         {
             <p>
-                Showing results for
-                <strong>"@searchString"</strong>
+                Results for <strong>"@searchString"</strong>
             </p>
         }
-
     </div>
-
 
     <div class="public-search-results">
 
@@ -36,49 +28,65 @@
         {
             foreach (var page in Model)
             {
-                <div class="public-search-result-card">
+                <article class="public-search-result-card">
 
                     <div class="public-search-result-icon">
                         📖
                     </div>
 
                     <div class="public-search-result-content">
+                        <h2>@(page.CategoryName)</h2>
 
-                        <h2>
-                            CategoryName
-                        </h2>
+                        @foreach (var block in page.ContentBlocks)
+                        {
+                            @if (string.Equals(
+                                block.Type, "heading",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                <h3>@block.Content</h3>
+                            }
+                            else if (string.Equals(
+                                block.Type, "image",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                @if (block.ImageData != null &&
+                                     block.ImageData.Length > 0)
+                                {
+                                    <img src="data:@block.ImageContentType;base64,@Convert.ToBase64String(block.ImageData)"
+                                         alt="@block.Content"
+                                         class="img-fluid rounded mb-3" />
+                                }
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrWhiteSpace(block.Content))
+                                {
+                                    <p>@block.Content</p>
+                                }
+                            }
 
-                        <p>
-                            Explore information about
-                            CategoryName and useful
-                            resources available through
-                            Aotearoa is Home.
-                        </p>
+                            @if (!string.IsNullOrWhiteSpace(block.Details))
+                            {
+                                <p>@block.Details</p>
+                            }
+                        }
 
                     </div>
 
-                    <span class="public-search-result-arrow">
-                        →
-                    </span>
-
-                </div>
+                </article>
             }
         }
         else
         {
             <div class="public-no-results">
+                <div class="public-no-results-icon">🔎</div>
 
-                <div class="public-no-results-icon">
-                    🔎
-                </div>
-
-                <h2>
-                    No results found
-                </h2>
+                <h2>No results found</h2>
 
                 <p>
-                    We couldn't find any information matching
-                    your search. Try using a different keyword.
+                    We couldn't find matching settlement information.
+                    Try another keyword, such as healthcare,
+                    accommodation, education or employment.
                 </p>
 
                 <a asp-controller="Home"
@@ -86,10 +94,8 @@
                    class="public-btn public-btn-primary">
                     Back to Home
                 </a>
-
             </div>
         }
 
     </div>
-
 </div>

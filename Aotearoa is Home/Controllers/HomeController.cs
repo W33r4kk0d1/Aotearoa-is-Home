@@ -15,9 +15,22 @@ namespace Aotearoa_is_Home.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var settlementPages = await _context.SettlementPages
+                .AsNoTracking()
+                .Include(p => p.ContentBlocks)
+                .OrderBy(p => p.CategoryName)
+                .ToListAsync();
+
+            foreach (var page in settlementPages)
+            {
+                page.ContentBlocks = page.ContentBlocks
+                    .OrderBy(b => b.DisplayOrder)
+                    .ToList();
+            }
+
+            return View(settlementPages);
         }
 
 
@@ -25,6 +38,8 @@ namespace Aotearoa_is_Home.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(string? searchString)
         {
+            ViewData["SearchString"] = searchString;
+
             if (string.IsNullOrWhiteSpace(searchString))
             {
                 return View(new List<Models.SettlementPage>());
@@ -33,12 +48,22 @@ namespace Aotearoa_is_Home.Controllers
             searchString = searchString.Trim();
 
             var results = await _context.SettlementPages
+                .AsNoTracking()
+                .Include(p => p.ContentBlocks)
                 .Where(p =>
-                    p.CategoryName.Contains(searchString))
+                    p.CategoryName.Contains(searchString) ||
+                    p.ContentBlocks.Any(c =>
+                        c.Content.Contains(searchString) ||
+                        c.Details.Contains(searchString)))
                 .OrderBy(p => p.CategoryName)
                 .ToListAsync();
 
-            ViewData["SearchString"] = searchString;
+            foreach (var page in results)
+            {
+                page.ContentBlocks = page.ContentBlocks
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToList();
+            }
 
             return View(results);
         }
