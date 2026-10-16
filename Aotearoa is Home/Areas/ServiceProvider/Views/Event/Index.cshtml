@@ -433,6 +433,21 @@
                                 Edit Event
                             </a>
 
+                            @if (eventItem.EnableResponses && eventItem.RecordResponses)
+                            {
+                                <a href="@Url.Action(
+                                    "Attendees",
+                                    "Event",
+                                    new
+                                    {
+                                        area = "ServiceProvider",
+                                        id = eventItem.Id
+                                    })"
+                                class="manage-view-button">
+                                    View Attendees
+                                </a>
+                            }
+
                             @* Delete Event *@
                             <form action="@Url.Action(
                                 "Delete",

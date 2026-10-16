@@ -1,0 +1,159 @@
+@model List<Aotearoa_is_Home.Models.EventResponse>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Event Attendees";
+
+    var providerEvents =
+        ViewBag.ProviderEvents as List<Aotearoa_is_Home.Models.Event>
+        ?? new List<Aotearoa_is_Home.Models.Event>();
+
+    int? selectedEventId = ViewBag.SelectedEventId;
+}
+
+<div class="container my-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Event Attendees</h1>
+            <p class="text-muted mb-0">
+                People who have expressed interest in
+                <strong>@ViewBag.EventTitle</strong>.
+            </p>
+        </div>
+
+        <a href="/ServiceProvider/Event/Index"
+           class="btn btn-outline-secondary">
+            Back to My Events
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="get"
+                  action="/ServiceProvider/Event/Attendees"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-8">
+                    <label for="id" class="form-label">
+                        Filter by event
+                    </label>
+
+                    <select id="id" name="id" class="form-select">
+                        <option value="">All Events</option>
+
+                        @foreach (var eventItem in providerEvents)
+                        {
+                            if (selectedEventId == eventItem.Id)
+                            {
+                                <option value="@eventItem.Id" selected>
+                                    @eventItem.Title
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@eventItem.Id">
+                                    @eventItem.Title
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Apply Filter
+                    </button>
+
+                    <a href="/ServiceProvider/Event/Attendees"
+                       class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+                </div>
+
+            </form>
+
+            <div class="mt-3">
+                <a href="@Url.Action(
+                    "ExportAttendees",
+                    "Event",
+                    new { area = "ServiceProvider", id = selectedEventId })"
+                   class="btn btn-success">
+                    Download CSV
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">
+                Attendees (@Model.Count)
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted mb-0">
+                    No one has expressed interest in the selected event(s).
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                @if (!selectedEventId.HasValue)
+                                {
+                                    <th>Event</th>
+                                }
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Date of Response</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var attendee = Model[i];
+
+                                <tr>
+                                    @if (!selectedEventId.HasValue)
+                                    {
+                                        <td>@attendee.Event?.Title</td>
+                                    }
+
+                                    <td>@(i + 1)</td>
+
+                                    <td>
+                                        @(attendee.User == null
+                                            ? "Unknown user"
+                                            : $"{attendee.User.FirstName} {attendee.User.LastName}")
+                                    </td>
+
+                                    <td>
+                                        @(attendee.User?.Email ?? "Not available")
+                                    </td>
+
+                                    <td>
+                                        @attendee.CreatedAt.ToString(
+                                            "dd MMM yyyy, h:mm tt")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

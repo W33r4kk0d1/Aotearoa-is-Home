@@ -754,5 +754,149 @@ namespace Aotearoa_is_Home.Areas.ServiceProvider.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Attendees(int? id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            // Load only this provider's events that record responses.
+            var providerEvents = await _context.Events
+                .Where(e =>
+                    e.EventProviderProfile!.UserId == userId &&
+                    e.EnableResponses &&
+                    e.RecordResponses)
+                .OrderBy(e => e.Title)
+                .ToListAsync();
+
+            // If an event ID was supplied, confirm it belongs to this provider.
+            if (id.HasValue &&
+                !providerEvents.Any(e => e.Id == id.Value))
+            {
+                return NotFound();
+            }
+
+            var query = _context.EventResponses
+                .AsNoTracking()
+                .Include(r => r.User)
+                .Include(r => r.Event)
+                .Where(r =>
+                    r.Event!.EventProviderProfile!.UserId == userId &&
+                    r.Event.EnableResponses &&
+                    r.Event.RecordResponses);
+
+            if (id.HasValue)
+            {
+                query = query.Where(r => r.EventId == id.Value);
+            }
+
+            var attendees = await query
+                .OrderBy(r => r.Event!.Title)
+                .ThenByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.ProviderEvents = providerEvents;
+            ViewBag.SelectedEventId = id;
+            ViewBag.EventTitle = id.HasValue
+                ? providerEvents.First(e => e.Id == id.Value).Title
+                : "All Events";
+
+            return View(attendees);
+        }
+
+        // DOWNLOAD ATTENDEE LIST AS CSV
+        [HttpGet]
+        public async Task<IActionResult> ExportAttendees(int? id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            // Confirm the selected event belongs to this provider.
+            if (id.HasValue)
+            {
+                var ownsEvent = await _context.Events.AnyAsync(e =>
+                    e.Id == id.Value &&
+                    e.EventProviderProfile!.UserId == userId &&
+                    e.EnableResponses &&
+                    e.RecordResponses);
+
+                if (!ownsEvent)
+                    return NotFound();
+            }
+
+            var query = _context.EventResponses
+                .AsNoTracking()
+                .Include(r => r.User)
+                .Include(r => r.Event)
+                .Where(r =>
+                    r.Event!.EventProviderProfile!.UserId == userId &&
+                    r.Event.EnableResponses &&
+                    r.Event.RecordResponses);
+
+            if (id.HasValue)
+            {
+                query = query.Where(r => r.EventId == id.Value);
+            }
+
+            var responses = await query
+                .OrderBy(r => r.Event!.Title)
+                .ThenByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            // Protect CSV columns against commas, quotes, and line breaks.
+            static string Csv(string? value)
+            {
+                value ??= string.Empty;
+
+                // Prevent spreadsheet formula injection.
+                if (value.Length > 0 &&
+                    "=+-@\t\r".Contains(value[0]))
+                {
+                    value = "'" + value;
+                }
+
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
+
+            var lines = new List<string>
+            {
+                string.Join(",", new[]
+                {
+                    Csv("Event"),
+                    Csv("Attendee Name"),
+                    Csv("Email"),
+                    Csv("Date of Response")
+                })
+            };
+
+            foreach (var response in responses)
+            {
+                var name = response.User == null
+                    ? "Unknown user"
+                    : $"{response.User.FirstName} {response.User.LastName}";
+
+                lines.Add(string.Join(",", new[]
+                {
+                    Csv(response.Event?.Title),
+                    Csv(name),
+                    Csv(response.User?.Email),
+                    Csv(response.CreatedAt.ToString("dd MMM yyyy, h:mm tt"))
+                }));
+            }
+
+            var csv = "\uFEFF" + string.Join("\r\n", lines);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+
+            var fileName = id.HasValue
+                ? $"Event-{id.Value}-Attendees.csv"
+                : "All-Event-Attendees.csv";
+
+            return File(bytes, "text/csv; charset=utf-8", fileName);
+        }
     }
 }
