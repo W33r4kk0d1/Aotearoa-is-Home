@@ -392,5 +392,162 @@ namespace Aotearoa_is_Home.Services
 
             await smtpClient.SendMailAsync(message);
         }
+
+        public async Task SendFamilyAccountCreatedEmailAsync(
+            string recipientEmail,
+            string firstName)
+        {
+            var safeName = WebUtility.HtmlEncode(firstName);
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                "Welcome to Aotearoa is Home",
+                $"""
+                <h2>Kia ora {safeName},</h2>
+                <p>Your Family Member account has been successfully created.</p>
+                <p>You can now sign in and explore settlement information
+                and resources for your family.</p>
+                <p>Ngā mihi,<br><strong>Aotearoa is Home Team</strong></p>
+                """);
+        }
+
+        public async Task SendServiceProviderAccountCreatedEmailAsync(
+            string recipientEmail,
+            string providerName)
+        {
+            var safeName = WebUtility.HtmlEncode(providerName);
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                "Service Provider Registration Received",
+                $"""
+                <h2>Kia ora {safeName},</h2>
+                <p>Your service provider account has been created successfully.</p>
+                <p>Your account is awaiting administrator approval.
+                You will be able to access the applicable provider features
+                once your account has been approved.</p>
+                <p>Ngā mihi,<br><strong>Aotearoa is Home Team</strong></p>
+                """);
+        }
+
+        public async Task SendEventInterestNotificationAsync(
+            string recipientEmail,
+            string providerName,
+            string eventName)
+        {
+            var safeName = WebUtility.HtmlEncode(providerName);
+            var safeEventName = WebUtility.HtmlEncode(eventName);
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                "Someone Is Interested in Your Event",
+                $"""
+                <h2>Kia ora {safeName},</h2>
+                <p>Someone has expressed interest in your event:</p>
+                <p><strong>{safeEventName}</strong></p>
+                <p>Please sign in to Aotearoa is Home to view the
+                available event information and responses.</p>
+                <p>Ngā mihi,<br><strong>Aotearoa is Home Team</strong></p>
+                """);
+        }
+
+        private async Task SendNotificationEmailAsync(
+            string recipientEmail,
+            string subject,
+            string htmlBody)
+        {
+            var smtpHost = _configuration["Email:SmtpHost"];
+            var smtpPort = int.Parse(
+                _configuration["Email:SmtpPort"] ?? "587");
+            var username = _configuration["Email:Username"];
+            var password = _configuration["Email:Password"];
+            var fromEmail = _configuration["Email:FromEmail"];
+
+            if (string.IsNullOrWhiteSpace(smtpHost) ||
+                string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(fromEmail))
+            {
+                throw new InvalidOperationException(
+                    "Email settings are not configured.");
+            }
+
+            using var message = new MailMessage
+            {
+                From = new MailAddress(fromEmail, "Aotearoa is Home"),
+                Subject = subject,
+                Body = $"""
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family:Arial,sans-serif;
+                            color:#333;line-height:1.6;">
+                    <div style="max-width:600px;margin:auto;padding:24px;">
+                        <h1 style="color:#397957;">Aotearoa is Home</h1>
+                        {htmlBody}
+                    </div>
+                </body>
+                </html>
+                """,
+                IsBodyHtml = true
+            };
+
+            message.To.Add(new MailAddress(recipientEmail));
+
+            using var smtpClient = new SmtpClient(smtpHost, smtpPort)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential(username, password)
+            };
+
+            await smtpClient.SendMailAsync(message);
+        }
+
+        public async Task SendServiceProviderApprovalEmailAsync(
+            string recipientEmail,
+            string providerName)
+        {
+            var safeName = WebUtility.HtmlEncode(providerName);
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                "Your Aotearoa is Home Service Provider Account Has Been Approved",
+                $"""
+                <h2>Kia ora {safeName},</h2>
+                <p>Great news! Your Service Provider account has been approved by the Aotearoa is Home administrator.</p>
+                <p>You can now sign in and access the features available to approved service providers.</p>
+                <p>Ngā mihi,<br>
+                <strong>Aotearoa is Home Team</strong></p>
+                """);
+        }
+
+        public async Task SendEmailConfirmationAsync(
+            string recipientEmail,
+            string firstName,
+            string confirmationLink)
+        {
+            var safeName = WebUtility.HtmlEncode(firstName);
+            var safeLink = WebUtility.HtmlEncode(confirmationLink);
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                "Verify Your Aotearoa is Home Email Address",
+                $"""
+                <h2>Kia ora {safeName},</h2>
+
+                <p>Thank you for registering with Aotearoa is Home.</p>
+
+                <p>Please click the link below to verify your email address:</p>
+
+                <p>
+                    <a href="{safeLink}">Verify my email address</a>
+                </p>
+
+                <p>If you did not create this account, you can ignore this email.</p>
+
+                <p>Ngā mihi,<br>
+                <strong>Aotearoa is Home Team</strong></p>
+                """
+            );
+        }
     }
 }

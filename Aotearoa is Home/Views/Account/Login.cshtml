@@ -62,6 +62,13 @@
                 </div>
             }
 
+            @if (TempData["RegistrationWarning"] != null)
+            {
+                <div class="alert alert-warning login-warning" role="alert">
+                    @TempData["RegistrationWarning"]
+                </div>
+            }
+
 
             <form asp-area=""
                   asp-controller="Account"
