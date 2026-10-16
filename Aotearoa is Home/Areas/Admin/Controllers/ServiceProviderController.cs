@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Aotearoa_is_Home.Services;
 
 namespace Aotearoa_is_Home.Areas.Admin.Controllers
 {
@@ -12,11 +13,17 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
     public class ServiceProviderController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailService _emailService;
+        private readonly ILogger<ServiceProviderController> _logger;
 
         public ServiceProviderController(
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IEmailService emailService,
+            ILogger<ServiceProviderController> logger)
         {
             _userManager = userManager;
+            _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(
@@ -93,6 +100,24 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                TempData["RegistrationWarning"] =
+                    "The provider was approved, but no email address is available.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Avoid sending the approval email again if already approved.
+            if (user.IsServiceProviderVerified)
+            {
+                TempData["RegistrationSuccess"] =
+                    "This service provider has already been approved.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Update the approval status first.
             user.IsServiceProviderVerified = true;
 
             var result = await _userManager.UpdateAsync(user);
@@ -104,7 +129,33 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
 
+                TempData["RegistrationWarning"] =
+                    "The service provider could not be approved.";
+
                 return RedirectToAction(nameof(Index));
+            }
+
+            // Send the approval email after the update succeeds.
+            try
+            {
+                await _emailService.SendServiceProviderApprovalEmailAsync(
+                    user.Email!,
+                    user.FirstName
+                );
+
+                TempData["RegistrationSuccess"] =
+                    "Service provider approved successfully. An approval email has been sent.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Service provider {UserId} was approved, but the approval email failed.",
+                    user.Id
+                );
+
+                TempData["RegistrationWarning"] =
+                    "Service provider approved successfully, but the approval email could not be sent.";
             }
 
             return RedirectToAction(nameof(Index));
@@ -116,14 +167,31 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null)
+            if (user == null ||
+                !await _userManager.IsInRoleAsync(user, "Service Provider"))
             {
                 return NotFound();
             }
 
             user.IsServiceProviderVerified = false;
 
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogError(
+                    "Failed to reject service provider {UserId}: {Errors}",
+                    user.Id,
+                    string.Join("; ", result.Errors.Select(e => e.Description)));
+
+                TempData["RegistrationWarning"] =
+                    "The service provider could not be rejected.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["RegistrationSuccess"] =
+                "The service provider's approval has been revoked.";
 
             return RedirectToAction(nameof(Index));
         }

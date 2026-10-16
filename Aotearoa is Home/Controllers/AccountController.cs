@@ -2,9 +2,12 @@ using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
 using Aotearoa_is_Home.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Aotearoa_is_Home.Controllers
 {
@@ -59,6 +62,15 @@ namespace Aotearoa_is_Home.Controllers
                 ModelState.AddModelError(
                     string.Empty,
                     "Invalid username/email or password.");
+
+                return View(model);
+            }
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Please verify your email address using the link sent to your email before signing in.");
 
                 return View(model);
             }
@@ -229,8 +241,37 @@ namespace Aotearoa_is_Home.Controllers
 
                     break;
 
-                case "Student":
-                    break;
+                    case "Student":
+                    {
+                        // Check whether the student says they have a Student ID.
+                        if (model.HasStudentId != true ||
+                            string.IsNullOrWhiteSpace(model.StudentId))
+                        {
+                            // No Student ID: send for administrator approval.
+                            isPendingStudent = true;
+                            model.StudentId = null;
+                            break;
+                        }
+
+                        var enteredStudentId = model.StudentId.Trim();
+
+                        // Look up the ID in the university database.
+                        var universityStudent = await _universityContext.UniversityStudents
+                            .FirstOrDefaultAsync(s => s.StudentId == enteredStudentId);
+
+                        // Missing or inactive student: send for administrator approval.
+                        if (universityStudent == null ||
+                            !universityStudent.IsCurrentStudent)
+                        {
+                            isPendingStudent = true;
+                            break;
+                        }
+
+                        // Valid, active university student.
+                        model.StudentId = universityStudent.StudentId;
+
+                        break;
+                    }
 
                 case "Admin":
                     break;
@@ -445,66 +486,324 @@ namespace Aotearoa_is_Home.Controllers
                 return View(model);
             }
 
-            // EMAIL NOTIFICATIONS
-
-            if (model.AccountType == "Student")
+            // SEND EMAIL VERIFICATION LINK
+            try
             {
-                try
-                {
-                    await _emailService.SendStudentAccountCreatedEmailAsync(
-                        user.Email!,
-                        user.FirstName);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("========================================");
-                    Console.WriteLine("STUDENT ACCOUNT CREATION EMAIL FAILED");
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("========================================");
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    TempData["RegistrationWarning"] = "Your account was created successfully, but the confirmation email could not be sent.";
+                var encodedToken = WebEncoders.Base64UrlEncode(
+                    Encoding.UTF8.GetBytes(token));
+
+                var confirmationLink = Url.Action(
+                    nameof(ConfirmEmail),
+                    "Account",
+                    new
+                    {
+                        userId = user.Id,
+                        code = encodedToken
+                    },
+                    protocol: Request.Scheme);
+
+                if (string.IsNullOrWhiteSpace(confirmationLink))
+                {
+                    throw new InvalidOperationException(
+                        "Could not generate the email confirmation link.");
                 }
+
+                await _emailService.SendEmailConfirmationAsync(
+                    user.Email!,
+                    user.FirstName,
+                    confirmationLink);
+
+                TempData["RegistrationSuccess"] =
+                    "Your account has been created. Please check your email and click the verification link before signing in.";
             }
-            else if (model.AccountType == "Admin")
+            catch (Exception ex)
             {
-                try
-                {
-                    await _emailService.SendAdminAccountCreatedEmailAsync(
-                        user.Email!,
-                        user.FirstName,
-                        model.EmployeeId!,
-                        model.DepartmentOrganisation ??
-                        "Not specified");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("========================================");
-                    Console.WriteLine("ADMIN ACCOUNT CREATION EMAIL FAILED");
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("========================================");
+                Console.WriteLine("EMAIL VERIFICATION EMAIL FAILED");
+                Console.WriteLine(ex);
 
-                    TempData["RegistrationWarning"] = "Your administrator account was created successfully, but the confirmation email could not be sent.";
-                }
-            }
-
-            // SUCCESS MESSAGE
-
-            if (TempData["RegistrationWarning"] == null)
-            {
-                if (model.AccountType == "Service Provider")
-                {
-                    TempData["RegistrationSuccess"] = "Account created successfully. Your service provider account is awaiting administrator approval.";
-                }
-                else
-                {
-                    TempData["RegistrationSuccess"] = "Account created successfully! A confirmation email has been sent.";
-                }
+                TempData["RegistrationWarning"] =
+                    "Your account was created, but the verification email could not be sent. Please contact support to request another verification email.";
             }
 
-            return RedirectToAction(
-                "Login",
-                "Account");
+            return RedirectToAction(nameof(Login));
+
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(
+            string userId,
+            string code)
+        {
+            if (string.IsNullOrWhiteSpace(userId) ||
+                string.IsNullOrWhiteSpace(code))
+            {
+                return BadRequest("Invalid email confirmation link.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("Account not found.");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                TempData["RegistrationSuccess"] =
+                    "Your email address has already been verified.";
+
+                return RedirectToAction(nameof(Login));
+            }
+
+            try
+            {
+                var decodedCode = Encoding.UTF8.GetString(
+                    WebEncoders.Base64UrlDecode(code));
+
+                var result = await _userManager.ConfirmEmailAsync(
+                    user,
+                    decodedCode);
+
+                if (result.Succeeded)
+                {
+                    TempData["RegistrationSuccess"] =
+                        "Your email address has been verified. You can now sign in.";
+
+                    return RedirectToAction(nameof(Login));
+                }
+            }
+            catch (FormatException)
+            {
+                // The confirmation link contains an invalid token.
+            }
+
+            TempData["RegistrationWarning"] =
+                "The verification link is invalid or has expired. Please request a new verification email.";
+
+            return RedirectToAction(nameof(Login));
+        }
+
+        // CHANGE PASSWORD — SIGNED-IN USERS
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(
+            ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                await _signInManager.SignOutAsync();
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                model.CurrentPassword,
+                model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                // Refresh the sign-in cookie after changing the password.
+                await _signInManager.RefreshSignInAsync(user);
+
+                TempData["PasswordSuccess"] =
+                    "Your password has been changed successfully.";
+
+                return RedirectToAction(nameof(ChangePassword));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
+        // FORGOT PASSWORD — REQUEST RESET EMAIL
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(
+            ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(
+                model.Email.Trim());
+
+            // Always show the same confirmation message, whether or not an account exists, to avoid revealing registered email addresses.
+            if (user != null &&
+                await _userManager.IsEmailConfirmedAsync(user))
+            {
+                var token =
+                    await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var encodedToken = WebEncoders.Base64UrlEncode(
+                    Encoding.UTF8.GetBytes(token));
+
+                var resetLink = Url.Action(
+                    nameof(ResetPassword),
+                    "Account",
+                    new
+                    {
+                        email = user.Email,
+                        code = encodedToken
+                    },
+                    protocol: Request.Scheme);
+
+                if (!string.IsNullOrWhiteSpace(resetLink))
+                {
+                    try
+                    {
+                        Console.WriteLine("PASSWORD RESET: Attempting to send email.");
+
+                        await _emailService.SendPasswordResetEmailAsync(
+                            user.Email!,
+                            user.FirstName,
+                            resetLink);
+
+                        Console.WriteLine("PASSWORD RESET: Email sent successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("PASSWORD RESET: EMAIL FAILED.");
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        // RESET PASSWORD — FROM EMAIL LINK
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? email, string? code)
+        {
+            if (string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(code))
+            {
+                TempData["PasswordResetError"] =
+                    "The password reset link is invalid or incomplete.";
+
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+
+            return View(new ResetPasswordViewModel
+            {
+                Email = email,
+                Code = code
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(
+            ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(
+                model.Email.Trim());
+
+            Console.WriteLine(
+                $"PASSWORD RESET: User found = {user != null}");
+
+            if (user != null)
+            {
+                Console.WriteLine(
+                    $"PASSWORD RESET: Email confirmed = " +
+                    $"{await _userManager.IsEmailConfirmedAsync(user)}");
+            }
+
+            if (user == null)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The password reset link is invalid or has expired.");
+
+                return View(model);
+            }
+
+            string decodedToken;
+
+            try
+            {
+                decodedToken = Encoding.UTF8.GetString(
+                    WebEncoders.Base64UrlDecode(model.Code));
+            }
+            catch (FormatException)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The password reset link is invalid or has expired.");
+
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                decodedToken,
+                model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["PasswordSuccess"] =
+                    "Your password has been reset. You can now sign in.";
+
+                return RedirectToAction(nameof(PasswordResetConfirmation));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult PasswordResetConfirmation()
+        {
+            return View();
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

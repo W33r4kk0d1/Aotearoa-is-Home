@@ -2,6 +2,8 @@ using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
 using Aotearoa_is_Home.Services;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -301,6 +303,17 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 LastName = registration.LastName
             };
 
+            var existingUser = await _userManager.FindByEmailAsync(
+                registration.Email);
+
+            if (existingUser != null)
+            {
+                TempData["RegistrationError"] =
+                    "An account already exists with this email. Please review the registration.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
             var userResult =
                 await _userManager.CreateAsync(
                     user,
@@ -352,35 +365,68 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 _context.StudentProfiles.Add(studentProfile);
             }
 
+            
+            // GENERATE EMAIL CONFIRMATION LINK
+            var token =
+                await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var encodedToken = WebEncoders.Base64UrlEncode(
+                System.Text.Encoding.UTF8.GetBytes(token));
+
+            var confirmationLink = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new
+                {
+                    area = "",
+                    userId = user.Id,
+                    code = encodedToken
+                },
+                protocol: Request.Scheme);
+
+            if (string.IsNullOrWhiteSpace(confirmationLink))
+            {
+                await _userManager.DeleteAsync(user);
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The email verification link could not be generated. Please try approving the registration again.");
+
+                model.FirstName = registration.FirstName;
+                model.LastName = registration.LastName;
+                model.Email = registration.Email;
+
+                return View("Approve", model);
+            }
+
             // MARK REGISTRATION AS APPROVED
             registration.Status = "Approved";
 
             await _context.SaveChangesAsync();
 
-
-            // SEND APPROVAL EMAIL
+            // SEND TEMPORARY PASSWORD AND EMAIL VERIFICATION LINK
             try
             {
                 await _emailService.SendStudentApprovalEmailAsync(
                     registration.Email,
                     registration.FirstName,
-                    model.TemporaryPassword);
+                    model.TemporaryPassword,
+                    confirmationLink);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("========================================");
-                Console.WriteLine("APPROVAL EMAIL FAILED");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("========================================");
+                Console.WriteLine("STUDENT APPROVAL EMAIL FAILED");
+                Console.WriteLine(ex);
 
-                TempData["RegistrationWarning"] = $"The student account was approved successfully, but the email could not be sent. Error: {ex.Message}";
+                TempData["RegistrationWarning"] =
+                    "The student account was approved, but the email could not be sent. The student must receive a verification link before signing in. Please arrange to resend the approval email.";
 
                 return RedirectToAction(nameof(Index));
             }
 
-
             // SUCCESS
-            TempData["RegistrationSuccess"] = $"Student registration for {registration.FirstName} {registration.LastName} was approved successfully, and the login details were emailed to {registration.Email}.";
+            TempData["RegistrationSuccess"] =
+                $"Student registration for {registration.FirstName} {registration.LastName} was approved. The temporary password and email verification link were sent to {registration.Email}.";
 
             return RedirectToAction(nameof(Index));
         }

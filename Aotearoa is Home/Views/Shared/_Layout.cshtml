@@ -684,7 +684,11 @@
     }
 
     function performLogout() {
-        document.getElementById("logoutForm").submit();
+        const logoutForm = document.getElementById("logoutForm");
+
+        if (logoutForm) {
+            logoutForm.requestSubmit();
+        }
     }
 
     // Close when clicking outside the dialog

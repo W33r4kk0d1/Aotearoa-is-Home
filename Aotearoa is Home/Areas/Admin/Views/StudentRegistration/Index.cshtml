@@ -327,7 +327,10 @@
                                         </span>
 
                                         <span class="info-value">
-                                            @registration.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")
+                                            @TimeZoneInfo.ConvertTimeFromUtc(
+                                                        DateTime.SpecifyKind(registration.SubmittedAt, DateTimeKind.Utc),
+                                                        TimeZoneInfo.FindSystemTimeZoneById("Pacific/Auckland")
+                                                    ).ToString("dd MMM yyyy, h:mm tt")
                                         </span>
 
                                     </div>

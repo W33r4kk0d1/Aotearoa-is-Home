@@ -8,7 +8,7 @@
     var settlementUrl = Url.Action(
         "Index",
         "Settlement",
-        new { area = "Admin" }
+        new { area = "Student" }
     );
 }
 
@@ -73,17 +73,16 @@
              aria-label="Chat conversation">
 
             <div class="chat-message assistant-message">
-                <div class="chat-message-label">
-                    Assistant
-                </div>
+                <div class="chat-message-label">Assistant</div>
 
-                <div class="chat-message-bubble">
-                    Kia ora! How can I help you today?
-
-                    You can ask me about accommodation,
-                    healthcare, education, employment,
-                    transport, emergency support and
-                    family services.
+                <div class="chat-message-bubble chatbot-welcome-bubble">
+                    <p>Kia ora! How can I help you today?
+                        
+                        <br /> 
+                        <br/> 
+                        You can ask me about accommodation, healthcare,
+                        education, employment, transport, emergency
+                        support and family services.</p>
                 </div>
             </div>
         </div>

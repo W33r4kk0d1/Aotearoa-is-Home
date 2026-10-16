@@ -823,8 +823,7 @@ namespace Aotearoa_is_Home.Controllers
             else if (IsAny(question, "hi", "hello", "kia ora", "hey"))
             {
                 response =
-                    "Kia ora! I can provide quick answers about emergencies, healthcare, transport, " +
-                    "banking, phones, accommodation, waste, shopping, employment and other settlement needs.";
+                    "Kia ora! I can provide quick answers about emergencies, healthcare, transport, banking, phones, accommodation, waste, shopping, employment and other settlement needs.";
             }
 
             // =========================================================

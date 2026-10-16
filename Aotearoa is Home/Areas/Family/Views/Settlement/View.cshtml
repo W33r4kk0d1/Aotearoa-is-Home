@@ -15,10 +15,6 @@
         TimeZoneInfo.ConvertTimeFromUtc(
             Model.UpdatedAt,
             nzTimeZone);
-
-    var imageName = Model.CategoryName
-        .ToLower()
-        .Replace(" ", "-") + ".jpg";
 }
 
 <div class="student-settlement-view">
@@ -35,11 +31,24 @@
         </a>
     </div>
 
+
     <section class="student-settlement-hero">
 
-        <img src="@Url.Content($"~/images/settlement/{imageName}")"
-             alt="@Model.CategoryName"
-             class="student-settlement-hero-image" />
+        @if (Model.BackgroundImage != null &&
+            Model.BackgroundImage.Length > 0)
+        {
+            <img
+                src="data:@(Model.BackgroundImageContentType ?? "image/jpeg");base64,@Convert.ToBase64String(Model.BackgroundImage)"
+                alt="@Model.CategoryName"
+                class="student-settlement-hero-image" />
+        }
+        else
+        {
+            <div class="student-settlement-hero-placeholder"
+                role="img"
+                aria-label="@Model.CategoryName">
+            </div>
+        }
 
         <div class="student-settlement-hero-overlay"></div>
 
@@ -49,18 +58,16 @@
                 SETTLEMENT INFORMATION
             </span>
 
-            <h1>
-                @Model.CategoryName
-            </h1>
+            <h1>@Model.CategoryName</h1>
 
             <p>
-                Helpful information and resources to help you
-                settle into Aotearoa New Zealand.
+                Helpful information and resources to help you settle into Aotearoa New Zealand.
             </p>
 
         </div>
 
     </section>
+
 
     <div class="student-settlement-meta">
 

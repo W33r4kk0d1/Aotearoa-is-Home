@@ -11,10 +11,6 @@
         TimeZoneInfo.ConvertTimeFromUtc(
             Model.UpdatedAt,
             nzTimeZone);
-
-    var imageName = Model.CategoryName
-        .ToLower()
-        .Replace(" ", "-") + ".jpg";
 }
 
 
@@ -35,11 +31,24 @@
     </div>
 
 
+
     <section class="student-settlement-hero">
 
-        <img src="@Url.Content($"~/images/settlement/{imageName}")"
-            alt="@Model.CategoryName"
-            class="student-settlement-hero-image" />
+        @if (Model.BackgroundImage != null &&
+            Model.BackgroundImage.Length > 0)
+        {
+            <img
+                src="data:@(Model.BackgroundImageContentType ?? "image/jpeg");base64,@Convert.ToBase64String(Model.BackgroundImage)"
+                alt="@Model.CategoryName"
+                class="student-settlement-hero-image" />
+        }
+        else
+        {
+            <div class="student-settlement-hero-placeholder"
+                role="img"
+                aria-label="@Model.CategoryName">
+            </div>
+        }
 
         <div class="student-settlement-hero-overlay"></div>
 
@@ -49,9 +58,7 @@
                 SETTLEMENT INFORMATION
             </span>
 
-            <h1>
-                @Model.CategoryName
-            </h1>
+            <h1>@Model.CategoryName</h1>
 
             <p>
                 Helpful information and resources to help you
@@ -61,6 +68,7 @@
         </div>
 
     </section>
+
 
     <!--  LAST UPDATED -->
 
@@ -155,51 +163,42 @@
                 </div>
             }
 
+
             else if (block.Type == "link")
             {
-                var linkDisplayText = "Visit Resource";
-                var linkTargetUrl = "#";
+                var pieces = (block.Content ?? "").Split("||", 2);
 
-                if (!string.IsNullOrWhiteSpace(block.Content) &&
-                    block.Content.Contains("||"))
+                var linkDisplayText = pieces.Length > 1
+                    ? pieces[0].Trim()
+                    : "Visit Resource";
+
+                var linkTargetUrl = pieces.Length > 1
+                    ? pieces[1].Trim()
+                    : (block.Content ?? "").Trim();
+
+                var isValidUrl = Uri.TryCreate(
+                    linkTargetUrl,
+                    UriKind.Absolute,
+                    out var parsedUrl)
+                    && (parsedUrl.Scheme == Uri.UriSchemeHttp
+                        || parsedUrl.Scheme == Uri.UriSchemeHttps);
+
+                if (isValidUrl)
                 {
-                    var pieces = block.Content.Split("||", 2);
-
-                    linkDisplayText = pieces[0].Trim();
-
-                    linkTargetUrl =
-                        pieces.Length > 1
-                            ? pieces[1].Trim()
-                            : "#";
+                    <div class="student-content-link searchable-content">
+                        <a href="@parsedUrl!.AbsoluteUri"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                            <span class="student-content-link-icon">🔗</span>
+                            <span class="student-content-link-text">
+                                @linkDisplayText
+                            </span>
+                            <span class="student-content-link-arrow">↗</span>
+                        </a>
+                    </div>
                 }
-                else
-                {
-                    linkTargetUrl =
-                        block.Content?.Trim() ?? "#";
-                }
-
-                <div class="student-content-link searchable-content">
-
-                    <a href="@linkTargetUrl"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                        <span class="student-content-link-icon">
-                            🔗
-                        </span>
-
-                        <span class="student-content-link-text">
-                            @linkDisplayText
-                        </span>
-
-                        <span class="student-content-link-arrow">
-                            ↗
-                        </span>
-
-                    </a>
-
-                </div>
             }
+
 
         }
 

@@ -27,9 +27,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
         options.Password.RequireNonAlphanumeric = false;
 
         options.User.RequireUniqueEmail = true;
+
+        // Require users to verify their email before logging in.
+        options.SignIn.RequireConfirmedEmail = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+    
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
