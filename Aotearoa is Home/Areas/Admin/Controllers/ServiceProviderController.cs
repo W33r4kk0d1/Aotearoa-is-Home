@@ -100,6 +100,14 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                TempData["RegistrationWarning"] =
+                    "The provider was approved, but no email address is available.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
             // Avoid sending the approval email again if already approved.
             if (user.IsServiceProviderVerified)
             {
@@ -159,14 +167,31 @@ namespace Aotearoa_is_Home.Areas.Admin.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null)
+            if (user == null ||
+                !await _userManager.IsInRoleAsync(user, "Service Provider"))
             {
                 return NotFound();
             }
 
             user.IsServiceProviderVerified = false;
 
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogError(
+                    "Failed to reject service provider {UserId}: {Errors}",
+                    user.Id,
+                    string.Join("; ", result.Errors.Select(e => e.Description)));
+
+                TempData["RegistrationWarning"] =
+                    "The service provider could not be rejected.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["RegistrationSuccess"] =
+                "The service provider's approval has been revoked.";
 
             return RedirectToAction(nameof(Index));
         }

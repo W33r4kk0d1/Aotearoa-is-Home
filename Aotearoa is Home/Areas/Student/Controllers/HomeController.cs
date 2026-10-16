@@ -149,7 +149,9 @@ namespace Aotearoa_is_Home.Areas.Student.Controllers
             // 8. Load the three earliest approved events.
             var events = await context.Events
                 .Include(x => x.EventProviderProfile)
-                .Where(x => x.Status == "Approved")
+                .Where(x =>
+                    x.Status == "Approved" &&
+                    x.StartDate >= DateTime.Now)
                 .OrderBy(x => x.StartDate)
                 .Take(3)
                 .ToListAsync();

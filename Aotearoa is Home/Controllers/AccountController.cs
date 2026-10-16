@@ -2,6 +2,7 @@ using Aotearoa_is_Home.Data;
 using Aotearoa_is_Home.Models;
 using Aotearoa_is_Home.Models.ViewModels;
 using Aotearoa_is_Home.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -240,8 +241,37 @@ namespace Aotearoa_is_Home.Controllers
 
                     break;
 
-                case "Student":
-                    break;
+                    case "Student":
+                    {
+                        // Check whether the student says they have a Student ID.
+                        if (model.HasStudentId != true ||
+                            string.IsNullOrWhiteSpace(model.StudentId))
+                        {
+                            // No Student ID: send for administrator approval.
+                            isPendingStudent = true;
+                            model.StudentId = null;
+                            break;
+                        }
+
+                        var enteredStudentId = model.StudentId.Trim();
+
+                        // Look up the ID in the university database.
+                        var universityStudent = await _universityContext.UniversityStudents
+                            .FirstOrDefaultAsync(s => s.StudentId == enteredStudentId);
+
+                        // Missing or inactive student: send for administrator approval.
+                        if (universityStudent == null ||
+                            !universityStudent.IsCurrentStudent)
+                        {
+                            isPendingStudent = true;
+                            break;
+                        }
+
+                        // Valid, active university student.
+                        model.StudentId = universityStudent.StudentId;
+
+                        break;
+                    }
 
                 case "Admin":
                     break;
@@ -553,6 +583,225 @@ namespace Aotearoa_is_Home.Controllers
                 "The verification link is invalid or has expired. Please request a new verification email.";
 
             return RedirectToAction(nameof(Login));
+        }
+
+        // CHANGE PASSWORD — SIGNED-IN USERS
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(
+            ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                await _signInManager.SignOutAsync();
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                model.CurrentPassword,
+                model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                // Refresh the sign-in cookie after changing the password.
+                await _signInManager.RefreshSignInAsync(user);
+
+                TempData["PasswordSuccess"] =
+                    "Your password has been changed successfully.";
+
+                return RedirectToAction(nameof(ChangePassword));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
+        // FORGOT PASSWORD — REQUEST RESET EMAIL
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(
+            ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(
+                model.Email.Trim());
+
+            // Always show the same confirmation message, whether or not an account exists, to avoid revealing registered email addresses.
+            if (user != null &&
+                await _userManager.IsEmailConfirmedAsync(user))
+            {
+                var token =
+                    await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var encodedToken = WebEncoders.Base64UrlEncode(
+                    Encoding.UTF8.GetBytes(token));
+
+                var resetLink = Url.Action(
+                    nameof(ResetPassword),
+                    "Account",
+                    new
+                    {
+                        email = user.Email,
+                        code = encodedToken
+                    },
+                    protocol: Request.Scheme);
+
+                if (!string.IsNullOrWhiteSpace(resetLink))
+                {
+                    try
+                    {
+                        Console.WriteLine("PASSWORD RESET: Attempting to send email.");
+
+                        await _emailService.SendPasswordResetEmailAsync(
+                            user.Email!,
+                            user.FirstName,
+                            resetLink);
+
+                        Console.WriteLine("PASSWORD RESET: Email sent successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("PASSWORD RESET: EMAIL FAILED.");
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        // RESET PASSWORD — FROM EMAIL LINK
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? email, string? code)
+        {
+            if (string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(code))
+            {
+                TempData["PasswordResetError"] =
+                    "The password reset link is invalid or incomplete.";
+
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+
+            return View(new ResetPasswordViewModel
+            {
+                Email = email,
+                Code = code
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(
+            ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(
+                model.Email.Trim());
+
+            Console.WriteLine(
+                $"PASSWORD RESET: User found = {user != null}");
+
+            if (user != null)
+            {
+                Console.WriteLine(
+                    $"PASSWORD RESET: Email confirmed = " +
+                    $"{await _userManager.IsEmailConfirmedAsync(user)}");
+            }
+
+            if (user == null)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The password reset link is invalid or has expired.");
+
+                return View(model);
+            }
+
+            string decodedToken;
+
+            try
+            {
+                decodedToken = Encoding.UTF8.GetString(
+                    WebEncoders.Base64UrlDecode(model.Code));
+            }
+            catch (FormatException)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The password reset link is invalid or has expired.");
+
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                decodedToken,
+                model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["PasswordSuccess"] =
+                    "Your password has been reset. You can now sign in.";
+
+                return RedirectToAction(nameof(PasswordResetConfirmation));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult PasswordResetConfirmation()
+        {
+            return View();
         }
 
 

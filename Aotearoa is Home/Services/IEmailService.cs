@@ -3,10 +3,12 @@ namespace Aotearoa_is_Home.Services
 {
     public interface IEmailService
     {
+        
         Task SendStudentApprovalEmailAsync(
             string recipientEmail,
             string firstName,
-            string temporaryPassword);
+            string temporaryPassword,
+            string confirmationLink);
 
         Task SendStudentAccountCreatedEmailAsync(
             string recipientEmail,
@@ -39,5 +41,10 @@ namespace Aotearoa_is_Home.Services
             string recipientEmail,
             string firstName,
             string confirmationLink);
+
+        Task SendPasswordResetEmailAsync(
+            string recipientEmail,
+            string firstName,
+            string resetLink);
     }
 }
