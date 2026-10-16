@@ -1,6 +1,7 @@
 using Aotearoa_is_Home.Data;
 using System.Security.Claims;
 using Aotearoa_is_Home.Models;
+using Aotearoa_is_Home.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,14 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
     public class EventController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public EventController(ApplicationDbContext context)
+        public EventController(
+            ApplicationDbContext context,
+            IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -112,6 +117,7 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             }
 
             var eventItem = await _context.Events
+                .Include(e => e.EventProviderProfile)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (eventItem == null)
@@ -156,7 +162,37 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
 
                 _context.EventResponses.Add(response);
 
+                // Save the response first so it is not lost if email fails.
                 await _context.SaveChangesAsync();
+
+                // Notify the provider only when they enabled email notifications.
+                if (eventItem.EmailOnResponse)
+                {
+                    try
+                    {
+                        var providerUserId = eventItem.EventProviderProfile?.UserId;
+
+                        if (!string.IsNullOrWhiteSpace(providerUserId))
+                        {
+                            var providerUser = await _context.Users
+                                .FirstOrDefaultAsync(u => u.Id == providerUserId);
+
+                            if (!string.IsNullOrWhiteSpace(providerUser?.Email))
+                            {
+                                await _emailService.SendEventInterestNotificationAsync(
+                                    providerUser.Email,
+                                    providerUser.FirstName,
+                                    eventItem.Title);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Keep the saved response even if email sending fails.
+                        Console.WriteLine(
+                            $"Event interest notification failed: {ex}");
+                    }
+                }
 
                 TempData["EventMessage"] = "You're marked as going to this event.";
             }
