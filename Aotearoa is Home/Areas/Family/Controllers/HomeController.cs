@@ -35,6 +35,8 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             var activeChecklists = await _context.StudentChecklists
                 .Where(c => c.UserId == userId && !c.IsArchived)
                 .Include(c => c.Items)
+                    .ThenInclude(i => i.ChecklistTask)
+                        .ThenInclude(t => t!.SettlementPage)
                 .ToListAsync();
 
             // 2. Create a default checklist if none exists.
@@ -59,6 +61,12 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
                 .SelectMany(c => c.Items)
                 .ToList();
 
+            var outstandingItems = checklistItems
+                .Where(item => !item.IsCompleted)
+                .OrderBy(item => item.Category)
+                .ThenBy(item => item.Title)
+                .ToList();
+
             // 4. Load settlement pages and their tasks.
             var settlementPages = await _context.SettlementPages
                 .Include(p => p.ChecklistTasks)
@@ -73,25 +81,13 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
 
             foreach (var page in settlementPages)
             {
-                var tasks = page.ChecklistTasks
-                    .OrderBy(t => t.DisplayOrder)
+                var selectedItems = checklistItems
+                    .Where(item =>
+                        item.ChecklistTask?.SettlementPageId == page.Id)
                     .ToList();
 
-                int total = tasks.Count;
-
-                var taskIds = tasks
-                    .Select(t => t.Id)
-                    .ToHashSet();
-
-                var completedTaskIds = checklistItems
-                    .Where(item =>
-                        item.ChecklistTaskId.HasValue &&
-                        item.IsCompleted &&
-                        taskIds.Contains(item.ChecklistTaskId.Value))
-                    .Select(item => item.ChecklistTaskId!.Value)
-                    .ToHashSet();
-
-                int completed = completedTaskIds.Count;
+                int total = selectedItems.Count;
+                int completed = selectedItems.Count(item => item.IsCompleted);
                 int remaining = total - completed;
 
                 progress[page.Id] = new ChecklistProgressViewModel
@@ -137,7 +133,8 @@ namespace Aotearoa_is_Home.Areas.Family.Controllers
             {
                 SettlementPages = settlementPages,
                 Events = events,
-                ChecklistProgress = progress
+                ChecklistProgress = progress,
+                OutstandingChecklistItems = outstandingItems
             };
 
             return View(model);

@@ -1,3 +1,4 @@
+
 using Aotearoa_is_Home.Models;
 
 namespace Aotearoa_is_Home.Models.ViewModels
@@ -12,6 +13,10 @@ namespace Aotearoa_is_Home.Models.ViewModels
 
         public Dictionary<int, ChecklistProgressViewModel> ChecklistProgress { get; set; }
             = new Dictionary<int, ChecklistProgressViewModel>();
+
+        // Selected checklist items that are not yet completed.
+        public List<ChecklistItem> OutstandingChecklistItems { get; set; }
+            = new List<ChecklistItem>();
     }
 
     public class ChecklistProgressViewModel

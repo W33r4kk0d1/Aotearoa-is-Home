@@ -16,14 +16,10 @@
         .ToList();
 
     // Recommend the first category that still needs attention.
-    var recommendedPageId = displayedSettlementPages
-    .Where(x =>
-        Model.ChecklistProgress.ContainsKey(x.Id) &&
-        Model.ChecklistProgress[x.Id].Total > 0 &&
-        Model.ChecklistProgress[x.Id].Completed <
-            Model.ChecklistProgress[x.Id].Total)
-    .Select(x => x.Id)
-    .FirstOrDefault();
+    var recommendedPageId = Model.OutstandingChecklistItems
+        .Where(item => item.ChecklistTask != null)
+        .Select(item => (int?)item.ChecklistTask!.SettlementPageId)
+        .FirstOrDefault();
 }
 
 <div class="student-home">
@@ -199,6 +195,71 @@
         {
             <div class="student-empty-state">
                 No upcoming events are currently available.
+            </div>
+        }
+
+    </section>
+
+    <section class="student-home-section">
+
+        <div class="student-section-title-row">
+            <div>
+                <span class="student-eyebrow">YOUR PROGRESS</span>
+                <h2>Outstanding Checklist Tasks</h2>
+                <p>Continue working through your settlement tasks.</p>
+            </div>
+
+            <a href="@Url.Action("Index", "Checklist", new { area = "Student" })"
+            class="student-view-all">
+                View all →
+            </a>
+        </div>
+
+        @if (Model.OutstandingChecklistItems.Any())
+        {
+            <div class="student-home-event-grid">
+                @foreach (var item in Model.OutstandingChecklistItems)
+                {
+                    <a href="@Url.Action(
+                        "ViewChecklist",
+                        "Checklist",
+                        new
+                        {
+                            area = "Student",
+                            id = item.StudentChecklistId
+                        })"
+                    class="student-home-event-card">
+
+                        <div class="student-home-event-content">
+                            <span class="student-event-category">
+                                @item.Category
+                            </span>
+
+                            <h3>@item.Title</h3>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <p>@item.Description</p>
+                            }
+
+                            <span>Continue task →</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                <p>
+                    You're all caught up! You have no outstanding tasks
+                    in your active checklists.
+                </p>
+
+                <a href="@Url.Action("Index", "Checklist", new { area = "Student" })"
+                class="student-view-all">
+                    View your checklist →
+                </a>
             </div>
         }
 

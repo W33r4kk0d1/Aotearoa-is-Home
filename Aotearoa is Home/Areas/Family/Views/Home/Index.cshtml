@@ -7,15 +7,10 @@
     var displayedSettlementPages =
         Model.SettlementPages.Take(3).ToList();
 
-    var recommendedPageId =
-        displayedSettlementPages
-            .Where(x =>
-                Model.ChecklistProgress.ContainsKey(x.Id) &&
-                Model.ChecklistProgress[x.Id].Total > 0 &&
-                Model.ChecklistProgress[x.Id].Completed <
-                Model.ChecklistProgress[x.Id].Total)
-            .Select(x => x.Id)
-            .FirstOrDefault();
+    var recommendedPageId = Model.OutstandingChecklistItems
+        .Where(item => item.ChecklistTask != null)
+        .Select(item => (int?)item.ChecklistTask!.SettlementPageId)
+        .FirstOrDefault();
 }
 
 <div class="student-home">
@@ -31,7 +26,6 @@
             <p> Find useful information, events, and resources to help you settle into life in New Zealand. </p>
         </div>
     </section>
-
 
     <!-- SETTLEMENT INFORMATION-->
     <section class="student-home-section">
@@ -208,5 +202,72 @@
             </div>
         }
 
+    </section>
+
+        @* OUTSTANDING CHECKLIST TASKS *@
+    <section class="student-home-section">
+        <div class="student-section-title-row">
+            <div>
+                <span class="student-eyebrow">YOUR CHECKLIST</span>
+                <h2>Your Next Steps</h2>
+                <p>Keep moving forward with your settlement journey.</p>
+            </div>
+
+            <a href="@Url.Action("Index", "Checklist", new { area = "Family" })"
+            class="student-view-all">
+                View checklist →
+            </a>
+        </div>
+
+        @if (Model.OutstandingChecklistItems.Any())
+        {
+            <div class="student-home-event-grid">
+                @foreach (var item in Model.OutstandingChecklistItems)
+                {
+                    <a href="@Url.Action(
+                        "ViewChecklist",
+                        "Checklist",
+                        new { area = "Family", id = item.StudentChecklistId })"
+                    class="student-home-event-card">
+
+                        <div class="student-home-event-content">
+                            @if (!string.IsNullOrWhiteSpace(item.Category))
+                            {
+                                <span class="student-event-category">
+                                    @item.Category
+                                </span>
+                            }
+
+                            <h3>@item.Title</h3>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <p>@item.Description</p>
+                            }
+
+                            <span class="student-view-all">
+                                Continue task →
+                            </span>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="student-empty-state">
+                <h3>You're all caught up!</h3>
+                <p>
+                    You have no outstanding tasks in your active checklists.
+                    Visit your checklist to review completed tasks or choose
+                    more settlement tasks.
+                </p>
+
+                <a href="@Url.Action("Index", "Checklist", new { area = "Family" })"
+                class="student-view-all">
+                    Open my checklist →
+                </a>
+            </div>
+        }
     </section>
 </div>
