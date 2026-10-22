@@ -81,10 +81,6 @@ using (var scope = app.Services.CreateScope())
     var environment =
         services.GetRequiredService<IWebHostEnvironment>();
 
-    await SettlementDataSeeder.SeedAsync(
-        context,
-        environment.WebRootPath);
-
     // Initialize the university/student database.
     await UniversityDbInitializer.InitializeAsync(services);
 }
